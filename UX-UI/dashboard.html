@@ -1,0 +1,1315 @@
+<!DOCTYPE html><html lang="en"><head>
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/vite.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>agency</title>
+  <style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/index.css">@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-light: #d1fae5;
+  --bg-color: #f3f4f6;
+  --surface: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --error: #ef4444;
+  --error-bg: #fee2e2;
+  --focus-ring: rgba(16, 185, 129, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+p {
+  color: var(--text-muted);
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-weight: 500;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* Reusable Utility Classes */
+
+.glass-panel {
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 4px 6px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.auth-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: radial-gradient(circle at top, var(--primary-light) 0%, var(--bg-color) 40%);
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem;
+  animation: slideUpFade 0.5s ease-out forwards;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+/* Form Elements */
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  color: var(--primary);
+}
+
+.logo-text {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* Animations */
+
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-5px);
+  }
+
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@media (max-width: 640px) {
+  .auth-wrapper {
+    padding: 1rem;
+  }
+
+  .auth-container {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* ============================================
+   DASHBOARD LAYOUT TOKENS
+   ============================================ */
+
+:root {
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 70px;
+  --header-height: 65px;
+  --sidebar-bg: #111827;
+  --sidebar-text: #9ca3af;
+  --sidebar-text-active: #ffffff;
+  --sidebar-active-bg: rgba(16, 185, 129, 0.15);
+  --sidebar-active-border: var(--primary);
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --status-pending: #f59e0b;
+  --status-confirmed: #10b981;
+  --status-cancelled: #ef4444;
+  --status-completed: #6366f1;
+}
+
+/* Dashboard Shell */
+
+.dashboard-shell {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.3s ease;
+  min-width: 0;
+}
+
+.dashboard-main.collapsed {
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+.dashboard-content {
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+  margin-top: var(--header-height);
+}
+
+/* KPI Status badges */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-confirmed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-completed {
+  background: #ede9fe;
+  color: #4c1d95;
+}
+
+.badge-available {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-rented {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-maintenance {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-owner {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-manager {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-member {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.badge-staff {
+  background: #fce7f3;
+  color: #831843;
+}
+
+/* Utility */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  align-items: center;
+}
+
+.select-input {
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  background: var(--surface);
+  color: var(--text-main);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.select-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.action-btn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.action-btn:hover {
+  background: var(--bg-color);
+}
+
+.action-btn.danger:hover {
+  background: #fee2e2;
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.action-btn.success:hover {
+  background: var(--primary-light);
+  color: var(--primary-hover);
+  border-color: var(--primary);
+}
+
+/* Animate spin for icons */
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@media (max-width: 900px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-main {
+    margin-left: var(--sidebar-collapsed-width);
+  }
+
+  .dashboard-content {
+    padding: 1.25rem;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/components/InputField.css">.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.25rem;
+    width: 100%;
+}
+
+.input-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--surface);
+    color: var(--text-main);
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.input-field::placeholder {
+    color: var(--text-muted);
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.input-error {
+    border-color: var(--error);
+}
+
+.input-error:focus {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.password-toggle:hover {
+    color: var(--text-main);
+}
+
+.error-message {
+    font-size: 0.75rem;
+    color: var(--error);
+    margin-top: 0.25rem;
+}
+
+.text-error {
+    color: var(--error);
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/components/Button.css">.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+}
+
+.btn-primary:not(:disabled):hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-primary:not(:disabled):active {
+    transform: translateY(0);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.btn-outline:not(:disabled):hover {
+    background-color: var(--primary-light);
+}
+
+.btn-text {
+    background-color: transparent;
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+}
+
+.btn-text:not(:disabled):hover {
+    color: var(--primary);
+    background-color: var(--bg-color);
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/components/Alert.css">.alert {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+}
+
+.alert-error {
+    background-color: var(--error-bg);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #991b1b;
+}
+
+.alert-error .alert-icon {
+    color: var(--error);
+}
+
+.alert-success {
+    background-color: var(--primary-light);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #065f46;
+}
+
+.alert-success .alert-icon {
+    color: var(--primary);
+}
+
+.alert-message {
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.4;
+    color: inherit;
+}
+
+.animate-slide-down {
+    animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/layouts/Sidebar.css">.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    z-index: 200;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+/* Logo */
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.35rem 1.1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: var(--header-height);
+    flex-shrink: 0;
+}
+
+.sidebar-logo__icon {
+    width: 36px;
+    height: 36px;
+    background: var(--primary);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sidebar-logo__text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+}
+
+/* Toggle button */
+.sidebar-toggle {
+    position: absolute;
+    right: -14px;
+    top: 22px;
+    width: 28px;
+    height: 28px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    z-index: 201;
+    transition: all 0.2s;
+}
+
+.sidebar-toggle:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* Nav */
+.sidebar-nav {
+    flex: 1;
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: 10px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all 0.15s;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.sidebar-link:hover {
+    background: var(--sidebar-hover-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-link.active {
+    background: var(--sidebar-active-bg);
+    color: var(--primary);
+    border-left: 3px solid var(--sidebar-active-border);
+}
+
+.sidebar-link__icon {
+    flex-shrink: 0;
+}
+
+.sidebar-link__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Logout */
+.sidebar-logout {
+    margin: 0 0.75rem 1.25rem;
+    color: #f87171;
+}
+
+.sidebar-logout:hover {
+    background: rgba(248, 113, 113, 0.12);
+    color: #f87171;
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/layouts/Header.css">.topbar {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    height: var(--header-height);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 1.75rem;
+    gap: 1rem;
+    z-index: 100;
+    transition: left 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.topbar.collapsed {
+    left: var(--sidebar-collapsed-width);
+}
+
+/* Search */
+.topbar__search {
+    position: relative;
+    flex: 1;
+    max-width: 360px;
+}
+
+.topbar__search-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.topbar__search-input {
+    width: 100%;
+    padding: 0.55rem 1rem 0.55rem 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background: var(--bg-color);
+    color: var(--text-main);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.topbar__search-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+    background: var(--surface);
+}
+
+.topbar__right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+/* Agency name */
+.topbar__agency {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    padding: 0 0.5rem;
+}
+
+/* Icon button + badge */
+.topbar__icon-btn {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    background: var(--bg-color);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.topbar__icon-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.topbar__badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 18px;
+    height: 18px;
+    background: var(--error);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--surface);
+}
+
+/* User avatar + dropdown */
+.topbar__user {
+    position: relative;
+}
+
+.topbar__avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.topbar__avatar-btn:hover {
+    background: var(--bg-color);
+}
+
+.topbar__avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.topbar__user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.topbar__user-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+.topbar__user-role {
+    font-size: 0.7rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.topbar__chevron {
+    color: var(--text-muted);
+    transition: transform 0.2s;
+}
+
+.topbar__chevron.open {
+    transform: rotate(180deg);
+}
+
+/* Dropdown menu */
+.topbar__dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 180px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    animation: scaleIn 0.15s ease;
+    z-index: 300;
+}
+
+.topbar__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.topbar__dropdown-item:hover {
+    background: var(--bg-color);
+}
+
+.topbar__dropdown-item.danger {
+    color: var(--error);
+}
+
+.topbar__dropdown-item.danger:hover {
+    background: #fee2e2;
+}
+
+.topbar__dropdown-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0.25rem 0;
+}
+
+@media (max-width: 640px) {
+    .topbar__agency {
+        display: none;
+    }
+
+    .topbar__user-info {
+        display: none;
+    }
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/components/Card.css">.kpi-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.kpi-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.kpi-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-card__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-card__trend {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+
+.kpi-card__trend.pos {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.kpi-card__trend.neg {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.kpi-card__label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin: 0;
+}
+
+.kpi-card__value {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.kpi-card__trend-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0;
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/components/Table.css">.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.data-table thead {
+    background: #f9fafb;
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table th {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.data-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+}
+
+.data-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.data-table td {
+    padding: 0.85rem 1rem;
+    color: var(--text-main);
+    vertical-align: middle;
+}
+
+.data-table tbody tr.clickable {
+    cursor: pointer;
+}
+
+.data-table tbody tr.clickable:hover {
+    background: #f9fafb;
+}
+
+.data-table tbody tr.active-row {
+    background: var(--primary-light);
+    border-left: 3px solid var(--primary);
+}
+
+.table-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/components/Modal.css">.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-panel {
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: scaleIn 0.2s ease;
+}
+
+.modal-sm {
+    max-width: 400px;
+}
+
+.modal-md {
+    max-width: 560px;
+}
+
+.modal-lg {
+    max-width: 760px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 1.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--bg-color);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #fee2e2;
+    color: var(--error);
+}
+
+.modal-body {
+    padding: 1.5rem 1.75rem 1.75rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}</style><style type="text/css" data-vite-dev-id="C:/Users/J.P.M/Downloads/agency-main/agency-main/YanCarzAgency/src/App.css">#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+</style></head>
+  <body>
+    <div id="root"><div class="dashboard-shell"><aside class="sidebar "><div class="sidebar-logo"><div class="sidebar-logo__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.5-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg></div><span class="sidebar-logo__text">YanCarz</span></div><button class="sidebar-toggle" title="Collapse"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button><nav class="sidebar-nav"><a aria-current="page" class="sidebar-link active" href="/dashboard" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard sidebar-link__icon" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg><span class="sidebar-link__label">Tableau de bord</span></a><a class="sidebar-link " href="/vehicles" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car sidebar-link__icon" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg><span class="sidebar-link__label">Véhicules</span></a><a class="sidebar-link " href="/reservations" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-check sidebar-link__icon" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="m9 16 2 2 4-4"></path></svg><span class="sidebar-link__label">Réservations</span></a><a class="sidebar-link " href="/clients" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users sidebar-link__icon" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg><span class="sidebar-link__label">Clients</span></a><a class="sidebar-link " href="/billing" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-receipt sidebar-link__icon" aria-hidden="true"><path d="M12 17V7"></path><path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8"></path><path d="M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z"></path></svg><span class="sidebar-link__label">Facturation</span></a><a class="sidebar-link " href="/payments" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card sidebar-link__icon" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg><span class="sidebar-link__label">Paiements</span></a><a class="sidebar-link " href="/notifications" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell sidebar-link__icon" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg><span class="sidebar-link__label">Notifications</span></a><a class="sidebar-link " href="/reporting" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column sidebar-link__icon" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg><span class="sidebar-link__label">Rapports</span></a><a class="sidebar-link " href="/team" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-cog sidebar-link__icon" aria-hidden="true"><path d="M10 15H6a4 4 0 0 0-4 4v2"></path><path d="m14.305 16.53.923-.382"></path><path d="m15.228 13.852-.923-.383"></path><path d="m16.852 12.228-.383-.923"></path><path d="m16.852 17.772-.383.924"></path><path d="m19.148 12.228.383-.923"></path><path d="m19.53 18.696-.382-.924"></path><path d="m20.772 13.852.924-.383"></path><path d="m20.772 16.148.924.383"></path><circle cx="18" cy="15" r="3"></circle><circle cx="9" cy="7" r="4"></circle></svg><span class="sidebar-link__label">Équipe</span></a><a class="sidebar-link " href="/settings" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings sidebar-link__icon" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="sidebar-link__label">Paramètres</span></a></nav><button class="sidebar-link sidebar-logout"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out sidebar-link__icon" aria-hidden="true"><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path></svg><span class="sidebar-link__label">Déconnexion</span></button></aside><div class="dashboard-main "><header class="topbar "><div class="topbar__search"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search topbar__search-icon" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg><input placeholder="Rechercher..." class="topbar__search-input" type="text" value=""></div><div class="topbar__right"><span class="topbar__agency">YanCarz Agency</span><button class="topbar__icon-btn" title="Notifications"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg><span class="topbar__badge">3</span></button><div class="topbar__user"><button class="topbar__avatar-btn"><div class="topbar__avatar">YC</div><div class="topbar__user-info"><span class="topbar__user-name">Utilisateur</span><span class="topbar__user-role">Member</span></div><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down topbar__chevron" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button></div></div></header><main class="dashboard-content"><div style="animation: 0.4s ease 0s 1 normal none running slideUpFade;"><div class="page-header"><div><h1 class="page-title">Tableau de bord</h1><p class="page-subtitle">Vue d'ensemble de l'agence YanCarz</p></div></div><div class="kpi-grid"><div class="kpi-card glass-panel"><div class="kpi-card__header"><div class="kpi-card__icon" style="background: var(--primary)15; color: var(--primary);"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg></div><span class="kpi-card__trend pos">▲ 5%</span></div><p class="kpi-card__label">Total Véhicules</p><p class="kpi-card__value">10</p><p class="kpi-card__trend-label">vs mois dernier</p></div><div class="kpi-card glass-panel"><div class="kpi-card__header"><div class="kpi-card__icon" style="background: rgba(99, 102, 241, 0.082); color: rgb(99, 102, 241);"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-check" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path><path d="m9 16 2 2 4-4"></path></svg></div><span class="kpi-card__trend pos">▲ 12%</span></div><p class="kpi-card__label">Réservations Actives</p><p class="kpi-card__value">4</p><p class="kpi-card__trend-label">vs mois dernier</p></div><div class="kpi-card glass-panel"><div class="kpi-card__header"><div class="kpi-card__icon" style="background: rgba(245, 158, 11, 0.082); color: rgb(245, 158, 11);"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign" aria-hidden="true"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div><span class="kpi-card__trend pos">▲ 8%</span></div><p class="kpi-card__label">Revenu du Mois</p><p class="kpi-card__value">2267 €</p><p class="kpi-card__trend-label">vs mois dernier</p></div><div class="kpi-card glass-panel"><div class="kpi-card__header"><div class="kpi-card__icon" style="background: rgba(236, 72, 153, 0.082); color: rgb(236, 72, 153);"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path></svg></div><span class="kpi-card__trend neg">▼ 2%</span></div><p class="kpi-card__label">Messages Non Lus</p><p class="kpi-card__value">7</p><p class="kpi-card__trend-label">vs mois dernier</p></div></div><div class="charts-grid"><div class="glass-panel" style="padding: 1.5rem;"><p class="section-title">Évolution du revenu (7 mois)</p><div class="recharts-responsive-container" style="width: 100%; height: 220px; min-width: 0px;"><div style="width: 0px; overflow-x: visible;"><div width="531" height="220" class="recharts-wrapper" style="position: relative; cursor: default; width: 531px; height: 220px;"><div xmlns="http://www.w3.org/1999/xhtml" tabindex="-1" class="recharts-tooltip-wrapper" style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px;"><div class="recharts-default-tooltip" role="status" aria-live="assertive" style="margin: 0px; padding: 10px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); white-space: nowrap; border-radius: 10px; font-size: 13px;"><p class="recharts-tooltip-label" style="margin: 0px;"></p></div></div><svg role="application" tabindex="0" class="recharts-surface" width="531" height="220" viewBox="0 0 531 220" style="width: 100%; height: 100%; display: block;"><title></title><desc></desc><g tabindex="-1"><g class="recharts-cartesian-grid"><g class="recharts-cartesian-grid-horizontal"><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="65" y1="185" x2="526" y2="185"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="65" y1="140" x2="526" y2="140"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="65" y1="95" x2="526" y2="95"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="65" y1="50" x2="526" y2="50"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="65" y1="5" x2="526" y2="5"></line></g><g class="recharts-cartesian-grid-vertical"><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="65" y1="5" x2="65" y2="185"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="141.83333333333331" y1="5" x2="141.83333333333331" y2="185"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="218.66666666666666" y1="5" x2="218.66666666666666" y2="185"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="295.5" y1="5" x2="295.5" y2="185"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="372.3333333333333" y1="5" x2="372.3333333333333" y2="185"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="449.16666666666663" y1="5" x2="449.16666666666663" y2="185"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="461" height="180" x1="526" y1="5" x2="526" y2="185"></line></g></g></g><g tabindex="-1"></g><defs><clipPath id="recharts1-clip"><rect x="65" y="5" height="180" width="461"></rect></clipPath></defs><defs><linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stop-color="#10b981" stop-opacity="0.25"></stop><stop offset="95%" stop-color="#10b981" stop-opacity="0"></stop></linearGradient></defs><g tabindex="-1"><g class="recharts-layer recharts-area"><g class="recharts-layer"><path stroke-width="2.5" fill="url(#colorRev)" fill-opacity="0.6" height="180" stroke="none" width="461" id="recharts-area-_r_0_" class="recharts-curve recharts-area-area" d="M65,109.4C90.611,95,116.222,80.6,141.833,80.6C167.444,80.6,193.056,96.8,218.667,96.8C244.278,96.8,269.889,64.4,295.5,64.4C321.111,64.4,346.722,93.2,372.333,93.2C397.944,93.2,423.556,49.4,449.167,44.6C474.778,39.8,500.389,38.6,526,37.4L526,185C500.389,185,474.778,185,449.167,185C423.556,185,397.944,185,372.333,185C346.722,185,321.111,185,295.5,185C269.889,185,244.278,185,218.667,185C193.056,185,167.444,185,141.833,185C116.222,185,90.611,185,65,185Z"></path><path stroke-width="2.5" fill="none" fill-opacity="0.6" height="180" stroke="#10b981" width="461" class="recharts-curve recharts-area-curve" d="M65,109.4C90.611,95,116.222,80.6,141.833,80.6C167.444,80.6,193.056,96.8,218.667,96.8C244.278,96.8,269.889,64.4,295.5,64.4C321.111,64.4,346.722,93.2,372.333,93.2C397.944,93.2,423.556,49.4,449.167,44.6C474.778,39.8,500.389,38.6,526,37.4"></path></g></g></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"><g class="recharts-layer recharts-cartesian-axis recharts-xAxis xAxis"><line angle="0" height="30" orientation="bottom" x="65" y="185" width="461" class="recharts-cartesian-axis-line" stroke="#666" fill="none" x1="65" y1="185" x2="526" y2="185"></line><g class="recharts-cartesian-axis-ticks recharts-xAxis-ticks"><g class="recharts-cartesian-axis-tick-lines recharts-xAxis-tick-lines"><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="185" width="461" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="65" y1="191" x2="65" y2="185"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="185" width="461" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="141.83333333333331" y1="191" x2="141.83333333333331" y2="185"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="185" width="461" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="218.66666666666666" y1="191" x2="218.66666666666666" y2="185"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="185" width="461" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="295.5" y1="191" x2="295.5" y2="185"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="185" width="461" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="372.3333333333333" y1="191" x2="372.3333333333333" y2="185"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="185" width="461" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="449.16666666666663" y1="191" x2="449.16666666666663" y2="185"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="185" width="461" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="526" y1="191" x2="526" y2="185"></line></g></g></g></g><g class="recharts-layer recharts-cartesian-axis recharts-yAxis yAxis"><line angle="0" orientation="left" width="60" x="5" y="5" height="180" class="recharts-cartesian-axis-line" stroke="#666" fill="none" x1="65" y1="5" x2="65" y2="185"></line><g class="recharts-cartesian-axis-ticks recharts-yAxis-ticks"><g class="recharts-cartesian-axis-tick-lines recharts-yAxis-tick-lines"><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="180" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="185" x2="65" y2="185"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="180" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="140" x2="65" y2="140"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="180" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="95" x2="65" y2="95"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="180" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="50" x2="65" y2="50"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="180" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="5" x2="65" y2="5"></line></g></g></g></g></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"><g class="recharts-cartesian-axis-tick-labels recharts-xAxis-tick-labels"><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="461" stroke="none" font-size="12" x="65" y="193" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="65" dy="0.71em">Sep</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="461" stroke="none" font-size="12" x="141.83333333333331" y="193" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="141.83333333333331" dy="0.71em">Oct</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="461" stroke="none" font-size="12" x="218.66666666666666" y="193" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="218.66666666666666" dy="0.71em">Nov</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="461" stroke="none" font-size="12" x="295.5" y="193" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="295.5" dy="0.71em">Déc</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="461" stroke="none" font-size="12" x="372.3333333333333" y="193" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="372.3333333333333" dy="0.71em">Jan</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="461" stroke="none" font-size="12" x="449.16666666666663" y="193" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="449.16666666666663" dy="0.71em">Fév</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="461" stroke="none" font-size="12" x="519.9453125" y="193" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="519.9453125" dy="0.71em">Mar</tspan></text></g></g><g class="recharts-cartesian-axis-tick-labels recharts-yAxis-tick-labels"><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="180" stroke="none" font-size="12" x="57" y="185" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">0</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="180" stroke="none" font-size="12" x="57" y="140" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">2500</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="180" stroke="none" font-size="12" x="57" y="95" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">5000</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="180" stroke="none" font-size="12" x="57" y="50" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">7500</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="180" stroke="none" font-size="12" x="57" y="7.5" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">10000</tspan></text></g></g></g></svg></div></div></div></div><div class="glass-panel" style="padding: 1.5rem;"><p class="section-title">Statut de la flotte</p><div class="recharts-responsive-container" style="width: 100%; height: 220px; min-width: 0px;"><div style="width: 0px; overflow-x: visible;"><div width="241" height="220" class="recharts-wrapper" style="position: relative; cursor: default; width: 241px; height: 220px;"><div xmlns="http://www.w3.org/1999/xhtml" tabindex="-1" class="recharts-tooltip-wrapper" style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px;"><div class="recharts-default-tooltip" role="status" aria-live="assertive" style="margin: 0px; padding: 10px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); white-space: nowrap; border-radius: 10px; font-size: 13px;"><p class="recharts-tooltip-label" style="margin: 0px;"></p></div></div><div class="recharts-legend-wrapper" style="position: absolute; width: 231px; height: auto; left: 5px; bottom: 5px; font-size: 12px;"><ul class="recharts-default-legend" style="padding: 0px; margin: 0px; text-align: center;"><li class="recharts-legend-item legend-item-0" style="display: inline-block; margin-right: 10px;"><svg aria-label="Disponible legend icon" class="recharts-surface" width="10" height="10" viewBox="0 0 32 32" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><title></title><desc></desc><path fill="#10b981" cx="16" cy="16" class="recharts-symbols" transform="translate(16, 16)" d="M16,0A16,16,0,1,1,-16,0A16,16,0,1,1,16,0"></path></svg><span class="recharts-legend-item-text" style="color: rgb(16, 185, 129);">Disponible</span></li><li class="recharts-legend-item legend-item-1" style="display: inline-block; margin-right: 10px;"><svg aria-label="Loué legend icon" class="recharts-surface" width="10" height="10" viewBox="0 0 32 32" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><title></title><desc></desc><path fill="#6366f1" cx="16" cy="16" class="recharts-symbols" transform="translate(16, 16)" d="M16,0A16,16,0,1,1,-16,0A16,16,0,1,1,16,0"></path></svg><span class="recharts-legend-item-text" style="color: rgb(99, 102, 241);">Loué</span></li><li class="recharts-legend-item legend-item-2" style="display: inline-block; margin-right: 10px;"><svg aria-label="Maintenance legend icon" class="recharts-surface" width="10" height="10" viewBox="0 0 32 32" style="display: inline-block; vertical-align: middle; margin-right: 4px;"><title></title><desc></desc><path fill="#f59e0b" cx="16" cy="16" class="recharts-symbols" transform="translate(16, 16)" d="M16,0A16,16,0,1,1,-16,0A16,16,0,1,1,16,0"></path></svg><span class="recharts-legend-item-text" style="color: rgb(245, 158, 11);">Maintenance</span></li></ul></div><svg cx="50%" cy="50%" role="application" tabindex="0" class="recharts-surface" width="241" height="220" viewBox="0 0 241 220" style="width: 100%; height: 100%; display: block;"><title></title><desc></desc><g tabindex="-1"></g><g tabindex="-1"></g><defs><clipPath id="recharts3-clip"><rect x="5" y="5" height="180" width="231"></rect></clipPath></defs><g tabindex="-1"><g class="recharts-layer recharts-pie" tabindex="0"><g class="recharts-layer"><g class="recharts-layer recharts-pie-sector" tabindex="-1"><path cx="120.5" cy="95" fill="#10b981" stroke="#fff" name="Disponible" tabindex="-1" data-recharts-item-index="0" data-recharts-item-id="recharts-pie-_r_1_" class="recharts-sector" d="M 200.5,95
+    A 80,80,0,
+    1,0,
+    50.3955,133.5403
+  L 72.3031,121.4965
+            A 55,55,0,
+            1,1,
+            175.5,95 Z"></path></g><g class="recharts-layer recharts-pie-sector" tabindex="-1"><path cx="120.5" cy="95" fill="#6366f1" stroke="#fff" name="Loué" tabindex="-1" data-recharts-item-index="1" data-recharts-item-id="recharts-pie-_r_1_" class="recharts-sector" d="M 53.2547,138.3367
+    A 80,80,0,
+    0,0,
+    179.1984,149.3553
+  L 160.8551,132.3693
+            A 55,55,0,
+            0,1,
+            74.2688,124.794 Z"></path></g><g class="recharts-layer recharts-pie-sector" tabindex="-1"><path cx="120.5" cy="95" fill="#f59e0b" stroke="#fff" name="Maintenance" tabindex="-1" data-recharts-item-index="2" data-recharts-item-id="recharts-pie-_r_1_" class="recharts-sector" d="M 182.847,145.1283
+    A 80,80,0,
+    0,0,
+    200.3051,100.5805
+  L 175.366,98.8366
+            A 55,55,0,
+            0,1,
+            163.3636,129.4632 Z"></path></g></g></g></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g></svg></div></div></div></div></div><div class="glass-panel mb-6" style="padding: 1.5rem; margin-bottom: 1.5rem;"><p class="section-title">Réservations par mois</p><div class="recharts-responsive-container" style="width: 100%; height: 180px; min-width: 0px;"><div style="width: 0px; overflow-x: visible;"><div width="842" height="180" class="recharts-wrapper" style="position: relative; cursor: default; width: 842px; height: 180px;"><div xmlns="http://www.w3.org/1999/xhtml" tabindex="-1" class="recharts-tooltip-wrapper" style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px;"><div class="recharts-default-tooltip" role="status" aria-live="assertive" style="margin: 0px; padding: 10px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); white-space: nowrap; border-radius: 10px; font-size: 13px;"><p class="recharts-tooltip-label" style="margin: 0px;"></p></div></div><svg role="application" tabindex="0" class="recharts-surface" width="842" height="180" viewBox="0 0 842 180" style="width: 100%; height: 100%; display: block;"><title></title><desc></desc><g tabindex="-1"><g class="recharts-cartesian-grid"><g class="recharts-cartesian-grid-horizontal"><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="65" y1="145" x2="837" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="65" y1="110" x2="837" y2="110"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="65" y1="75" x2="837" y2="75"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="65" y1="40" x2="837" y2="40"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="65" y1="5" x2="837" y2="5"></line></g><g class="recharts-cartesian-grid-vertical"><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="120.14285714285714" y1="5" x2="120.14285714285714" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="230.42857142857142" y1="5" x2="230.42857142857142" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="340.7142857142857" y1="5" x2="340.7142857142857" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="451.00000000000006" y1="5" x2="451.00000000000006" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="561.2857142857143" y1="5" x2="561.2857142857143" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="671.5714285714286" y1="5" x2="671.5714285714286" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="781.8571428571429" y1="5" x2="781.8571428571429" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="65" y1="5" x2="65" y2="145"></line><line stroke-dasharray="3 3" stroke="#f3f4f6" fill="none" x="65" y="5" width="772" height="140" x1="837" y1="5" x2="837" y2="145"></line></g></g></g><g tabindex="-1"></g><defs><clipPath id="recharts5-clip"><rect x="65" y="5" height="140" width="772"></rect></clipPath></defs><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"><g class="recharts-layer recharts-bar" id="recharts-bar-_r_2_"><g class="recharts-layer recharts-bar-rectangles"><g class="recharts-layer"><g class="recharts-layer recharts-bar-rectangle"><path fill="#10b981" name="undefined" x="76.0286" y="75" width="88" height="70" class="recharts-rectangle" d="M76.0286,81A 6,6,0,0,1,82.0286,75L 158.0286,75A 6,6,0,0,1,
+        164.0286,81L 164.0286,145L 76.0286,145Z"></path></g><g class="recharts-layer recharts-bar-rectangle"><path fill="#10b981" name="undefined" x="186.3143" y="51.6667" width="88" height="93.3333" class="recharts-rectangle" d="M186.3143,57.6667A 6,6,0,0,1,192.3143,51.6667L 268.3143,51.6667A 6,6,0,0,1,
+        274.3143,57.6667L 274.3143,145L 186.3143,145Z"></path></g><g class="recharts-layer recharts-bar-rectangle"><path fill="#10b981" name="undefined" x="296.6" y="67.2222" width="88" height="77.7778" class="recharts-rectangle" d="M296.6,73.2222A 6,6,0,0,1,302.6,67.2222L 378.6,67.2222A 6,6,0,0,1,
+        384.6,73.2222L 384.6,145L 296.6,145Z"></path></g><g class="recharts-layer recharts-bar-rectangle"><path fill="#10b981" name="undefined" x="406.8857" y="36.1111" width="88" height="108.8889" class="recharts-rectangle" d="M406.8857,42.1111A 6,6,0,0,1,412.8857,36.1111L 488.8857,36.1111A 6,6,0,0,1,
+        494.8857,42.1111L 494.8857,145L 406.8857,145Z"></path></g><g class="recharts-layer recharts-bar-rectangle"><path fill="#10b981" name="undefined" x="517.1714" y="59.4444" width="88" height="85.5556" class="recharts-rectangle" d="M517.1714,65.4444A 6,6,0,0,1,523.1714,59.4444L 599.1714,59.4444A 6,6,0,0,1,
+        605.1714,65.4444L 605.1714,145L 517.1714,145Z"></path></g><g class="recharts-layer recharts-bar-rectangle"><path fill="#10b981" name="undefined" x="627.4571" y="20.5556" width="88" height="124.4444" class="recharts-rectangle" d="M627.4571,26.5556A 6,6,0,0,1,633.4571,20.5556L 709.4571,20.5556A 6,6,0,0,1,
+        715.4571,26.5556L 715.4571,145L 627.4571,145Z"></path></g><g class="recharts-layer recharts-bar-rectangle"><path fill="#10b981" name="undefined" x="737.7429" y="8.8889" width="88" height="136.1111" class="recharts-rectangle" d="M737.7429,14.8889A 6,6,0,0,1,743.7429,8.8889L 819.7429,8.8889A 6,6,0,0,1,
+        825.7429,14.8889L 825.7429,145L 737.7429,145Z"></path></g></g></g></g></g><g tabindex="-1"></g><g tabindex="-1"><g class="recharts-layer recharts-cartesian-axis recharts-xAxis xAxis"><line angle="0" height="30" orientation="bottom" x="65" y="145" width="772" class="recharts-cartesian-axis-line" stroke="#666" fill="none" x1="65" y1="145" x2="837" y2="145"></line><g class="recharts-cartesian-axis-ticks recharts-xAxis-ticks"><g class="recharts-cartesian-axis-tick-lines recharts-xAxis-tick-lines"><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="145" width="772" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="120.14285714285714" y1="151" x2="120.14285714285714" y2="145"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="145" width="772" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="230.42857142857142" y1="151" x2="230.42857142857142" y2="145"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="145" width="772" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="340.7142857142857" y1="151" x2="340.7142857142857" y2="145"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="145" width="772" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="451.00000000000006" y1="151" x2="451.00000000000006" y2="145"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="145" width="772" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="561.2857142857143" y1="151" x2="561.2857142857143" y2="145"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="145" width="772" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="671.5714285714286" y1="151" x2="671.5714285714286" y2="145"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" height="30" orientation="bottom" x="65" y="145" width="772" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="781.8571428571429" y1="151" x2="781.8571428571429" y2="145"></line></g></g></g></g><g class="recharts-layer recharts-cartesian-axis recharts-yAxis yAxis"><line angle="0" orientation="left" width="60" x="5" y="5" height="140" class="recharts-cartesian-axis-line" stroke="#666" fill="none" x1="65" y1="5" x2="65" y2="145"></line><g class="recharts-cartesian-axis-ticks recharts-yAxis-ticks"><g class="recharts-cartesian-axis-tick-lines recharts-yAxis-tick-lines"><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="140" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="145" x2="65" y2="145"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="140" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="110" x2="65" y2="110"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="140" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="75" x2="65" y2="75"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="140" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="40" x2="65" y2="40"></line></g><g class="recharts-layer recharts-cartesian-axis-tick"><line angle="0" orientation="left" width="60" x="5" y="5" height="140" class="recharts-cartesian-axis-tick-line" stroke="#666" fill="none" x1="59" y1="5" x2="65" y2="5"></line></g></g></g></g></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"></g><g tabindex="-1"><g class="recharts-cartesian-axis-tick-labels recharts-xAxis-tick-labels"><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="772" stroke="none" font-size="12" x="120.14285714285714" y="153" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="120.14285714285714" dy="0.71em">Sep</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="772" stroke="none" font-size="12" x="230.42857142857142" y="153" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="230.42857142857142" dy="0.71em">Oct</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="772" stroke="none" font-size="12" x="340.7142857142857" y="153" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="340.7142857142857" dy="0.71em">Nov</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="772" stroke="none" font-size="12" x="451.00000000000006" y="153" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="451.00000000000006" dy="0.71em">Déc</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="772" stroke="none" font-size="12" x="561.2857142857143" y="153" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="561.2857142857143" dy="0.71em">Jan</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="772" stroke="none" font-size="12" x="671.5714285714286" y="153" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="671.5714285714286" dy="0.71em">Fév</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text height="30" orientation="bottom" width="772" stroke="none" font-size="12" x="781.8571428571429" y="153" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="middle" fill="#6b7280"><tspan x="781.8571428571429" dy="0.71em">Mar</tspan></text></g></g><g class="recharts-cartesian-axis-tick-labels recharts-yAxis-tick-labels"><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="140" stroke="none" font-size="12" x="57" y="145" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">0</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="140" stroke="none" font-size="12" x="57" y="110" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">9</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="140" stroke="none" font-size="12" x="57" y="75" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">18</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="140" stroke="none" font-size="12" x="57" y="40" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">27</tspan></text></g><g class="recharts-layer recharts-cartesian-axis-tick-label"><text orientation="left" width="60" height="140" stroke="none" font-size="12" x="57" y="7.5" class="recharts-text recharts-cartesian-axis-tick-value" text-anchor="end" fill="#6b7280"><tspan x="57" dy="0.355em">36</tspan></text></g></g></g></svg></div></div></div></div><div><p class="section-title">Activité récente</p><div class="table-wrapper"><table class="data-table"><thead><tr><th>Réf.</th><th>Client</th><th>Véhicule</th><th>Total</th><th>Statut</th></tr></thead><tbody><tr class=" "><td>RES-001</td><td>Alice Moreau</td><td>Toyota Corolla</td><td>180 €</td><td><span class="badge badge-confirmed">confirmed</span></td></tr><tr class=" "><td>RES-002</td><td>Bob Petit</td><td>Renault Clio</td><td>140 €</td><td><span class="badge badge-pending">pending</span></td></tr><tr class=" "><td>RES-003</td><td>Carla Durand</td><td>BMW Série 3</td><td>450 €</td><td><span class="badge badge-completed">completed</span></td></tr><tr class=" "><td>RES-004</td><td>David Martin</td><td>Mercedes Classe C</td><td>110 €</td><td><span class="badge badge-cancelled">cancelled</span></td></tr><tr class=" "><td>RES-005</td><td>Emma Bernard</td><td>Peugeot 3008</td><td>300 €</td><td><span class="badge badge-confirmed">confirmed</span></td></tr></tbody></table></div></div></div></main></div></div></div>
+    <script type="module" src="/src/main.jsx"></script>
+  
+
+<span id="recharts_measurement_span" aria-hidden="true" style="position: absolute; top: -20000px; left: 0px; padding: 0px; margin: 0px; border: none; white-space: pre; font-size: 12px; letter-spacing: normal;">9</span></body></html>
