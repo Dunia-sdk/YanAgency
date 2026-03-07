@@ -8,8 +8,7 @@ import Alert from '../components/Alert';
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, loading } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -35,7 +34,6 @@ const LoginPage = () => {
         e.preventDefault();
         if (!validateForm()) return;
 
-        setLoading(true);
         setError('');
 
         try {
@@ -43,8 +41,6 @@ const LoginPage = () => {
             navigate('/dashboard');
         } catch (err) {
             setError(err.message || 'Échec de la connexion');
-        } finally {
-            setLoading(false);
         }
     };
 

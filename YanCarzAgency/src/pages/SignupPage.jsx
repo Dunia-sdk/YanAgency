@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import InputField from '../components/InputField';
+import SelectField from '../components/SelectField';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 
@@ -10,13 +11,36 @@ const SignupPage = () => {
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        city: '',
+        phone: '',
+        contact: ''
     });
     const [formErrors, setFormErrors] = useState({});
     const [globalError, setGlobalError] = useState('');
     const [loading, setLoading] = useState(false);
     const { register } = useAuth();
     const navigate = useNavigate();
+
+    const moroccanCities = [
+        { value: '', label: 'Sélectionnez une ville', disabled: true },
+        { value: 'Agadir', label: 'Agadir' },
+        { value: 'Beni-Mellal', label: 'Beni-Mellal' },
+        { value: 'Casablanca', label: 'Casablanca' },
+        { value: 'Chefchaouen', label: 'Chefchaouen' },
+        { value: 'Essaouira', label: 'Essaouira' },
+        { value: 'Fès', label: 'Fès' },
+        { value: 'Ksar-el-Kébir', label: 'Ksar-el-Kébir' },
+        { value: 'Marrakech', label: 'Marrakech' },
+        { value: 'Meknès', label: 'Meknès' },
+        { value: 'Ouarzazate', label: 'Ouarzazate' },
+        { value: 'Rabat', label: 'Rabat' },
+        { value: 'Safi', label: 'Safi' },
+        { value: 'Salé', label: 'Salé' },
+        { value: 'Tanger', label: 'Tanger' },
+        { value: 'Taza', label: 'Taza' },
+        { value: 'Témara', label: 'Témara' }
+    ];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -56,6 +80,25 @@ const SignupPage = () => {
 
         if (formData.password !== formData.confirmPassword) {
             errors.confirmPassword = 'Les mots de passe ne correspondent pas';
+            isValid = false;
+        }
+
+        if (!formData.city) {
+            errors.city = 'La ville est requise';
+            isValid = false;
+        }
+
+        const phoneRegex = /^(06|07|05)\d{8}$/;
+        if (!formData.phone) {
+            errors.phone = 'Le numéro de téléphone est requis';
+            isValid = false;
+        } else if (!phoneRegex.test(formData.phone)) {
+            errors.phone = 'Format de numéro de téléphone invalide';
+            isValid = false;
+        }
+
+        if (!formData.contact.trim()) {
+            errors.contact = 'Le contact est requis';
             isValid = false;
         }
 
@@ -118,6 +161,34 @@ const SignupPage = () => {
                         onChange={handleChange}
                         placeholder="nom@yancarz.com"
                         error={formErrors.email}
+                        required
+                    />
+                    <SelectField
+                        label="Ville"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        options={moroccanCities}
+                        error={formErrors.city}
+                        required
+                    />
+                    <InputField
+                        label="Téléphone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="06XXXXXXXX"
+                        error={formErrors.phone}
+                        required
+                    />
+                    <InputField
+                        label="Contact"
+                        name="contact"
+                        value={formData.contact}
+                        onChange={handleChange}
+                        placeholder="Personne à contacter"
+                        error={formErrors.contact}
                         required
                     />
                     <InputField
