@@ -77,11 +77,18 @@ const ClientDetailPage = () => {
                                 Membre depuis {client.joined}
                             </p>
 
-                            <div className="grid grid-cols-2 gap-3 w-full mb-10">
-                                <Button className="font-900 text-[10px] tracking-[0.2em] uppercase py-4 shadow-lg">ÉDITER</Button>
-                                <Button variant="outline" className="font-900 text-[10px] tracking-[0.2em] uppercase py-4 bg-white">RECOMMANDER</Button>
-                            </div>
+                            <div className="grid grid-cols-2 gap-6 w-full mb-15">
+                                <Button className="w-full py-4 font-black text-[10px] tracking-[0.2em] uppercase shadow-lg">
+                                     ÉDITER
+                                </Button>
 
+                                <Button
+                                    variant="outline"
+                                     className="w-full py-5 border-5 font-black text-[10px] tracking-[0.2em] uppercase bg-white"
+                                     >
+                                     RECOMMANDER
+                                </Button>
+                            </div>
                             <div className="flex flex-col gap-6 w-full text-left pt-10 border-t border-border/80">
                                 {[
                                     { icon: <Mail size={18} />, label: 'Email Officiel', value: client.email },
@@ -107,7 +114,7 @@ const ClientDetailPage = () => {
                         <div className="glass-panel p-8 border-l-[8px] border-primary flex items-center justify-between shadow-xl border-none">
                             <div className="flex flex-col gap-1">
                                 <p className="text-muted text-[10px] font-900 uppercase tracking-[0.25em]">Activité Portefeuille</p>
-                                <p className="text-4xl font-900 text-main tracking-tighter">{client.bookings} <span className="text-[10px] font-700 opacity-40">DOSSIERS</span></p>
+                                <p className="text-4xl font-900 text-main tracking-tighter">{client.bookings} <span className="text-[20px] font-700 opacity-40">DOSSIERS</span></p>
                             </div>
                             <div className="p-5 bg-primary/5 text-primary rounded-[24px]">
                                 <Activity size={32} />
@@ -153,7 +160,7 @@ const ClientDetailPage = () => {
                                 </div>
                             </div>
                             <div className="relative w-full md:w-96 group">
-                                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors duration-300" />
+                                <Search size={16} className=" mr-5 absolute  top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors duration-300" />
                                 <input
                                     type="text"
                                     placeholder="Recherche par dossier ou véhicule..."
@@ -222,7 +229,7 @@ const ClientDetailPage = () => {
                             <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 translate-x-10 -translate-y-10 scale-150">
                                 <Briefcase size={120} />
                             </div>
-                            <h3 className="text-sm font-900 mb-10 flex items-center gap-3 text-white/60 uppercase tracking-[0.2em] border-b border-white/10 pb-6 relative z-10">
+                            <h3 className="text-sm font-900 mb-10 flex items-center gap-3 text-black/60 uppercase tracking-[0.2em] border-b border-white/10 pb-6 relative z-10">
                                 <Zap size={18} className="text-primary" /> Intelligence Client
                             </h3>
                             <div className="flex-1 flex flex-col justify-center relative z-10">
@@ -230,14 +237,14 @@ const ClientDetailPage = () => {
                                     <div className="absolute -top-6 left-10 p-4 bg-primary text-white rounded-2xl shadow-xl">
                                         <MessageSquare size={24} />
                                     </div>
-                                    <p className="text-lg text-white font-700 leading-relaxed italic tracking-tight mb-8">
+                                    <p className="text-lg text-black font-700 leading-relaxed italic tracking-tight mb-8">
                                         "Profil corporatif très exigeant. Ponctualité exemplaire. Préfère les véhicules récents (moins de 2 ans). Toujours vérifier l'état des pneus avant livraison."
                                     </p>
                                     <div className="flex items-center gap-4 pt-6 border-t border-white/10">
-                                        <div className="w-12 h-12 rounded-[18px] bg-primary text-white flex items-center justify-center text-sm font-900 shadow-lg">AD</div>
+                                        <div className="w-12 h-12 rounded-[18px] bg-primary text-black flex items-center justify-center text-sm font-900 shadow-lg">AD</div>
                                         <div className="flex flex-col">
-                                            <span className="text-xs font-900 text-white uppercase tracking-widest">Audit Manager</span>
-                                            <span className="text-[9px] font-700 text-white/40 uppercase tracking-widest mt-0.5">Mis à jour le 18 Mars 2024</span>
+                                            <span className="text-xs font-900 text-black uppercase tracking-widest">Audit Manager</span>
+                                            <span className="text-[9px] font-700 text-black/40 uppercase tracking-widest mt-0.5">Mis à jour le 18 Mars 2024</span>
                                         </div>
                                     </div>
                                 </div>

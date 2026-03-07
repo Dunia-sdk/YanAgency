@@ -140,7 +140,7 @@ const VehicleDetailPage = () => {
                                 <h3 className="text-lg font-900 uppercase tracking-widest mb-2 flex items-center gap-2">
                                     <Star size={20} className="text-primary" fill="currentColor" /> Premium Status
                                 </h3>
-                                <p className="text-white/60 text-xs font-500 leading-relaxed">
+                                <p className="text-black/60 text-xs font-500 leading-relaxed">
                                     Ce véhicule appartient à notre gamme supérieure. Disponible pour des locations de courte et longue durée.
                                 </p>
                             </div>
@@ -156,17 +156,17 @@ const VehicleDetailPage = () => {
 
                             <div className="pt-6 border-t border-white/10 flex items-center justify-between">
                                 <div className="text-center">
-                                    <p className="text-[10px] font-800 uppercase tracking-widest text-white/40 mb-1">Km Initial</p>
+                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">Km Initial</p>
                                     <p className="text-lg font-900 tracking-tight">{vehicle.mileage - 200}</p>
                                 </div>
                                 <div className="w-px h-8 bg-white/10" />
                                 <div className="text-center">
-                                    <p className="text-[10px] font-800 uppercase tracking-widest text-white/40 mb-1">Dernier Client</p>
+                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">Dernier Client</p>
                                     <p className="text-lg font-900 tracking-tight">Marché J.</p>
                                 </div>
                                 <div className="w-px h-8 bg-white/10" />
                                 <div className="text-center">
-                                    <p className="text-[10px] font-800 uppercase tracking-widest text-white/40 mb-1">Contrats</p>
+                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">Contrats</p>
                                     <p className="text-lg font-900 tracking-tight">12</p>
                                 </div>
                             </div>

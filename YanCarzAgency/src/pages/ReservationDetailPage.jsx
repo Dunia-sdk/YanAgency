@@ -209,16 +209,16 @@ const ReservationDetailPage = () => {
                         <div className="flex flex-col gap-8 relative z-10 mb-12">
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center group/item">
-                                    <span className="text-[10px] font-800 text-white/40 uppercase tracking-[0.15em]">Loyer Net (5 jrs)</span>
-                                    <span className="text-base font-900 text-white group-hover/item:text-primary transition-colors tracking-tight">{basePrice.toLocaleString()} MAD</span>
+                                    <span className="text-[10px] font-800 text-black/40 uppercase tracking-[0.15em]">Loyer Net (5 jrs)</span>
+                                    <span className="text-base font-900 text-black group-hover/item:text-primary transition-colors tracking-tight">{basePrice.toLocaleString()} MAD</span>
                                 </div>
                                 <div className="flex justify-between items-center group/item">
-                                    <span className="text-[10px] font-800 text-white/40 uppercase tracking-[0.15em]">Assurance Premium</span>
-                                    <span className="text-base font-900 text-white group-hover/item:text-primary transition-colors tracking-tight">150.00 MAD</span>
+                                    <span className="text-[10px] font-800 text-black/40 uppercase tracking-[0.15em]">Assurance Premium</span>
+                                    <span className="text-base font-900 text-black group-hover/item:text-primary transition-colors tracking-tight">150.00 MAD</span>
                                 </div>
                                 <div className="flex justify-between items-center group/item">
-                                    <span className="text-[10px] font-800 text-white/40 uppercase tracking-[0.15em]">TVA Indirecte (20%)</span>
-                                    <span className="text-base font-900 text-white group-hover/item:text-primary transition-colors tracking-tight">{tax.toLocaleString()} MAD</span>
+                                    <span className="text-[10px] font-800 text-black/40 uppercase tracking-[0.15em]">TVA Indirecte (20%)</span>
+                                    <span className="text-base font-900 text-black group-hover/item:text-primary transition-colors tracking-tight">{tax.toLocaleString()} MAD</span>
                                 </div>
                             </div>
 
