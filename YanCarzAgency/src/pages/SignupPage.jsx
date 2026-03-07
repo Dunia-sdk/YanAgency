@@ -114,7 +114,9 @@ const SignupPage = () => {
         setGlobalError('');
 
         try {
-            await register(formData.name, formData.email, formData.password);
+            // Pass the entire formData object to the register function
+            // AuthContext.register expects one argument (userData/formData)
+            await register(formData);
             navigate('/dashboard');
         } catch (err) {
             setGlobalError(err.message || 'Échec de l\'inscription');

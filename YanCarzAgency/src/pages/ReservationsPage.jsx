@@ -1,20 +1,21 @@
 import React, { useState, useMemo } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
+import { ChevronDown, Eye } from 'lucide-react';
 import Table from '../components/Table';
 import { reservations as initialReservations } from '../services/mockData';
 
 const STATUS_OPTS = ['Tous', 'pending', 'confirmed', 'completed', 'cancelled'];
 const STATUS_LABELS = { pending: 'En attente', confirmed: 'Confirmé', completed: 'Terminé', cancelled: 'Annulé' };
 const STATUS_ACTIONS = {
-    pending: ['Confirmer', 'Annuler'],
-    confirmed: ['Terminer', 'Annuler'],
-    completed: [],
-    cancelled: [],
+    pending: ['Détails', 'Confirmer', 'Annuler'],
+    confirmed: ['Détails', 'Terminer', 'Annuler'],
+    completed: ['Détails'],
+    cancelled: ['Détails'],
 };
 
 const ReservationsPage = () => {
     const { searchQuery = '' } = useOutletContext() || {};
+    const navigate = useNavigate();
     const [reservations, setReservations] = useState(initialReservations);
     const [statusFilter, setStatusFilter] = useState('Tous');
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -28,6 +29,10 @@ const ReservationsPage = () => {
     }, [reservations, statusFilter, searchQuery]);
 
     const applyAction = (id, action) => {
+        if (action === 'Détails') {
+            navigate(`/reservations/${id}`);
+            return;
+        }
         const map = { 'Confirmer': 'confirmed', 'Annuler': 'cancelled', 'Terminer': 'completed' };
         setReservations(prev => prev.map(r => r.id === id ? { ...r, status: map[action] } : r));
         setOpenDropdown(null);
@@ -45,7 +50,6 @@ const ReservationsPage = () => {
             key: '__actions', label: 'Actions', width: '6%',
             render: (_, row) => {
                 const actions = STATUS_ACTIONS[row.status] || [];
-                if (!actions.length) return <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>—</span>;
                 return (
                     <div style={{ position: 'relative' }}>
                         <button

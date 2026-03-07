@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import authService from '../services/authService';
+import authService from '../api/services/authService';
 import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
@@ -51,10 +51,10 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const register = async (formData) => {
+    const register = async (userData) => {
         setLoading(true);
         try {
-            const data = await authService.register(formData);
+            const data = await authService.signup(userData);
             const decoded = jwtDecode(data.token);
             setUser({ email: decoded.email, name: decoded.name });
             setToken(data.token);

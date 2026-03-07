@@ -38,6 +38,7 @@ const LoginPage = () => {
 
         try {
             await login(formData.email, formData.password);
+            // Redirection is handled by caller or here
             navigate('/dashboard');
         } catch (err) {
             setError(err.message || 'Échec de la connexion');

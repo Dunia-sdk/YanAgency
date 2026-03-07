@@ -9,8 +9,11 @@ import DashboardLayout from './layouts/DashboardLayout';
 // Dashboard pages
 import DashboardPage from './pages/DashboardPage';
 import VehiclesPage from './pages/VehiclesPage';
+import VehicleDetailPage from './pages/VehicleDetailPage';
 import ReservationsPage from './pages/ReservationsPage';
+import ReservationDetailPage from './pages/ReservationDetailPage';
 import ClientsPage from './pages/ClientsPage';
+import ClientDetailPage from './pages/ClientDetailPage';
 import TeamPage from './pages/TeamPage';
 import BillingPage from './pages/BillingPage';
 import PaymentsPage from './pages/PaymentsPage';
@@ -34,9 +37,16 @@ function App() {
             <Route element={<DashboardLayout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+
               <Route path="/vehicles" element={<VehiclesPage />} />
+              <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
+
               <Route path="/reservations" element={<ReservationsPage />} />
+              <Route path="/reservations/:id" element={<ReservationDetailPage />} />
+
               <Route path="/clients" element={<ClientsPage />} />
+              <Route path="/clients/:id" element={<ClientDetailPage />} />
+
               <Route path="/team" element={<TeamPage />} />
               <Route path="/billing" element={<BillingPage />} />
               <Route path="/payments" element={<PaymentsPage />} />
