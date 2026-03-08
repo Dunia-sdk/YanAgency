@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import Table from '../components/Table';
 import Modal from '../components/Modal';
@@ -44,11 +44,10 @@ const COLUMNS = (onEdit, onDelete, onView) => [
 
 const VehiclesPage = () => {
     const { searchQuery = '' } = useOutletContext() || {};
+    const navigate = useNavigate();
     const [vehicles, setVehicles] = useState(initialVehicles);
     const [activeRow, setActiveRow] = useState(null);
     const [modal, setModal] = useState(false);
-    const [viewModal, setViewModal] = useState(false);
-    const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [editVehicle, setEditVehicle] = useState(null);
     const [form, setForm] = useState(emptyForm);
     const [localSearch, setLocalSearch] = useState('');
@@ -69,14 +68,15 @@ const VehiclesPage = () => {
 
     const openAdd = () => { setForm(emptyForm); setEditVehicle(null); setModal(true); };
     const openEdit = (v) => { setForm({ ...v }); setEditVehicle(v); setModal(true); };
-    const openView = (v) => { setSelectedVehicle(v); setViewModal(true); };
-    const closeModal = () => { setModal(false); setViewModal(false); };
+    const openView = (v) => { navigate(`/vehicles/${v.id}`); };
+    const closeModal = () => { setModal(false); };
 
     const handleFormChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     const handleFilterChange = (key, val) => setFilters(prev => ({ ...prev, [key]: val }));
 
     const handleSave = () => {
         if (!form.brand || !form.model) return;
+        if (Number(form.price) < 0 || Number(form.mileage) < 0) return;
         if (editVehicle) {
             setVehicles(prev => prev.map(v => v.id === editVehicle.id ? { ...v, ...form } : v));
         } else {
@@ -134,9 +134,9 @@ const VehiclesPage = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
                     <InputField label="Marque" name="brand" value={form.brand} onChange={handleFormChange} placeholder="Toyota" required />
                     <InputField label="Modèle" name="model" value={form.model} onChange={handleFormChange} placeholder="Corolla" required />
-                    <InputField label="Année" name="year" type="number" value={form.year} onChange={handleFormChange} placeholder="2023" />
-                    <InputField label="Prix / jour (MAD)" name="price" type="number" value={form.price} onChange={handleFormChange} placeholder="500" />
-                    <InputField label="Kilométrage (km)" name="mileage" type="number" value={form.mileage} onChange={handleFormChange} placeholder="15000" />
+                    <InputField label="Année" name="year" type="number" value={form.year} onChange={handleFormChange} placeholder="2023" min="1900" max={new Date().getFullYear() + 1} />
+                    <InputField label="Prix / jour (MAD)" name="price" type="number" value={form.price} onChange={handleFormChange} placeholder="500" min="0" />
+                    <InputField label="Kilométrage (km)" name="mileage" type="number" value={form.mileage} onChange={handleFormChange} placeholder="15000" min="0" />
                     <InputField label="URL Image" name="image" value={form.image} onChange={handleFormChange} placeholder="https://..." />
                     {[['category', 'Catégorie', CATEGORIES.slice(1)], ['fuel', 'Carburant', FUELS.slice(1)], ['transmission', 'Boite', TRANS.slice(1)], ['status', 'Statut', STATUSES.slice(1)]].map(([key, lbl, opts]) => (
                         <div className="input-group" key={key}>
@@ -153,45 +153,6 @@ const VehiclesPage = () => {
                 </div>
             </Modal>
 
-            {/* View Details Modal */}
-            <Modal isOpen={viewModal} onClose={closeModal} title="Détails du véhicule">
-                {selectedVehicle && (
-                    <div className="flex flex-col gap-4">
-                        <img
-                            src={selectedVehicle.image}
-                            alt={selectedVehicle.model}
-                            style={{ width: '100%', height: 200, objectFit: 'cover', borderRadius: 12 }}
-                        />
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                            <div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Marque & Modèle</p>
-                                <p style={{ fontWeight: 600 }}>{selectedVehicle.brand} {selectedVehicle.model}</p>
-                            </div>
-                            <div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Année</p>
-                                <p style={{ fontWeight: 600 }}>{selectedVehicle.year}</p>
-                            </div>
-                            <div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Kilométrage</p>
-                                <p style={{ fontWeight: 600 }}>{selectedVehicle.mileage?.toLocaleString()} km</p>
-                            </div>
-                            <div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Prix / jour</p>
-                                <p style={{ fontWeight: 600, color: 'var(--primary)' }}>{selectedVehicle.price} MAD</p>
-                            </div>
-                            <div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Carburant</p>
-                                <p style={{ fontWeight: 600 }}>{selectedVehicle.fuel}</p>
-                            </div>
-                            <div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Statut</p>
-                                <span className={`badge badge-${selectedVehicle.status}`}>{STATUS_LABELS[selectedVehicle.status]}</span>
-                            </div>
-                        </div>
-                        <Button onClick={closeModal} fullWidth className="mt-4">Fermer</Button>
-                    </div>
-                )}
-            </Modal>
         </div>
     );
 };
