@@ -72,7 +72,7 @@ const Header = ({ onSearch, searchValue }) => {
 
                     {dropdownOpen && (
                         <div className="topbar__dropdown">
-                            <button className="topbar__dropdown-item" onClick={() => setDropdownOpen(false)}>
+                            <button className="topbar__dropdown-item" onClick={() => { setDropdownOpen(false); navigate('/profile'); }}>
                                 <User size={16} /> Profil
                             </button>
                             <button className="topbar__dropdown-item" onClick={() => setDropdownOpen(false)}>

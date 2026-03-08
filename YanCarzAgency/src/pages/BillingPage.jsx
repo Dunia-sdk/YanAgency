@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 import { Receipt, FileText, AlertCircle, CheckCircle2, Clock, Search } from 'lucide-react';
 import Table from '../components/Table';
 import Card from '../components/Card';
@@ -15,11 +15,11 @@ const COLUMNS = [
     { key: 'status', label: 'Statut', width: '15%', render: v => <span className={`badge badge-${v}`}>{STATUS_LABELS[v] || v}</span> },
     {
         key: '__actions', label: 'Actions', width: '15%',
-        render: () => (
+        render: (_, row) => (
             <div className="flex gap-2">
-                <button className="action-btn" title="Voir facture" style={{ backgroundColor: 'var(--bg-accent)', color: 'var(--text-main)' }}>
+                <Link to={`/billing/${row.id}`} className="action-btn" title="Voir facture" style={{ backgroundColor: 'var(--bg-accent)', color: 'var(--text-main)', display: 'inline-flex', alignItems: 'center' }}>
                     <FileText size={13} />
-                </button>
+                </Link>
             </div>
         )
     },

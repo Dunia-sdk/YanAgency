@@ -15,7 +15,9 @@ import ReservationDetailPage from './pages/ReservationDetailPage';
 import ClientsPage from './pages/ClientsPage';
 import ClientDetailPage from './pages/ClientDetailPage';
 import TeamPage from './pages/TeamPage';
+import ProfilePage from './pages/ProfilePage';
 import BillingPage from './pages/BillingPage';
+import BillingDetailPage from './pages/BillingDetailPage';
 import PaymentsPage from './pages/PaymentsPage';
 import NotificationsPage from './pages/NotificationsPage';
 import ReportingPage from './pages/ReportingPage';
@@ -48,7 +50,9 @@ function App() {
               <Route path="/clients/:id" element={<ClientDetailPage />} />
 
               <Route path="/team" element={<TeamPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/billing" element={<BillingPage />} />
+              <Route path="/billing/:id" element={<BillingDetailPage />} />
               <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/reporting" element={<ReportingPage />} />

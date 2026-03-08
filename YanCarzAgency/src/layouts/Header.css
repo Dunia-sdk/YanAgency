@@ -10,7 +10,7 @@
     align-items: center;
     padding: 0 1.75rem;
     gap: 1rem;
-    z-index: 100;
+    z-index: 1100;
     transition: left 0.3s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }

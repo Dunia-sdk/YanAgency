@@ -77,16 +77,16 @@ const ClientDetailPage = () => {
                                 Membre depuis {client.joined}
                             </p>
 
-                            <div className="grid grid-cols-2 gap-6 w-full mb-15">
+                            <div className="grid grid-cols-1 gap-4 w-full mb-15">
                                 <Button className="w-full py-4 font-black text-[10px] tracking-[0.2em] uppercase shadow-lg">
-                                     ÉDITER
+                                    ÉDITER
                                 </Button>
 
                                 <Button
                                     variant="outline"
-                                     className="w-full py-5 border-5 font-black text-[10px] tracking-[0.2em] uppercase bg-white"
-                                     >
-                                     RECOMMANDER
+                                    className="w-full py-[14px] border-[3px] border-primary font-black text-[10px] tracking-[0.2em] uppercase bg-white"
+                                >
+                                    RECOMMANDER
                                 </Button>
                             </div>
                             <div className="flex flex-col gap-6 w-full text-left pt-10 border-t border-border/80">

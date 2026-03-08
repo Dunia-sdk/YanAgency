@@ -76,6 +76,7 @@ const VehiclesPage = () => {
 
     const handleSave = () => {
         if (!form.brand || !form.model) return;
+        if (Number(form.price) < 0 || Number(form.mileage) < 0) return;
         if (editVehicle) {
             setVehicles(prev => prev.map(v => v.id === editVehicle.id ? { ...v, ...form } : v));
         } else {
@@ -133,9 +134,9 @@ const VehiclesPage = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
                     <InputField label="Marque" name="brand" value={form.brand} onChange={handleFormChange} placeholder="Toyota" required />
                     <InputField label="Modèle" name="model" value={form.model} onChange={handleFormChange} placeholder="Corolla" required />
-                    <InputField label="Année" name="year" type="number" value={form.year} onChange={handleFormChange} placeholder="2023" />
-                    <InputField label="Prix / jour (MAD)" name="price" type="number" value={form.price} onChange={handleFormChange} placeholder="500" />
-                    <InputField label="Kilométrage (km)" name="mileage" type="number" value={form.mileage} onChange={handleFormChange} placeholder="15000" />
+                    <InputField label="Année" name="year" type="number" value={form.year} onChange={handleFormChange} placeholder="2023" min="1900" max={new Date().getFullYear() + 1} />
+                    <InputField label="Prix / jour (MAD)" name="price" type="number" value={form.price} onChange={handleFormChange} placeholder="500" min="0" />
+                    <InputField label="Kilométrage (km)" name="mileage" type="number" value={form.mileage} onChange={handleFormChange} placeholder="15000" min="0" />
                     <InputField label="URL Image" name="image" value={form.image} onChange={handleFormChange} placeholder="https://..." />
                     {[['category', 'Catégorie', CATEGORIES.slice(1)], ['fuel', 'Carburant', FUELS.slice(1)], ['transmission', 'Boite', TRANS.slice(1)], ['status', 'Statut', STATUSES.slice(1)]].map(([key, lbl, opts]) => (
                         <div className="input-group" key={key}>
