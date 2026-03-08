@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>YanCarz - Tests d'Intégration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50">
+    <nav class="bg-white shadow-sm p-4 flex justify-between items-center border-b">
+        <div class="flex items-center gap-2 font-bold text-xl text-slate-800">
+            <i class="fas fa-puzzle-piece text-amber-500"></i> YanCarz <span class="text-amber-500">Integration</span>
+        </div>
+        <div class="flex gap-4">
+            <a href="test_unitaire.html" class="text-slate-500 hover:text-amber-600">Unitaire</a>
+            <a href="test_integration.html" class="text-amber-600 font-bold border-b-2 border-amber-600">Intégration</a>
+            <a href="test_e2e.html" class="text-slate-500 hover:text-amber-600">End-to-End</a>
+        </div>
+    </nav>
+
+    <div class="max-w-5xl mx-auto py-12 px-4">
+        <h1 class="text-3xl font-bold text-slate-900 mb-2">Rapport d'Intégration & Bugs</h1>
+        <p class="text-slate-500 mb-8">Analyse de la logique métier et détection des failles.</p>
+
+        <div class="space-y-6">
+            <!-- BUG 1 -->
+            <div class="bg-rose-50 border-2 border-rose-200 p-6 rounded-xl shadow-sm">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="bg-rose-500 text-white px-2 py-0.5 rounded text-xs font-bold uppercase">CRITIQUE</span>
+                        <h3 class="text-xl font-bold text-rose-900 mt-2">Bug : Saisie de Prix Négatif</h3>
+                        <p class="text-rose-700 mt-1 italic">Le système accepte l'enregistrement d'un tarif journalier de -5000 MAD.</p>
+                    </div>
+                    <i class="fas fa-bug text-rose-500 text-3xl"></i>
+                </div>
+            </div>
+
+            <!-- BUG 2 -->
+            <div class="bg-amber-50 border-2 border-amber-200 p-6 rounded-xl shadow-sm">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="bg-amber-500 text-white px-2 py-0.5 rounded text-xs font-bold uppercase">MAJEUR</span>
+                        <h3 class="text-xl font-bold text-amber-900 mt-2">Bug : Cohérence de l'année (2099)</h3>
+                        <p class="text-amber-700 mt-1 italic">L'application ne bloque pas les années de mise en circulation futures.</p>
+                    </div>
+                    <i class="fas fa-calendar-times text-amber-500 text-3xl"></i>
+                </div>
+            </div>
+
+            <!-- SECURITE OK -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-lg text-slate-800">Sécurité des Routes (URLs)</h3>
+                    <p class="text-slate-500 text-sm">Protection des pages privées sans session active.</p>
+                </div>
+                <div class="flex items-center gap-2 text-emerald-600 font-bold">
+                    <i class="fas fa-shield-alt"></i> VALIDÉ
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
