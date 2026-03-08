@@ -59,24 +59,24 @@ const LoginPage = () => {
                 </div>
 
                 <div className="text-center mb-6">
-                    <h2 className="mb-2">Bon retour parmi nous</h2>
-                    <p>Connectez-vous à votre espace agence</p>
+                    <h2 className="mb-2">Welcome Back</h2>
+                    <p>Log in to your agency space</p>
                 </div>
 
                 <Alert type="error" message={error} />
 
                 <form onSubmit={handleSubmit}>
                     <InputField
-                        label="Adresse Email"
+                        label="Email Address"
                         name="email"
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="nom@yancarz.com"
+                        placeholder="name@yancarz.com"
                         required
                     />
                     <InputField
-                        label="Mot de passe"
+                        label="Password"
                         name="password"
                         type="password"
                         value={formData.password}
@@ -88,20 +88,20 @@ const LoginPage = () => {
                     <div className="flex justify-between items-center mb-6 mt-2">
                         <label className="flex items-center gap-2" style={{ fontSize: '0.875rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
                             <input type="checkbox" style={{ accentColor: 'var(--primary)', cursor: 'pointer' }} />
-                            Se souvenir de moi
+                            Remember me
                         </label>
-                        <a href="#" className="font-500" style={{ fontSize: '0.875rem' }}>Mot de passe oublié ?</a>
+                        <a href="#" className="font-500" style={{ fontSize: '0.875rem' }}>Forgot password?</a>
                     </div>
 
                     <Button type="submit" fullWidth isLoading={loading}>
-                        Se connecter
+                        Log in
                     </Button>
                 </form>
 
                 <div className="text-center mt-6">
                     <p style={{ fontSize: '0.875rem' }}>
-                        Vous n'avez pas de compte ?{' '}
-                        <Link to="/signup">S'inscrire</Link>
+                        Don't have an account?{' '}
+                        <Link to="/signup">Sign Up</Link>
                     </p>
                 </div>
             </div>

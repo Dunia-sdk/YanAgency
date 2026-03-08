@@ -39,33 +39,19 @@ const signup = async (formData) => {
         return response;
     }
     try {
-        // 1. Create Agency
-        const agencyPayload = {
+        // Agency and User creation via single API endpoint
+        await api.post('/Agencies', {
             name: formData.name,
-            street: '',
-            city: formData.city,
-            postalCode: ''
-        };
-        const agencyRes = await api.post('/Agencies', agencyPayload);
-        const agencyId = agencyRes.data.id;
+            eMail: formData.email,
+            nbrPhone: formData.phone,
+            lastName: formData.lastName,
+            firstMame: formData.firstName, // Using exact key requested by user
+            address: "", // Front-end doesn't collect address currently
+            idCity: "3fa85f64-5717-4562-b3fc-2c963f66afa6" // Default UUID as requested/provided
+        });
 
-        // 2. Extract first and last name from contact field
-        const nameParts = (formData.contact || '').trim().split(' ');
-        const firstName = nameParts[0] || 'User';
-        const lastName = nameParts.slice(1).join(' ') || firstName;
-
-        // 3. Create Agency User
-        const userPayload = {
-            firstName,
-            lastName,
-            email: formData.email,
-            passwordHash: formData.password,
-            telephone: formData.phone,
-            agencyId: agencyId
-        };
-        await api.post('/AgencyUsers', userPayload);
-
-        // 4. Automatically Login
+        // 2. Automatically Login
+        // Note: Make sure the login endpoint expects the same email/password
         return await login(formData.email, formData.password);
     } catch (error) {
         handleApiError(error, 'Registration failed');

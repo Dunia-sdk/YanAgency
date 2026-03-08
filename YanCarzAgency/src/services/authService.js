@@ -11,27 +11,15 @@ const register = async (formData) => {
         return { token: MOCK_TOKEN, user: { email: formData.email, name: formData.name } };
     }
     try {
-        // Step 1: Create the Agency
-        const agencyResponse = await api.post('/Agency', {
+        // Agency and User creation via single API endpoint
+        await api.post('/Agency', {
             name: formData.name,
-            city: formData.city,
-            contactPerson: formData.contact,
-        });
-
-        const agencyId = agencyResponse.data.id;
-
-        // Step 2: Create the Agency User
-        const nameParts = formData.contact.split(' ');
-        const firstName = nameParts[0];
-        const lastName = nameParts.slice(1).join(' ') || firstName;
-
-        const userResponse = await api.post('/AgencyUsers', {
-            firstName,
-            lastName,
-            email: formData.email,
-            passwordHash: formData.password,
-            telephone: formData.phone,
-            agencyId,
+            eMail: formData.email,
+            nbrPhone: formData.phone,
+            lastName: formData.lastName,
+            firstMame: formData.firstName, // Using exact key requested by user
+            address: "", // Front-end doesn't collect address currently
+            idCity: "3fa85f64-5717-4562-b3fc-2c963f66afa6" // Default UUID as requested/provided
         });
 
         // After successful registration, log the user in.

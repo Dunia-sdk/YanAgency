@@ -14,7 +14,8 @@ const SignupPage = () => {
         confirmPassword: '',
         city: '',
         phone: '',
-        contact: ''
+        firstName: '',
+        lastName: ''
     });
     const [formErrors, setFormErrors] = useState({});
     const [globalError, setGlobalError] = useState('');
@@ -23,7 +24,7 @@ const SignupPage = () => {
     const navigate = useNavigate();
 
     const moroccanCities = [
-        { value: '', label: 'Sélectionnez une ville', disabled: true },
+        { value: '', label: 'Select a city', disabled: true },
         { value: 'Agadir', label: 'Agadir' },
         { value: 'Beni-Mellal', label: 'Beni-Mellal' },
         { value: 'Casablanca', label: 'Casablanca' },
@@ -97,8 +98,13 @@ const SignupPage = () => {
             isValid = false;
         }
 
-        if (!formData.contact.trim()) {
-            errors.contact = 'Le contact est requis';
+        if (!formData.firstName.trim()) {
+            errors.firstName = 'First name is required';
+            isValid = false;
+        }
+
+        if (!formData.lastName.trim()) {
+            errors.lastName = 'Last name is required';
             isValid = false;
         }
 
@@ -139,15 +145,15 @@ const SignupPage = () => {
                 </div>
 
                 <div className="text-center mb-6">
-                    <h2 className="mb-2">Créer un compte</h2>
-                    <p>Rejoignez YanCarz pour gérer votre agence</p>
+                    <h2 className="mb-2">Create an account</h2>
+                    <p>Join YanCarz to manage your agency</p>
                 </div>
 
                 <Alert type="error" message={globalError} />
 
                 <form onSubmit={handleSubmit}>
                     <InputField
-                        label="Nom complet d'agence"
+                        label="Agency Name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
@@ -156,17 +162,17 @@ const SignupPage = () => {
                         required
                     />
                     <InputField
-                        label="Adresse Email"
+                        label="Email Address"
                         name="email"
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="nom@yancarz.com"
+                        placeholder="name@yancarz.com"
                         error={formErrors.email}
                         required
                     />
                     <SelectField
-                        label="Ville"
+                        label="City"
                         name="city"
                         value={formData.city}
                         onChange={handleChange}
@@ -175,7 +181,7 @@ const SignupPage = () => {
                         required
                     />
                     <InputField
-                        label="Téléphone"
+                        label="Phone Number"
                         name="phone"
                         type="tel"
                         value={formData.phone}
@@ -184,47 +190,58 @@ const SignupPage = () => {
                         error={formErrors.phone}
                         required
                     />
+                    <div className="flex gap-4">
+                        <InputField
+                            label="First Name"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            placeholder="First Name"
+                            error={formErrors.firstName}
+                            required
+                        />
+                        <InputField
+                            label="Last Name"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            placeholder="Last Name"
+                            error={formErrors.lastName}
+                            required
+                        />
+                    </div>
                     <InputField
-                        label="Contact"
-                        name="contact"
-                        value={formData.contact}
-                        onChange={handleChange}
-                        placeholder="Personne à contacter"
-                        error={formErrors.contact}
-                        required
-                    />
-                    <InputField
-                        label="Mot de passe"
+                        label="Password"
                         name="password"
                         type="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="Mini. 8 caractères"
+                        placeholder="Min. 8 characters"
                         error={formErrors.password}
                         required
                     />
                     <InputField
-                        label="Confirmer le mot de passe"
+                        label="Confirm Password"
                         name="confirmPassword"
                         type="password"
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        placeholder="Répétez le mot de passe"
+                        placeholder="Repeat password"
                         error={formErrors.confirmPassword}
                         required
                     />
 
                     <div className="mt-6 mb-4">
                         <Button type="submit" fullWidth isLoading={loading}>
-                            S'inscrire
+                            Sign Up
                         </Button>
                     </div>
                 </form>
 
                 <div className="text-center mt-4">
                     <p style={{ fontSize: '0.875rem' }}>
-                        Vous avez déjà un compte ?{' '}
-                        <Link to="/login">Se connecter</Link>
+                        Already have an account?{' '}
+                        <Link to="/login">Log in</Link>
                     </p>
                 </div>
             </div>
