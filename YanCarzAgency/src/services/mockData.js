@@ -1,15 +1,15 @@
 // ─── VEHICLES ──────────────────────────────────────────────────────────────
 export const vehicles = [
-    { id: 1, brand: 'Toyota', model: 'Corolla', year: 2022, price: 450, mileage: 15400, category: 'Berline', fuel: 'Essence', transmission: 'Auto', status: 'available', image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=200&auto=format&fit=crop' },
-    { id: 2, brand: 'Renault', model: 'Clio', year: 2021, price: 350, mileage: 42100, category: 'Citadine', fuel: 'Diesel', transmission: 'Manuel', status: 'rented', image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=200&auto=format&fit=crop' },
-    { id: 3, brand: 'BMW', model: 'Série 3', year: 2023, price: 900, mileage: 5200, category: 'Premium', fuel: 'Essence', transmission: 'Auto', status: 'available', image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=200&auto=format&fit=crop' },
-    { id: 4, brand: 'Peugeot', model: '3008', year: 2022, price: 600, mileage: 28900, category: 'SUV', fuel: 'Hybride', transmission: 'Auto', status: 'maintenance', image: 'https://images.unsplash.com/photo-1570733577524-3a047079e80d?q=80&w=200&auto=format&fit=crop' },
-    { id: 5, brand: 'Mercedes', model: 'Classe C', year: 2023, price: 1100, mileage: 8400, category: 'Premium', fuel: 'Essence', transmission: 'Auto', status: 'available', image: 'https://images.unsplash.com/photo-1620127252536-0390a8848ecd?q=80&w=200&auto=format&fit=crop' },
-    { id: 6, brand: 'Volkswagen', model: 'Golf', year: 2021, price: 500, mileage: 36500, category: 'Berline', fuel: 'Diesel', transmission: 'Manuel', status: 'rented', image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=200&auto=format&fit=crop' },
-    { id: 7, brand: 'Dacia', model: 'Duster', year: 2022, price: 380, mileage: 22300, category: 'SUV', fuel: 'Diesel', transmission: 'Manuel', status: 'available', image: 'https://images.unsplash.com/photo-1606016159991-bef4b07cab2a?q=80&w=200&auto=format&fit=crop' },
-    { id: 8, brand: 'Audi', model: 'A4', year: 2023, price: 950, mileage: 11200, category: 'Premium', fuel: 'Essence', transmission: 'Auto', status: 'available', image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=200&auto=format&fit=crop' },
-    { id: 9, brand: 'Ford', model: 'Puma', year: 2022, price: 420, mileage: 25700, category: 'SUV', fuel: 'Essence', transmission: 'Manuel', status: 'rented', image: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?q=80&w=200&auto=format&fit=crop' },
-    { id: 10, brand: 'Kia', model: 'Sportage', year: 2023, price: 650, mileage: 9800, category: 'SUV', fuel: 'Hybride', transmission: 'Auto', status: 'available', image: 'https://images.unsplash.com/photo-1634833215904-5e1352e854fa?q=80&w=200&auto=format&fit=crop' },
+    { id: 1, brand: 'Toyota', model: 'Corolla', year: 2022, price: 450, mileage: 15400, category: 'Berline', fuel: 'Essence', transmission: 'Auto', status: 'available', nbReservation: 12, image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=200&auto=format&fit=crop' },
+    { id: 2, brand: 'Renault', model: 'Clio', year: 2021, price: 350, mileage: 42100, category: 'Citadine', fuel: 'Diesel', transmission: 'Manuel', status: 'rented', nbReservation: 23, image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=200&auto=format&fit=crop' },
+    { id: 3, brand: 'BMW', model: 'Série 3', year: 2023, price: 900, mileage: 5200, category: 'Premium', fuel: 'Essence', transmission: 'Auto', status: 'available', nbReservation: 41, image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=200&auto=format&fit=crop' },
+    { id: 4, brand: 'Peugeot', model: '3008', year: 2022, price: 600, mileage: 28900, category: 'SUV', fuel: 'Hybride', transmission: 'Auto', status: 'maintenance', nbReservation: 17, image: 'https://images.unsplash.com/photo-1570733577524-3a047079e80d?q=80&w=200&auto=format&fit=crop' },
+    { id: 5, brand: 'Mercedes', model: 'Classe C', year: 2023, price: 1100, mileage: 8400, category: 'Premium', fuel: 'Essence', transmission: 'Auto', status: 'available', nbReservation: 8, image: 'https://images.unsplash.com/photo-1620127252536-0390a8848ecd?q=80&w=200&auto=format&fit=crop' },
+    { id: 6, brand: 'Volkswagen', model: 'Golf', year: 2021, price: 500, mileage: 36500, category: 'Berline', fuel: 'Diesel', transmission: 'Manuel', status: 'rented', nbReservation: 32, image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=200&auto=format&fit=crop' },
+    { id: 7, brand: 'Dacia', model: 'Duster', year: 2022, price: 380, mileage: 22300, category: 'SUV', fuel: 'Diesel', transmission: 'Manuel', status: 'available', nbReservation: 18, image: 'https://images.unsplash.com/photo-1606016159991-bef4b07cab2a?q=80&w=200&auto=format&fit=crop' },
+    { id: 8, brand: 'Audi', model: 'A4', year: 2023, price: 950, mileage: 11200, category: 'Premium', fuel: 'Essence', transmission: 'Auto', status: 'available', nbReservation: 10, image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=200&auto=format&fit=crop' },
+    { id: 9, brand: 'Ford', model: 'Puma', year: 2022, price: 420, mileage: 25700, category: 'SUV', fuel: 'Essence', transmission: 'Manuel', status: 'rented', nbReservation: 22, image: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?q=80&w=200&auto=format&fit=crop' },
+    { id: 10, brand: 'Kia', model: 'Sportage', year: 2023, price: 650, mileage: 9800, category: 'SUV', fuel: 'Hybride', transmission: 'Auto', status: 'available', nbReservation: 50, image: 'https://images.unsplash.com/photo-1634833215904-5e1352e854fa?q=80&w=200&auto=format&fit=crop' },
 ];
 
 // ─── CLIENTS ────────────────────────────────────────────────────────────────
@@ -22,6 +22,15 @@ export const clients = [
     { id: 6, name: 'François Leroy', email: 'francois@gmail.com', phone: '+212 6 22 33 44 55', location: 'Fès', bookings: 4, joined: '2023-07-22' },
     { id: 7, name: 'Gabrielle Simon', email: 'gab@gmail.com', phone: '+212 6 66 77 88 99', location: 'Oujda', bookings: 6, joined: '2022-12-12' },
     { id: 8, name: 'Hugo Lambert', email: 'hugo@gmail.com', phone: '+212 6 44 55 66 77', location: 'Kénitra', bookings: 2, joined: '2024-02-18' },
+];
+
+export const cities = [
+    { id: 'casablanca-uuid', name: 'Casablanca' },
+    { id: 'rabat-uuid', name: 'Rabat' },
+    { id: 'marrakech-uuid', name: 'Marrakech' },
+    { id: 'tanger-uuid', name: 'Tanger' },
+    { id: 'agadir-uuid', name: 'Agadir' },
+    { id: 'fes-uuid', name: 'Fès' },
 ];
 
 // ─── RESERVATIONS ───────────────────────────────────────────────────────────

@@ -42,12 +42,12 @@ const signup = async (formData) => {
         // Agency and User creation via single API endpoint
         await api.post('/Agencies', {
             name: formData.name,
-            eMail: formData.email,
+            email: formData.email,
             nbrPhone: formData.phone,
             lastName: formData.lastName,
-            firstMame: formData.firstName, // Using exact key requested by user
+            firstName: formData.firstName, // Fix typo: was firstMame
             address: "", // Front-end doesn't collect address currently
-            idCity: "3fa85f64-5717-4562-b3fc-2c963f66afa6" // Default UUID as requested/provided
+            idCity: formData.idCity // City UUID from the API dropdown
         });
 
         // 2. Automatically Login
@@ -65,7 +65,11 @@ const logout = () => {
 const handleApiError = (error, defaultMessage) => {
     console.error(`API Error (${defaultMessage}):`, error);
     if (error.response) {
-        const message = error.response.data?.message || error.response.data?.title || defaultMessage;
+        console.error('Response Data:', error.response.data);
+        console.error('Response Status:', error.response.status);
+        const message = error.response.data?.message ||
+            error.response.data?.title ||
+            (typeof error.response.data === 'string' ? error.response.data : defaultMessage);
         throw new Error(message);
     } else if (error.request) {
         throw new Error('No response from server. Check your connection.');

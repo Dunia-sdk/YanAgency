@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import InputField from '../components/InputField';
 import SelectField from '../components/SelectField';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
+import api, { isMockMode } from '../api/services/api';
+import { cities as mockCities } from '../services/mockData';
 
 const SignupPage = () => {
     const [formData, setFormData] = useState({
@@ -12,7 +14,7 @@ const SignupPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        city: '',
+        idCity: '',
         phone: '',
         firstName: '',
         lastName: ''
@@ -20,28 +22,36 @@ const SignupPage = () => {
     const [formErrors, setFormErrors] = useState({});
     const [globalError, setGlobalError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [cities, setCities] = useState([]);
+    const [citiesLoading, setCitiesLoading] = useState(true);
     const { register } = useAuth();
     const navigate = useNavigate();
 
-    const moroccanCities = [
-        { value: '', label: 'Select a city', disabled: true },
-        { value: 'Agadir', label: 'Agadir' },
-        { value: 'Beni-Mellal', label: 'Beni-Mellal' },
-        { value: 'Casablanca', label: 'Casablanca' },
-        { value: 'Chefchaouen', label: 'Chefchaouen' },
-        { value: 'Essaouira', label: 'Essaouira' },
-        { value: 'Fès', label: 'Fès' },
-        { value: 'Ksar-el-Kébir', label: 'Ksar-el-Kébir' },
-        { value: 'Marrakech', label: 'Marrakech' },
-        { value: 'Meknès', label: 'Meknès' },
-        { value: 'Ouarzazate', label: 'Ouarzazate' },
-        { value: 'Rabat', label: 'Rabat' },
-        { value: 'Safi', label: 'Safi' },
-        { value: 'Salé', label: 'Salé' },
-        { value: 'Tanger', label: 'Tanger' },
-        { value: 'Taza', label: 'Taza' },
-        { value: 'Témara', label: 'Témara' }
-    ];
+    useEffect(() => {
+        const fetchCities = async () => {
+            try {
+                const res = await api.get('/Cities');
+                const cityOptions = [
+                    { value: '', label: 'Select a city', disabled: true },
+                    ...res.data.map(c => ({ value: c.id, label: c.name }))
+                ];
+                setCities(cityOptions);
+                setCitiesLoading(false);
+                return;
+            } catch (err) {
+                console.error('API failed to load cities, falling back to mockData', err);
+                // Fallback to mock cities
+                const cityOptions = [
+                    { value: '', label: 'Select a city', disabled: true },
+                    ...mockCities.map(c => ({ value: c.id, label: c.name }))
+                ];
+                setCities(cityOptions);
+            } finally {
+                setCitiesLoading(false);
+            }
+        };
+        fetchCities();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -84,8 +94,8 @@ const SignupPage = () => {
             isValid = false;
         }
 
-        if (!formData.city) {
-            errors.city = 'La ville est requise';
+        if (!formData.idCity) {
+            errors.idCity = 'City is required';
             isValid = false;
         }
 
@@ -173,11 +183,11 @@ const SignupPage = () => {
                     />
                     <SelectField
                         label="City"
-                        name="city"
-                        value={formData.city}
+                        name="idCity"
+                        value={formData.idCity}
                         onChange={handleChange}
-                        options={moroccanCities}
-                        error={formErrors.city}
+                        options={citiesLoading ? [{ value: '', label: 'Loading cities...', disabled: true }] : cities}
+                        error={formErrors.idCity}
                         required
                     />
                     <InputField

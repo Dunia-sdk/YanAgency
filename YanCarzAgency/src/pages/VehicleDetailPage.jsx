@@ -8,6 +8,7 @@ const VehicleDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const vehicle = vehicles.find(v => v.id === parseInt(id));
+    const reservationCount = vehicle?.nbReservation ?? '—';
 
     if (!vehicle) {
         return (
@@ -24,7 +25,7 @@ const VehicleDetailPage = () => {
     return (
         <div className="pb-12 space-y-8 animate-[slideUpFade_0.5s_ease-out]">
             {/* 1. Enhanced Header with Breadcrumbs */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-white p-8 rounded-[24px] shadow-sm border border-border/50">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-white p-8 rounded-[24px] shadow-sm border border-border/">
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => navigate('/vehicles')}
@@ -46,8 +47,8 @@ const VehicleDetailPage = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <div className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-800 text-xs uppercase tracking-widest shadow-sm ${vehicle.status === 'available' ? 'bg-success/10 text-success border border-success/20' :
-                            vehicle.status === 'rented' ? 'bg-blue-50 text-blue-600 border border-blue-100' :
-                                'bg-amber-50 text-amber-600 border border-amber-100'
+                        vehicle.status === 'rented' ? 'bg-blue-50 text-blue-600 border border-blue-100' :
+                            'bg-amber-50 text-amber-600 border border-amber-100'
                         }`}>
                         <div className={`w-2 h-2 rounded-full ${vehicle.status === 'available' ? 'bg-success' : vehicle.status === 'rented' ? 'bg-blue-500' : 'bg-amber-500'}`} />
                         {vehicle.status === 'available' ? 'Disponible Immédiatement' : vehicle.status === 'rented' ? 'En Location' : 'En Maintenance'}
@@ -166,8 +167,10 @@ const VehicleDetailPage = () => {
                                 </div>
                                 <div className="w-px h-8 bg-white/10" />
                                 <div className="text-center">
-                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">Contrats</p>
-                                    <p className="text-lg font-900 tracking-tight">12</p>
+                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">Réservations</p>
+                                    <p className="text-lg font-900 tracking-tight">
+                                        {reservationCount}
+                                    </p>
                                 </div>
                             </div>
                         </div>

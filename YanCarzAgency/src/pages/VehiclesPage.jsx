@@ -76,11 +76,20 @@ const VehiclesPage = () => {
 
     const handleSave = () => {
         if (!form.brand || !form.model) return;
+
+        const year = Number(form.year);
+        const currentYear = new Date().getFullYear();
+        if (year < 1900 || year > currentYear + 1) {
+            alert(`L'année doit être comprise entre 1900 et ${currentYear + 1}`);
+            return;
+        }
+
         if (Number(form.price) < 0 || Number(form.mileage) < 0) return;
+
         if (editVehicle) {
-            setVehicles(prev => prev.map(v => v.id === editVehicle.id ? { ...v, ...form } : v));
+            setVehicles(prev => prev.map(v => v.id === editVehicle.id ? { ...v, ...form, year } : v));
         } else {
-            setVehicles(prev => [...prev, { ...form, id: Date.now(), price: Number(form.price), year: Number(form.year) }]);
+            setVehicles(prev => [...prev, { ...form, id: Date.now(), price: Number(form.price), year }]);
         }
         closeModal();
     };
