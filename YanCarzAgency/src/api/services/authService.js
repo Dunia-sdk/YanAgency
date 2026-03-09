@@ -74,10 +74,24 @@ const handleApiError = (error, defaultMessage) => {
     }
 };
 
+const changePassword = async (oldPassword, newPassword) => {
+    if (isMockMode) {
+        console.log('Mock Mode: Changing password');
+        return { message: 'Password changed successfully' };
+    }
+    try {
+        const response = await api.post('/Auth/change-password', { oldPassword, newPassword });
+        return response.data;
+    } catch (error) {
+        handleApiError(error, 'Password change failed');
+    }
+};
+
 const authService = {
     login,
     signup,
-    logout
+    logout,
+    changePassword
 };
 
 export default authService;
