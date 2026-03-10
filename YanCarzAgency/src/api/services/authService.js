@@ -39,20 +39,50 @@ const signup = async (formData) => {
         return response;
     }
     try {
-        // Agency and User creation via single API endpoint
-        await api.post('/Agencies', {
+        // 1. Agency and User creation via single API endpoint
+        await api.post('/Agency', {
             name: formData.name,
-            email: formData.email,
+            eMail: formData.email,
             nbrPhone: formData.phone,
             lastName: formData.lastName,
-            firstName: formData.firstName, // Fix typo: was firstMame
+            firstMame: formData.firstName, // Note: firstMame is the correct field in the API (typo included)
             address: "", // Front-end doesn't collect address currently
             idCity: formData.idCity // City UUID from the API dropdown
         });
 
-        // 2. Automatically Login
-        // Note: Make sure the login endpoint expects the same email/password
-        return await login(formData.email, formData.password);
+        // 2. Build a temporary session from signup data
+        // (Login API not yet available from backend - will be updated once /Auth/login is deployed)
+        const tempUser = {
+            email: formData.email,
+            name: `${formData.firstName} ${formData.lastName}`,
+            agencyName: formData.name,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            role: 'Admin'
+        };
+
+        // Create a minimal temporary token payload so jwtDecode doesn't crash
+        // This is a placeholder — will be replaced by real JWT from login API
+        const tempPayload = btoa(JSON.stringify({ alg: 'none' })) + '.' +
+            btoa(JSON.stringify({
+                email: formData.email,
+                name: `${formData.firstName} ${formData.lastName}`,
+                agencyName: formData.name,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                role: 'Admin',
+                exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // 24h
+            })) + '.temp-signature';
+
+        localStorage.setItem('token', tempPayload);
+        localStorage.setItem('agencyName', formData.name);
+        localStorage.setItem('firstName', formData.firstName);
+        localStorage.setItem('lastName', formData.lastName);
+
+        return {
+            token: tempPayload,
+            user: tempUser
+        };
     } catch (error) {
         handleApiError(error, 'Registration failed');
     }

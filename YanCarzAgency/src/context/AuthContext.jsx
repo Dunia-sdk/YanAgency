@@ -20,7 +20,14 @@ export const AuthProvider = ({ children }) => {
                 const decoded = jwtDecode(storedToken);
                 // Check if token is expired
                 if (decoded.exp * 1000 > Date.now()) {
-                    setUser({ email: decoded.email, name: decoded.name });
+                    setUser({
+                        email: decoded.email,
+                        name: decoded.name,
+                        agencyName: decoded.agencyName || localStorage.getItem('agencyName') || 'YanCarz Agency',
+                        firstName: decoded.firstName || localStorage.getItem('firstName'),
+                        lastName: decoded.lastName || localStorage.getItem('lastName'),
+                        role: decoded.role || 'Admin'
+                    });
                     setToken(storedToken);
                 } else {
                     // Token is expired
@@ -40,7 +47,21 @@ export const AuthProvider = ({ children }) => {
         try {
             const data = await authService.login(email, password);
             const decoded = jwtDecode(data.token);
-            setUser({ email: decoded.email, name: decoded.name });
+            const userData = {
+                email: decoded.email,
+                name: decoded.name,
+                agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
+                firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
+                lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
+                role: decoded.role || 'Admin'
+            };
+            setUser(userData);
+
+            localStorage.setItem('token', data.token);
+            if (userData.agencyName) localStorage.setItem('agencyName', userData.agencyName);
+            if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
+            if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
+
             setToken(data.token);
             return data;
         } catch (error) {
@@ -51,12 +72,26 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const register = async (userData) => {
+    const register = async (signupData) => {
         setLoading(true);
         try {
-            const data = await authService.signup(userData);
+            const data = await authService.signup(signupData);
             const decoded = jwtDecode(data.token);
-            setUser({ email: decoded.email, name: decoded.name });
+            const userData = {
+                email: decoded.email,
+                name: decoded.name,
+                agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
+                firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
+                lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
+                role: decoded.role || 'Admin'
+            };
+            setUser(userData);
+
+            localStorage.setItem('token', data.token);
+            if (userData.agencyName) localStorage.setItem('agencyName', userData.agencyName);
+            if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
+            if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
+
             setToken(data.token);
             return data;
         } catch (error) {
@@ -71,8 +106,10 @@ export const AuthProvider = ({ children }) => {
         authService.logout();
         setUser(null);
         setToken(null);
+        localStorage.removeItem('agencyName');
+        localStorage.removeItem('firstName');
+        localStorage.removeItem('lastName');
     };
-
     const value = {
         user,
         token,

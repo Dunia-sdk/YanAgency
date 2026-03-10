@@ -28,9 +28,11 @@ const Header = ({ onSearch, searchValue }) => {
         navigate('/login');
     };
 
-    const initials = user?.name
-        ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-        : 'YC';
+    const initials = user?.firstName && user?.lastName
+        ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+        : user?.name
+            ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+            : 'YC';
 
     return (
         <header className={`topbar ${collapsed ? 'collapsed' : ''}`}>
@@ -48,8 +50,7 @@ const Header = ({ onSearch, searchValue }) => {
 
             <div className="topbar__right">
                 {/* Agency name */}
-                <span className="topbar__agency">YanCarz Agency</span>
-
+                <span className="topbar__agency">{user?.agencyName || 'YanCarz Agency'}</span>
                 {/* Notification Bell */}
                 <button className="topbar__icon-btn" title="Notifications">
                     <Bell size={20} />
@@ -64,8 +65,12 @@ const Header = ({ onSearch, searchValue }) => {
                     >
                         <div className="topbar__avatar">{initials}</div>
                         <div className="topbar__user-info">
-                            <span className="topbar__user-name">{user?.name || 'Utilisateur'}</span>
-                            <span className="topbar__user-role">{user?.role || 'Member'}</span>
+                            <span className="topbar__user-name">
+                                {user?.firstName && user?.lastName
+                                    ? `${user.firstName} ${user.lastName}`
+                                    : user?.name || 'Utilisateur'}
+                            </span>
+                            <span className="topbar__user-role">{user?.role || 'Admin'}</span>
                         </div>
                         <ChevronDown size={14} className={`topbar__chevron ${dropdownOpen ? 'open' : ''}`} />
                     </button>

@@ -30,7 +30,7 @@ const SignupPage = () => {
     useEffect(() => {
         const fetchCities = async () => {
             try {
-                const res = await api.get('/Cities');
+                const res = await api.get('/City');
                 const cityOptions = [
                     { value: '', label: 'Select a city', disabled: true },
                     ...res.data.map(c => ({ value: c.id, label: c.name }))

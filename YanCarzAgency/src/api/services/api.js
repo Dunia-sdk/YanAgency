@@ -23,6 +23,8 @@ api.interceptors.response.use(
     (error) => {
         // Handle 401 Unauthorized globally
         if (error.response && error.response.status === 401) {
+            // - [x] Research current signup implementation <!-- id: 0 -->
+            // - [x] Research new API endpoints in Swagger <!-- id: 1 -->
             localStorage.removeItem('token');
             window.location.href = '/login';
         }
