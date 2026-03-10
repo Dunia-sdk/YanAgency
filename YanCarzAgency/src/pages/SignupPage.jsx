@@ -6,14 +6,13 @@ import SelectField from '../components/SelectField';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 import api, { isMockMode } from '../api/services/api';
+import authService from '../api/services/authService';
 import { cities as mockCities } from '../services/mockData';
 
 const SignupPage = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        password: '',
-        confirmPassword: '',
         idCity: '',
         phone: '',
         firstName: '',
@@ -30,7 +29,7 @@ const SignupPage = () => {
     useEffect(() => {
         const fetchCities = async () => {
             try {
-                const res = await api.get('/City');
+                const res = await api.get('/shared/City');
                 const cityOptions = [
                     { value: '', label: 'Select a city', disabled: true },
                     ...res.data.map(c => ({ value: c.id, label: c.name }))
@@ -81,18 +80,7 @@ const SignupPage = () => {
             isValid = false;
         }
 
-        if (!formData.password) {
-            errors.password = 'Le mot de passe est requis';
-            isValid = false;
-        } else if (formData.password.length < 8) {
-            errors.password = 'Le mot de passe doit contenir au moins 8 caractères';
-            isValid = false;
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            errors.confirmPassword = 'Les mots de passe ne correspondent pas';
-            isValid = false;
-        }
+        // Password validation removed
 
         if (!formData.idCity) {
             errors.idCity = 'City is required';
@@ -133,7 +121,15 @@ const SignupPage = () => {
             // Pass the entire formData object to the register function
             // AuthContext.register expects one argument (userData/formData)
             await register(formData);
-            navigate('/dashboard');
+
+            // Trigger welcome email (mocked)
+            try {
+                await authService.sendWelcomeEmail(formData.email, formData.firstName);
+            } catch (emailErr) {
+                console.error("Failed to send welcome email", emailErr);
+            }
+
+            navigate('/dashboard', { state: { newSignup: true } });
         } catch (err) {
             setGlobalError(err.message || 'Échec de l\'inscription');
         } finally {
@@ -220,26 +216,6 @@ const SignupPage = () => {
                             required
                         />
                     </div>
-                    <InputField
-                        label="Password"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Min. 8 characters"
-                        error={formErrors.password}
-                        required
-                    />
-                    <InputField
-                        label="Confirm Password"
-                        name="confirmPassword"
-                        type="password"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        placeholder="Repeat password"
-                        error={formErrors.confirmPassword}
-                        required
-                    />
 
                     <div className="mt-6 mb-4">
                         <Button type="submit" fullWidth isLoading={loading}>

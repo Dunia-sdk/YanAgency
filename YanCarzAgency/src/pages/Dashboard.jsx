@@ -42,9 +42,12 @@ const Dashboard = () => {
 
             <main>
                 <div className="glass-panel" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
-                    <h1 className="mb-4" style={{ fontSize: '2.5rem' }}>Bienvenue sur votre Dashboard</h1>
-                    <p className="mb-6" style={{ fontSize: '1.125rem', color: 'var(--text-muted)' }}>
+                    <h1 className="mb-4" style={{ fontSize: '2.5rem' }}>Bienvenue {user?.firstName} {user?.lastName}</h1>
+                    <p className="mb-2" style={{ fontSize: '1.125rem', color: 'var(--text-muted)' }}>
                         Vous êtes connecté avec succès à l'application YanCarz.
+                    </p>
+                    <p className="mb-6" style={{ fontSize: '1.125rem', color: 'var(--text-muted)' }}>
+                        Vous allez recevoir un message en email avec vos informations de connexion.
                     </p>
 
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1rem', padding: '1rem 2rem', background: 'var(--bg-color)', borderRadius: '12px' }}>

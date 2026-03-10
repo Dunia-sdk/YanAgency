@@ -40,7 +40,7 @@ const signup = async (formData) => {
     }
     try {
         // 1. Agency and User creation via single API endpoint
-        await api.post('/Agency', {
+        await api.post('/portal/Agency', {
             name: formData.name,
             eMail: formData.email,
             nbrPhone: formData.phone,
@@ -121,11 +121,18 @@ const changePassword = async (oldPassword, newPassword) => {
     }
 };
 
+const sendWelcomeEmail = async (email, firstName) => {
+    // Mocking email sending as backend doesn't have an endpoint yet
+    console.log(`[Mock Email] Sending welcome email to ${email} (Hi ${firstName}!)`);
+    return new Promise(resolve => setTimeout(resolve, 1000));
+};
+
 const authService = {
     login,
     signup,
     logout,
-    changePassword
+    changePassword,
+    sendWelcomeEmail
 };
 
 export default authService;
