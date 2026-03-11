@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import InputField from '../components/InputField';
 import SelectField from '../components/SelectField';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
-import api, { isMockMode } from '../api/services/api';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import api from '../api/services/api';
 import authService from '../api/services/authService';
 import { cities as mockCities } from '../services/mockData';
 
 const SignupPage = () => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -31,7 +34,7 @@ const SignupPage = () => {
             try {
                 const res = await api.get('/shared/City');
                 const cityOptions = [
-                    { value: '', label: 'Select a city', disabled: true },
+                    { value: '', label: t('selectCity'), disabled: true },
                     ...res.data.map(c => ({ value: c.id, label: c.name }))
                 ];
                 setCities(cityOptions);
@@ -39,9 +42,8 @@ const SignupPage = () => {
                 return;
             } catch (err) {
                 console.error('API failed to load cities, falling back to mockData', err);
-                // Fallback to mock cities
                 const cityOptions = [
-                    { value: '', label: 'Select a city', disabled: true },
+                    { value: '', label: t('selectCity'), disabled: true },
                     ...mockCities.map(c => ({ value: c.id, label: c.name }))
                 ];
                 setCities(cityOptions);
@@ -50,12 +52,11 @@ const SignupPage = () => {
             }
         };
         fetchCities();
-    }, []);
+    }, [t]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        // Clear specific field error when user types
         if (formErrors[name]) {
             setFormErrors(prev => ({ ...prev, [name]: '' }));
         }
@@ -67,42 +68,40 @@ const SignupPage = () => {
         let isValid = true;
 
         if (!formData.name.trim()) {
-            errors.name = 'Le nom est requis';
+            errors.name = t('errors.nameRequired');
             isValid = false;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email) {
-            errors.email = 'L\'email est requis';
+            errors.email = t('errors.emailRequired');
             isValid = false;
         } else if (!emailRegex.test(formData.email)) {
-            errors.email = 'Format d\'email invalide';
+            errors.email = t('errors.emailInvalid');
             isValid = false;
         }
 
-        // Password validation removed
-
         if (!formData.idCity) {
-            errors.idCity = 'City is required';
+            errors.idCity = t('errors.cityRequired');
             isValid = false;
         }
 
         const phoneRegex = /^(06|07|05)\d{8}$/;
         if (!formData.phone) {
-            errors.phone = 'Le numéro de téléphone est requis';
+            errors.phone = t('errors.phoneRequired');
             isValid = false;
         } else if (!phoneRegex.test(formData.phone)) {
-            errors.phone = 'Format de numéro de téléphone invalide';
+            errors.phone = t('errors.phoneInvalid');
             isValid = false;
         }
 
         if (!formData.firstName.trim()) {
-            errors.firstName = 'First name is required';
+            errors.firstName = t('errors.firstNameRequired');
             isValid = false;
         }
 
         if (!formData.lastName.trim()) {
-            errors.lastName = 'Last name is required';
+            errors.lastName = t('errors.lastNameRequired');
             isValid = false;
         }
 
@@ -118,11 +117,8 @@ const SignupPage = () => {
         setGlobalError('');
 
         try {
-            // Pass the entire formData object to the register function
-            // AuthContext.register expects one argument (userData/formData)
             await register(formData);
 
-            // Trigger welcome email (mocked)
             try {
                 await authService.sendWelcomeEmail(formData.email, formData.firstName);
             } catch (emailErr) {
@@ -131,7 +127,7 @@ const SignupPage = () => {
 
             navigate('/dashboard', { state: { newSignup: true } });
         } catch (err) {
-            setGlobalError(err.message || 'Échec de l\'inscription');
+            setGlobalError(err.message || t('errors.signupFailed'));
         } finally {
             setLoading(false);
         }
@@ -139,7 +135,12 @@ const SignupPage = () => {
 
     return (
         <div className="auth-wrapper">
-            <div className="glass-panel auth-container">
+            <div className="glass-panel auth-container" style={{ position: 'relative' }}>
+                {/* Language Switcher — top end corner (flips in RTL) */}
+                <div className="auth-lang-switcher">
+                    <LanguageSwitcher />
+                </div>
+
                 <div className="logo-container" style={{ marginBottom: '1.5rem' }}>
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.5-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
@@ -151,15 +152,15 @@ const SignupPage = () => {
                 </div>
 
                 <div className="text-center mb-6">
-                    <h2 className="mb-2">Create an account</h2>
-                    <p>Join YanCarz to manage your agency</p>
+                    <h2 className="mb-2">{t('createAccount')}</h2>
+                    <p>{t('joinYanCarz')}</p>
                 </div>
 
                 <Alert type="error" message={globalError} />
 
                 <form onSubmit={handleSubmit}>
                     <InputField
-                        label="Agency Name"
+                        label={t('agencyName')}
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
@@ -168,7 +169,7 @@ const SignupPage = () => {
                         required
                     />
                     <InputField
-                        label="Email Address"
+                        label={t('email')}
                         name="email"
                         type="email"
                         value={formData.email}
@@ -178,16 +179,16 @@ const SignupPage = () => {
                         required
                     />
                     <SelectField
-                        label="City"
+                        label={t('city')}
                         name="idCity"
                         value={formData.idCity}
                         onChange={handleChange}
-                        options={citiesLoading ? [{ value: '', label: 'Loading cities...', disabled: true }] : cities}
+                        options={citiesLoading ? [{ value: '', label: t('loadingCities'), disabled: true }] : cities}
                         error={formErrors.idCity}
                         required
                     />
                     <InputField
-                        label="Phone Number"
+                        label={t('phoneNumber')}
                         name="phone"
                         type="tel"
                         value={formData.phone}
@@ -198,20 +199,20 @@ const SignupPage = () => {
                     />
                     <div className="flex gap-4">
                         <InputField
-                            label="First Name"
+                            label={t('firstName')}
                             name="firstName"
                             value={formData.firstName}
                             onChange={handleChange}
-                            placeholder="First Name"
+                            placeholder={t('firstName')}
                             error={formErrors.firstName}
                             required
                         />
                         <InputField
-                            label="Last Name"
+                            label={t('lastName')}
                             name="lastName"
                             value={formData.lastName}
                             onChange={handleChange}
-                            placeholder="Last Name"
+                            placeholder={t('lastName')}
                             error={formErrors.lastName}
                             required
                         />
@@ -219,15 +220,15 @@ const SignupPage = () => {
 
                     <div className="mt-6 mb-4">
                         <Button type="submit" fullWidth isLoading={loading}>
-                            Sign Up
+                            {t('signUp')}
                         </Button>
                     </div>
                 </form>
 
                 <div className="text-center mt-4">
                     <p style={{ fontSize: '0.875rem' }}>
-                        Already have an account?{' '}
-                        <Link to="/login">Log in</Link>
+                        {t('alreadyAccount')}{' '}
+                        <Link to="/login">{t('login')}</Link>
                     </p>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 .sidebar {
     position: fixed;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     height: 100vh;
     width: var(--sidebar-width);
     background: var(--sidebar-bg);
@@ -49,7 +49,7 @@
 /* Toggle button */
 .sidebar-toggle {
     position: absolute;
-    right: -14px;
+    inset-inline-end: -14px;
     top: 22px;
     width: 28px;
     height: 28px;
@@ -108,7 +108,7 @@
 .sidebar-link.active {
     background: var(--sidebar-active-bg);
     color: var(--primary);
-    border-left: 3px solid var(--sidebar-active-border);
+    border-inline-start: 3px solid var(--sidebar-active-border);
 }
 
 .sidebar-link__icon {

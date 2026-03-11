@@ -32,7 +32,7 @@ const InputField = ({
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className={`input-field ${error ? 'input-error animate-shake' : ''}`}
+                    className={`input-field ${isPassword ? 'has-toggle' : ''} ${error ? 'input-error animate-shake' : ''}`}
                     required={required}
                     {...props}
                 />

@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useSidebar } from '../context/SidebarContext';
 import { useAuth } from '../context/AuthContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import './Header.css';
 
 const Header = ({ onSearch, searchValue }) => {
     const { collapsed } = useSidebar();
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -41,7 +44,7 @@ const Header = ({ onSearch, searchValue }) => {
                 <Search size={16} className="topbar__search-icon" />
                 <input
                     type="text"
-                    placeholder="Rechercher..."
+                    placeholder={t('search')}
                     className="topbar__search-input"
                     value={searchValue}
                     onChange={e => onSearch && onSearch(e.target.value)}
@@ -49,10 +52,15 @@ const Header = ({ onSearch, searchValue }) => {
             </div>
 
             <div className="topbar__right">
-                {/* Agency name */}
-                <span className="topbar__agency">{user?.agencyName || 'YanCarz Agency'}</span>
+                {/* Language Switcher */}
+                <LanguageSwitcher />
+
                 {/* Notification Bell */}
-                <button className="topbar__icon-btn" title="Notifications">
+                <button 
+                    className="topbar__icon-btn" 
+                    title={t('notifications.title')}
+                    onClick={() => navigate('/notifications')}
+                >
                     <Bell size={20} />
                     <span className="topbar__badge">3</span>
                 </button>
@@ -78,14 +86,14 @@ const Header = ({ onSearch, searchValue }) => {
                     {dropdownOpen && (
                         <div className="topbar__dropdown">
                             <button className="topbar__dropdown-item" onClick={() => { setDropdownOpen(false); navigate('/profile'); }}>
-                                <User size={16} /> Profil
+                                <User size={16} /> {t('profile.title')}
                             </button>
-                            <button className="topbar__dropdown-item" onClick={() => setDropdownOpen(false)}>
-                                <Settings size={16} /> Paramètres
+                            <button className="topbar__dropdown-item" onClick={() => { setDropdownOpen(false); navigate('/settings'); }}>
+                                <Settings size={16} /> {t('settings.title')}
                             </button>
                             <hr className="topbar__dropdown-divider" />
                             <button className="topbar__dropdown-item danger" onClick={handleLogout}>
-                                <LogOut size={16} /> Déconnexion
+                                <LogOut size={16} /> {t('logout')}
                             </button>
                         </div>
                     )}

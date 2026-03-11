@@ -1,11 +1,13 @@
 import React from 'react';
 import { User, Mail, Shield, Key, Bell, Camera, ChevronRight, Activity, MapPin, Phone, LogOut } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/Button';
 import Card from '../components/Card';
 
 const ProfilePage = () => {
     const { user, logout } = useAuth();
+    const { t } = useTranslation();
 
     // Mock user details since auth context might just have { username, role }
     const profileUser = {
@@ -25,11 +27,11 @@ const ProfilePage = () => {
                     <div>
                         <div className="flex items-center gap-2 text-[10px] font-900 text-primary uppercase tracking-[0.25em] mb-2 px-3 py-1 bg-primary/5 rounded-full w-fit">
                             <Activity size={10} />
-                            <span>Votre Espace</span>
+                            <span>{t('profile.yourSpace')}</span>
                             <ChevronRight size={10} />
-                            <span>Profil Utilisateur</span>
+                            <span>{t('profile.userProfile')}</span>
                         </div>
-                        <h1 className="text-3xl lg:text-4xl font-900 text-main tracking-tighter uppercase leading-none">Mon Profil</h1>
+                        <h1 className="text-3xl lg:text-4xl font-900 text-main tracking-tighter uppercase leading-none">{t('profile.title')}</h1>
                     </div>
                 </div>
             </div>
@@ -46,7 +48,10 @@ const ProfilePage = () => {
                                         {profileUser.name.split(' ').map(n => n[0]).join('')}
                                     </span>
                                 </div>
-                                <button className="absolute bottom-0 right-0 p-2.5 bg-primary text-white rounded-xl shadow-lg hover:scale-110 transition-transform">
+                                <button 
+                                    className="absolute bottom-0 right-0 p-2.5 bg-primary text-white rounded-xl shadow-lg hover:scale-110 transition-transform"
+                                    title={t('profile.uploadPhoto') || 'Upload Photo'}
+                                >
                                     <Camera size={16} />
                                 </button>
                             </div>
@@ -58,9 +63,9 @@ const ProfilePage = () => {
 
                             <div className="flex flex-col gap-6 w-full text-left pt-6 border-t border-border/80">
                                 {[
-                                    { icon: <Mail size={18} />, label: 'Email Professionnel', value: profileUser.email },
-                                    { icon: <Phone size={18} />, label: 'Téléphone Mobile', value: profileUser.phone },
-                                    { icon: <MapPin size={18} />, label: 'Bureau', value: profileUser.location }
+                                    { icon: <Mail size={18} />, label: t('profile.professionalEmail'), value: profileUser.email },
+                                    { icon: <Phone size={18} />, label: t('profile.phone'), value: profileUser.phone },
+                                    { icon: <MapPin size={18} />, label: t('profile.office'), value: profileUser.location }
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-5 group transition-all">
                                         <div className="p-3.5 bg-accent text-primary rounded-2xl group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
@@ -82,35 +87,35 @@ const ProfilePage = () => {
                     {/* General Information Card */}
                     <div className="glass-panel p-10 shadow-xl border-none">
                         <h3 className="text-sm font-900 mb-8 flex items-center gap-3 text-main uppercase tracking-[0.2em] border-b border-border/50 pb-4">
-                            <User size={18} className="text-primary" /> Informations Personnelles
+                            <User size={18} className="text-primary" /> {t('profile.personalInfo')}
                         </h3>
 
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">Nom Complet</label>
+                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('profile.fullName')}</label>
                                     <input type="text" defaultValue={profileUser.name} className="select-input w-full font-800 text-main" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">Email</label>
+                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('email')}</label>
                                     <input type="email" defaultValue={profileUser.email} className="select-input w-full font-800 text-main" />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">Téléphone</label>
+                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('phoneNumber')}</label>
                                     <input type="text" defaultValue={profileUser.phone} className="select-input w-full font-800 text-main" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">Rôle Système</label>
+                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('profile.systemRole')}</label>
                                     <input type="text" defaultValue={profileUser.role} disabled className="select-input w-full font-800 text-main opacity-50 cursor-not-allowed bg-accent/30" />
                                 </div>
                             </div>
 
                             <div className="pt-6 flex justify-end">
                                 <Button className="px-8 py-3.5 font-900 text-[10px] tracking-[0.2em] uppercase shadow-lg">
-                                    SAUVEGARDER LES MODIFICATIONS
+                                    {t('profile.saveChanges')}
                                 </Button>
                             </div>
                         </div>
@@ -120,21 +125,21 @@ const ProfilePage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="glass-panel p-8 shadow-xl border-none">
                             <h3 className="text-sm font-900 mb-6 flex items-center gap-3 text-main uppercase tracking-[0.2em]">
-                                <Key size={18} className="text-primary" /> Mot de passe
+                                <Key size={18} className="text-primary" /> {t('profile.password')}
                             </h3>
-                            <p className="text-xs font-600 text-muted mb-6">Assurez-vous que votre compte utilise un mot de passe long et aléatoire.</p>
+                            <p className="text-xs font-600 text-muted mb-6">{t('profile.passwordHint')}</p>
                             <Button variant="outline" className="w-full py-3.5 border-2 border-primary font-black text-[10px] tracking-[0.2em] uppercase bg-white">
-                                CHANGER LE MOT DE PASSE
+                                {t('profile.changePassword')}
                             </Button>
                         </div>
 
                         <div className="glass-panel p-8 shadow-xl border-none">
                             <h3 className="text-sm font-900 mb-6 flex items-center gap-3 text-error uppercase tracking-[0.2em]">
-                                <LogOut size={18} /> Déconnexion
+                                <LogOut size={18} /> {t('profile.signOut')}
                             </h3>
-                            <p className="text-xs font-600 text-muted mb-6">Mettez fin à votre session active sur cet appareil en toute sécurité.</p>
+                            <p className="text-xs font-600 text-muted mb-6">{t('profile.signOutHint')}</p>
                             <Button onClick={logout} className="w-full py-3.5 bg-error text-white font-black text-[10px] tracking-[0.2em] uppercase shadow-lg shadow-error/20 hover:bg-red-600 transition-all border-none">
-                                SE DÉCONNECTER
+                                {t('profile.disconnectBtn')}
                             </Button>
                         </div>
                     </div>

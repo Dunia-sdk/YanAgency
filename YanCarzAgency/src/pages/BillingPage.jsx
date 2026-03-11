@@ -1,33 +1,39 @@
 import React, { useState, useMemo } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
-import { Receipt, FileText, AlertCircle, CheckCircle2, Clock, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Receipt, FileText, AlertCircle, Clock } from 'lucide-react';
 import Table from '../components/Table';
 import Card from '../components/Card';
 import { invoices as initialInvoices } from '../services/mockData';
 
-const STATUS_LABELS = { paid: 'Payée', pending: 'En attente', overdue: 'Retard' };
-
-const COLUMNS = [
-    { key: 'ref', label: 'Référence', width: '15%' },
-    { key: 'client', label: 'Client', width: '25%' },
-    { key: 'amount', label: 'Montant', width: '15%', render: v => <span style={{ fontWeight: 600 }}>{v} MAD</span> },
-    { key: 'date', label: 'Date', width: '15%' },
-    { key: 'status', label: 'Statut', width: '15%', render: v => <span className={`badge badge-${v}`}>{STATUS_LABELS[v] || v}</span> },
-    {
-        key: '__actions', label: 'Actions', width: '15%',
-        render: (_, row) => (
-            <div className="flex gap-2">
-                <Link to={`/billing/${row.id}`} className="action-btn" title="Voir facture" style={{ backgroundColor: 'var(--bg-accent)', color: 'var(--text-main)', display: 'inline-flex', alignItems: 'center' }}>
-                    <FileText size={13} />
-                </Link>
-            </div>
-        )
-    },
-];
-
 const BillingPage = () => {
+    const { t } = useTranslation();
     const { searchQuery = '' } = useOutletContext() || {};
     const [invoices] = useState(initialInvoices);
+
+    const STATUS_LABELS = {
+        paid: t('billing.statusPaid'),
+        pending: t('billing.statusPending'),
+        overdue: t('billing.statusOverdue'),
+    };
+
+    const COLUMNS = [
+        { key: 'ref', label: t('billing.reference'), width: '15%' },
+        { key: 'client', label: t('client'), width: '25%' },
+        { key: 'amount', label: t('billing.amount'), width: '15%', render: v => <span style={{ fontWeight: 600 }}>{v} MAD</span> },
+        { key: 'date', label: t('billing.date'), width: '15%' },
+        { key: 'status', label: t('status'), width: '15%', render: v => <span className={`badge badge-${v}`}>{STATUS_LABELS[v] || v}</span> },
+        {
+            key: '__actions', label: t('actions'), width: '15%',
+            render: (_, row) => (
+                <div className="flex gap-2">
+                    <Link to={`/billing/${row.id}`} className="action-btn" title={t('billing.viewInvoice')} style={{ backgroundColor: 'var(--bg-accent)', color: 'var(--text-main)', display: 'inline-flex', alignItems: 'center' }}>
+                        <FileText size={13} />
+                    </Link>
+                </div>
+            )
+        },
+    ];
 
     const filtered = useMemo(() => {
         return invoices.filter(inv => {
@@ -48,23 +54,23 @@ const BillingPage = () => {
         <div style={{ animation: 'slideUpFade 0.4s ease' }}>
             <div className="page-header">
                 <div>
-                    <h1 className="page-title">Facturation</h1>
-                    <p className="page-subtitle">Gestion de {filtered.length} facture(s) agence</p>
+                    <h1 className="page-title">{t('billing.title')}</h1>
+                    <p className="page-subtitle">{t('billing.subtitle', { count: filtered.length })}</p>
                 </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-                <Card title="Total Facturé" icon={<Receipt size={20} color="var(--primary)" />}>
+                <Card title={t('billing.totalBilled')} icon={<Receipt size={20} color="var(--primary)" />}>
                     <div style={{ fontSize: '1.5rem', fontWeight: 700, marginTop: '0.5rem' }}>{stats.total.toLocaleString()} MAD</div>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Montant cumulé des factures</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('billing.cumulativeAmount')}</p>
                 </Card>
-                <Card title="Revenue en attente" icon={<Clock size={20} color="#f59e0b" />}>
+                <Card title={t('billing.pendingRevenue')} icon={<Clock size={20} color="#f59e0b" />}>
                     <div style={{ fontSize: '1.5rem', fontWeight: 700, marginTop: '0.5rem', color: '#f59e0b' }}>{stats.pending.toLocaleString()} MAD</div>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Factures non réglées</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('billing.unpaidInvoices')}</p>
                 </Card>
-                <Card title="Factures en retard" icon={<AlertCircle size={20} color="#ef4444" />}>
+                <Card title={t('billing.overdueInvoices')} icon={<AlertCircle size={20} color="#ef4444" />}>
                     <div style={{ fontSize: '1.5rem', fontWeight: 700, marginTop: '0.5rem', color: '#ef4444' }}>{stats.overdueCount}</div>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Action requise immédiate</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('billing.immediateAction')}</p>
                 </Card>
             </div>
 
@@ -72,7 +78,7 @@ const BillingPage = () => {
                 <Table
                     columns={COLUMNS}
                     data={filtered}
-                    emptyMessage="Aucune facture trouvée"
+                    emptyMessage={t('billing.noResults')}
                 />
             </div>
         </div>

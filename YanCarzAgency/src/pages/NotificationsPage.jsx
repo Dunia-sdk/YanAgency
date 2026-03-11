@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Bell, CheckCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { CheckCheck } from 'lucide-react';
 
 const NOTIFS = [
-    { id: 1, type: 'reservation', message: 'Nouvelle réservation RES-009 de Alice Moreau', time: 'Il y a 5 min', read: false },
-    { id: 2, type: 'vehicle', message: 'Toyota Corolla en maintenance programmée', time: 'Il y a 1h', read: false },
-    { id: 3, type: 'payment', message: 'Paiement de 475 MAD reçu pour RES-007', time: 'Il y a 2h', read: false },
-    { id: 4, type: 'team', message: 'Marc Tessier a rejoint l\'équipe', time: 'Hier', read: true },
-    { id: 5, type: 'reservation', message: 'Réservation RES-004 annulée par David Martin', time: 'Hier', read: true },
+    { id: 1, type: 'reservation', msgKey: 'n1', time: '5min', read: false },
+    { id: 2, type: 'vehicle', msgKey: 'n2', time: '1h', read: false },
+    { id: 3, type: 'payment', msgKey: 'n3', time: '2h', read: false },
+    { id: 4, type: 'team', msgKey: 'n4', time: 'yesterday', read: true },
+    { id: 5, type: 'reservation', msgKey: 'n5', time: 'yesterday', read: true },
 ];
 
 const TYPE_ICON = {
@@ -14,6 +15,7 @@ const TYPE_ICON = {
 };
 
 const NotificationsPage = () => {
+    const { t } = useTranslation();
     const [notifs, setNotifs] = useState(NOTIFS);
     const unread = notifs.filter(n => !n.read).length;
 
@@ -24,12 +26,12 @@ const NotificationsPage = () => {
         <div style={{ animation: 'slideUpFade 0.4s ease' }}>
             <div className="page-header">
                 <div>
-                    <h1 className="page-title">Notifications</h1>
-                    <p className="page-subtitle">{unread} notification(s) non lue(s)</p>
+                    <h1 className="page-title">{t('notifications.title')}</h1>
+                    <p className="page-subtitle">{t('notifications.subtitle', { count: unread })}</p>
                 </div>
                 {unread > 0 && (
                     <button className="action-btn success flex items-center gap-2" onClick={markAllRead}>
-                        <CheckCheck size={15} /> Tout marquer comme lu
+                        <CheckCheck size={15} /> {t('notifications.markAllRead')}
                     </button>
                 )}
             </div>
@@ -46,8 +48,8 @@ const NotificationsPage = () => {
                     }}>
                         <div style={{ fontSize: '1.5rem', lineHeight: 1 }}>{TYPE_ICON[n.type]}</div>
                         <div style={{ flex: 1 }}>
-                            <p style={{ margin: 0, color: 'var(--text-main)', fontWeight: n.read ? 400 : 600, fontSize: '0.9rem' }}>{n.message}</p>
-                            <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>{n.time}</p>
+                            <p style={{ margin: 0, color: 'var(--text-main)', fontWeight: n.read ? 400 : 600, fontSize: '0.9rem' }}>{t(`notifications.messages.${n.msgKey}`)}</p>
+                            <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t(`notifications.times.${n.time}`)}</p>
                         </div>
                         {!n.read && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--primary)', marginTop: 4, flexShrink: 0 }} />}
                     </div>
@@ -58,3 +60,4 @@ const NotificationsPage = () => {
 };
 
 export default NotificationsPage;
+

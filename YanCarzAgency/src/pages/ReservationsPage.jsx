@@ -1,69 +1,88 @@
 import React, { useState, useMemo } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { ChevronDown, Eye } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { ChevronDown } from 'lucide-react';
 import Table from '../components/Table';
 import { reservations as initialReservations } from '../services/mockData';
 
-const STATUS_OPTS = ['Tous', 'pending', 'confirmed', 'completed', 'cancelled'];
-const STATUS_LABELS = { pending: 'En attente', confirmed: 'Confirmé', completed: 'Terminé', cancelled: 'Annulé' };
-const STATUS_ACTIONS = {
-    pending: ['Détails', 'Confirmer', 'Annuler'],
-    confirmed: ['Détails', 'Terminer', 'Annuler'],
-    completed: ['Détails'],
-    cancelled: ['Détails'],
-};
-
 const ReservationsPage = () => {
+    const { t } = useTranslation();
     const { searchQuery = '' } = useOutletContext() || {};
     const navigate = useNavigate();
     const [reservations, setReservations] = useState(initialReservations);
-    const [statusFilter, setStatusFilter] = useState('Tous');
+    const [statusFilter, setStatusFilter] = useState('all');
     const [openDropdown, setOpenDropdown] = useState(null);
+
+    const STATUS_OPTS = [
+        { value: 'all', label: t('all') },
+        { value: 'pending', label: t('reservations.statusPending') },
+        { value: 'confirmed', label: t('reservations.statusConfirmed') },
+        { value: 'completed', label: t('reservations.statusCompleted') },
+        { value: 'cancelled', label: t('reservations.statusCancelled') },
+    ];
+
+    const STATUS_LABELS = {
+        pending: t('reservations.statusPending'),
+        confirmed: t('reservations.statusConfirmed'),
+        completed: t('reservations.statusCompleted'),
+        cancelled: t('reservations.statusCancelled'),
+    };
+
+    const ACTION_KEYS = {
+        pending: ['actionDetails', 'actionConfirm', 'actionCancel'],
+        confirmed: ['actionDetails', 'actionComplete', 'actionCancel'],
+        completed: ['actionDetails'],
+        cancelled: ['actionDetails'],
+    };
 
     const filtered = useMemo(() => {
         return reservations.filter(r => {
-            const matchFilter = statusFilter === 'Tous' || r.status === statusFilter;
+            const matchFilter = statusFilter === 'all' || r.status === statusFilter;
             const matchSearch = `${r.client} ${r.vehicle} ${r.id}`.toLowerCase().includes(searchQuery.toLowerCase());
             return matchFilter && matchSearch;
         });
     }, [reservations, statusFilter, searchQuery]);
 
-    const applyAction = (id, action) => {
-        if (action === 'Détails') {
+    const applyAction = (id, actionKey) => {
+        if (actionKey === 'actionDetails') {
             navigate(`/reservations/${id}`);
             return;
         }
-        const map = { 'Confirmer': 'confirmed', 'Annuler': 'cancelled', 'Terminer': 'completed' };
-        setReservations(prev => prev.map(r => r.id === id ? { ...r, status: map[action] } : r));
+        const map = {
+            actionConfirm: 'confirmed',
+            actionCancel: 'cancelled',
+            actionComplete: 'completed',
+        };
+        setReservations(prev => prev.map(r => r.id === id ? { ...r, status: map[actionKey] } : r));
         setOpenDropdown(null);
     };
 
     const columns = [
-        { key: 'id', label: 'Référence', width: '12%' },
-        { key: 'client', label: 'Client', width: '18%' },
-        { key: 'vehicle', label: 'Véhicule', width: '18%' },
-        { key: 'startDate', label: 'Début', width: '12%' },
-        { key: 'endDate', label: 'Fin', width: '12%' },
-        { key: 'total', label: 'Total', width: '10%', render: v => `${v} MAD` },
-        { key: 'status', label: 'Statut', width: '12%', render: v => <span className={`badge badge-${v}`}>{STATUS_LABELS[v] || v}</span> },
+        { key: 'id', label: t('reservations.reference'), width: '12%' },
+        { key: 'client', label: t('client'), width: '18%' },
+        { key: 'vehicle', label: t('vehicle'), width: '18%' },
+        { key: 'startDate', label: t('reservations.startDate'), width: '12%' },
+        { key: 'endDate', label: t('reservations.endDate'), width: '12%' },
+        { key: 'total', label: t('total'), width: '10%', render: v => `${v} MAD` },
+        { key: 'status', label: t('status'), width: '12%', render: v => <span className={`badge badge-${v}`}>{STATUS_LABELS[v] || v}</span> },
         {
-            key: '__actions', label: 'Actions', width: '6%',
+            key: '__actions', label: t('actions'), width: '6%',
             render: (_, row) => {
-                const actions = STATUS_ACTIONS[row.status] || [];
+                const actionKeys = ACTION_KEYS[row.status] || [];
                 return (
                     <div style={{ position: 'relative' }}>
                         <button
                             className="action-btn flex items-center gap-1"
                             onClick={e => { e.stopPropagation(); setOpenDropdown(prev => prev === row.id ? null : row.id); }}
                         >
-                            Actions <ChevronDown size={12} />
+                            {t('actions')} <ChevronDown size={12} />
                         </button>
                         {openDropdown === row.id && (
-                            <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: '0 8px 20px rgba(0,0,0,0.1)', zIndex: 99, minWidth: 140, overflow: 'hidden' }}>
-                                {actions.map(a => (
-                                    <button key={a} className="topbar__dropdown-item" onClick={e => { e.stopPropagation(); applyAction(row.id, a); }}
-                                        style={{ padding: '0.65rem 1rem', color: a === 'Annuler' ? 'var(--error)' : 'inherit' }}>
-                                        {a}
+                            <div style={{ position: 'absolute', insetInlineEnd: 0, top: '110%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: '0 8px 20px rgba(0,0,0,0.1)', zIndex: 99, minWidth: 140, overflow: 'hidden' }}>
+                                {actionKeys.map(key => (
+                                    <button key={key} className="topbar__dropdown-item" onClick={e => { e.stopPropagation(); applyAction(row.id, key); }}
+                                        style={{ padding: '0.65rem 1rem', color: key === 'actionCancel' ? 'var(--error)' : 'inherit' }}>
+                                        {t(`reservations.${key}`)}
                                     </button>
                                 ))}
                             </div>
@@ -78,23 +97,23 @@ const ReservationsPage = () => {
         <div style={{ animation: 'slideUpFade 0.4s ease' }}>
             <div className="page-header">
                 <div>
-                    <h1 className="page-title">Réservations</h1>
-                    <p className="page-subtitle">{filtered.length} réservation(s)</p>
+                    <h1 className="page-title">{t('reservations.title')}</h1>
+                    <p className="page-subtitle">{t('reservations.subtitle', { count: filtered.length })}</p>
                 </div>
             </div>
 
             <div className="filter-bar">
-                <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>Filtrer par statut :</span>
+                <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>{t('reservations.filterByStatus')}</span>
                 {STATUS_OPTS.map(s => (
-                    <button key={s} onClick={() => setStatusFilter(s)}
+                    <button key={s.value} onClick={() => setStatusFilter(s.value)}
                         className="action-btn"
-                        style={{ background: statusFilter === s ? 'var(--primary)' : undefined, color: statusFilter === s ? '#fff' : undefined, borderColor: statusFilter === s ? 'var(--primary)' : undefined }}>
-                        {STATUS_LABELS[s] || s}
+                        style={{ background: statusFilter === s.value ? 'var(--primary)' : undefined, color: statusFilter === s.value ? '#fff' : undefined, borderColor: statusFilter === s.value ? 'var(--primary)' : undefined }}>
+                        {s.label}
                     </button>
                 ))}
             </div>
 
-            <Table columns={columns} data={filtered} emptyMessage="Aucune réservation trouvée" />
+            <Table columns={columns} data={filtered} emptyMessage={t('reservations.noResults')} />
         </div>
     );
 };

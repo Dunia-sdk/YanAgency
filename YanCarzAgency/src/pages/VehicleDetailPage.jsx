@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Car, Fuel, Settings, Calendar, Shield, MapPin, Tag, CheckCircle2, AlertCircle, Sparkles, ChevronRight, Info, Zap, Gauge, Star } from 'lucide-react';
 import Button from '../components/Button';
 import { vehicles } from '../services/mockData';
@@ -7,6 +8,7 @@ import { vehicles } from '../services/mockData';
 const VehicleDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const vehicle = vehicles.find(v => v.id === parseInt(id));
     const reservationCount = vehicle?.nbReservation ?? '—';
 
@@ -16,8 +18,8 @@ const VehicleDetailPage = () => {
                 <div className="p-4 bg-error-bg text-error rounded-full mb-4">
                     <AlertCircle size={32} />
                 </div>
-                <p className="text-muted mb-4 font-700 uppercase tracking-widest text-xs">Véhicule Introuvable</p>
-                <Button onClick={() => navigate('/vehicles')}>Retour à la flotte</Button>
+                <p className="text-muted mb-4 font-700 uppercase tracking-widest text-xs">{t('vehicleDetails.notFound')}</p>
+                <Button onClick={() => navigate('/vehicles')}>{t('vehicleDetails.backToFleet')}</Button>
             </div>
         );
     }
@@ -36,9 +38,9 @@ const VehicleDetailPage = () => {
                     <div>
                         <div className="flex items-center gap-2 text-[10px] font-800 text-primary uppercase tracking-[0.2em] mb-2 px-3 py-1 bg-primary/5 rounded-full w-fit">
                             <Sparkles size={10} fill="currentColor" />
-                            <span>Flotte Véhicules</span>
+                            <span>{t('vehicleDetails.fleet')}</span>
                             <ChevronRight size={10} className="text-muted" />
-                            <span>{vehicle.category}</span>
+                            <span>{t(`vehicles.categories.${vehicles.categories?.indexOf(vehicle.category) ?? -1}`, vehicle.category)}</span>
                         </div>
                         <h1 className="text-3xl md:text-4xl font-900 text-main tracking-tight uppercase">
                             {vehicle.brand} <span className="text-primary">{vehicle.model}</span>
@@ -51,7 +53,7 @@ const VehicleDetailPage = () => {
                             'bg-amber-50 text-amber-600 border border-amber-100'
                         }`}>
                         <div className={`w-2 h-2 rounded-full ${vehicle.status === 'available' ? 'bg-success' : vehicle.status === 'rented' ? 'bg-blue-500' : 'bg-amber-500'}`} />
-                        {vehicle.status === 'available' ? 'Disponible Immédiatement' : vehicle.status === 'rented' ? 'En Location' : 'En Maintenance'}
+                        {vehicle.status === 'available' ? t('vehicleDetails.statusAvailableDetail') : vehicle.status === 'rented' ? t('vehicleDetails.statusRentedDetail') : t('vehicleDetails.statusMaintenanceDetail')}
                     </div>
                 </div>
             </div>
@@ -69,12 +71,12 @@ const VehicleDetailPage = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
                             <div className="absolute bottom-8 left-8 text-white">
-                                <p className="text-[10px] font-900 uppercase tracking-[0.3em] mb-2 opacity-80">Design & Performance</p>
-                                <h2 className="text-4xl font-900 tracking-tighter uppercase">{vehicle.brand} {vehicle.model} <span className="text-primary-light">Edition 2023</span></h2>
+                                <p className="text-[10px] font-900 uppercase tracking-[0.3em] mb-2 opacity-80">{t('vehicleDetails.designPerformance')}</p>
+                                <h2 className="text-4xl font-900 tracking-tighter uppercase">{vehicle.brand} {vehicle.model} <span className="text-primary-light">{t('vehicleDetails.edition')} {vehicle.year}</span></h2>
                             </div>
                             <div className="absolute top-8 right-8 bg-white/90 backdrop-blur-md px-6 py-4 rounded-[20px] shadow-2xl border border-white/50 text-center flex flex-col items-center">
-                                <span className="text-[10px] font-800 text-muted uppercase tracking-widest mb-1">Prix Journalier</span>
-                                <p className="text-3xl font-900 text-primary tracking-tighter">{vehicle.price} <span className="text-xs">MAD</span></p>
+                                <span className="text-[10px] font-800 text-muted uppercase tracking-widest mb-1">{t('vehicleDetails.dailyPrice')}</span>
+                                <p className="text-3xl font-900 text-primary tracking-tighter">{vehicle.price} <span className="text-xs">{t('vehicleDetails.currency')}</span></p>
                             </div>
                         </div>
                     </div>
@@ -82,10 +84,10 @@ const VehicleDetailPage = () => {
                     {/* Features Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {[
-                            { icon: <Gauge size={24} />, label: 'Kilométrage', value: `${vehicle.mileage.toLocaleString()} KM`, color: 'text-blue-600', bg: 'bg-blue-50' },
-                            { icon: <Fuel size={24} />, label: 'Carburant', value: vehicle.fuel, color: 'text-amber-600', bg: 'bg-amber-50' },
-                            { icon: <Settings size={24} />, label: 'Boîte', value: vehicle.transmission, color: 'text-purple-600', bg: 'bg-purple-50' },
-                            { icon: <Zap size={24} />, label: 'Catégorie', value: vehicle.category, color: 'text-primary', bg: 'bg-primary/5' }
+                            { icon: <Gauge size={24} />, label: t('vehicleDetails.mileage'), value: `${vehicle.mileage.toLocaleString()} KM`, color: 'text-blue-600', bg: 'bg-blue-50' },
+                            { icon: <Fuel size={24} />, label: t('vehicleDetails.fuel'), value: t(`vehicles.fuels.${['Petrol', 'Diesel', 'Hybrid', 'Electric'].indexOf(vehicle.fuel) + 1}`, vehicle.fuel), color: 'text-amber-600', bg: 'bg-amber-50' },
+                            { icon: <Settings size={24} />, label: t('vehicleDetails.transmission'), value: t(`vehicles.transmissions.${['Auto', 'Manual'].indexOf(vehicle.transmission) + 1}`, vehicle.transmission), color: 'text-purple-600', bg: 'bg-purple-50' },
+                            { icon: <Zap size={24} />, label: t('vehicleDetails.category'), value: t(`vehicles.categories.${['Sedan', 'Compact', 'SUV', 'Premium'].indexOf(vehicle.category) + 1}`, vehicle.category), color: 'text-primary', bg: 'bg-primary/5' }
                         ].map((spec, i) => (
                             <div key={i} className={`glass-panel p-6 flex flex-col items-center text-center gap-3 hover:shadow-lg transition-all border-none ${spec.bg}`}>
                                 <div className={`${spec.color} p-3 rounded-2xl bg-white shadow-inner`}>
@@ -106,19 +108,19 @@ const VehicleDetailPage = () => {
                                 <div className="p-3 bg-primary/5 text-primary rounded-2xl">
                                     <Info size={24} />
                                 </div>
-                                <h3 className="text-xl font-900 uppercase tracking-tighter text-main">Détails de Configuration</h3>
+                                <h3 className="text-xl font-900 uppercase tracking-tighter text-main">{t('vehicleDetails.configDetails')}</h3>
                             </div>
-                            <Button variant="outline" size="sm" className="font-800 text-[10px] tracking-widest">RAPPORT TECHNIQUE</Button>
+                            <Button variant="outline" size="sm" className="font-800 text-[10px] tracking-widest">{t('vehicleDetails.techReport')}</Button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                             {[
-                                { label: 'Nombre de Portes', value: '5 Portes' },
-                                { label: 'Places Assises', value: '5 Adultes' },
-                                { label: 'Volume Coffre', value: '380 Litres' },
-                                { label: 'Motorisation', value: '1.6 L Turbo' },
-                                { label: 'Année de Mise en Circulation', value: '2023' },
-                                { label: 'Dernière Révision', value: 'Mars 2024' }
+                                { label: t('vehicleDetails.doors'), value: t('vehicleDetails.doorsValue') },
+                                { label: t('vehicleDetails.seats'), value: t('vehicleDetails.seatsValue') },
+                                { label: t('vehicleDetails.trunkVol'), value: t('vehicleDetails.trunkVolValue') },
+                                { label: t('vehicleDetails.engine'), value: t('vehicleDetails.engineValue') },
+                                { label: t('vehicleDetails.yearOfCirculation'), value: vehicle.year },
+                                { label: t('vehicleDetails.lastService'), value: t('vehicleDetails.lastServiceValue', 'Mars 2024') }
                             ].map((item, i) => (
                                 <div key={i} className="flex justify-between items-center py-3 border-b border-accent">
                                     <span className="text-[10px] font-800 text-muted uppercase tracking-widest">{item.label}</span>
@@ -139,35 +141,35 @@ const VehicleDetailPage = () => {
                         <div className="relative z-10 flex flex-col gap-8">
                             <div>
                                 <h3 className="text-lg font-900 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                    <Star size={20} className="text-primary" fill="currentColor" /> Premium Status
+                                    <Star size={20} className="text-primary" fill="currentColor" /> {t('vehicleDetails.premiumStatus')}
                                 </h3>
                                 <p className="text-black/60 text-xs font-500 leading-relaxed">
-                                    Ce véhicule appartient à notre gamme supérieure. Disponible pour des locations de courte et longue durée.
+                                    {t('vehicleDetails.premiumDesc')}
                                 </p>
                             </div>
 
                             <div className="flex flex-col gap-4">
                                 <Button className="w-full h-14 bg-primary text-white font-900 uppercase tracking-[0.2em] shadow-lg border-none hover:bg-primary-hover">
-                                    CRÉER UNE RÉSERVATION
+                                    {t('vehicleDetails.createReservation')}
                                 </Button>
                                 <Button variant="outline" className="w-full h-14 border-white/20 text-white font-800 uppercase tracking-[0.2em] hover:bg-white/10">
-                                    MODIFIER LES DÉTAILS
+                                    {t('vehicleDetails.editDetails')}
                                 </Button>
                             </div>
 
                             <div className="pt-6 border-t border-white/10 flex items-center justify-between">
                                 <div className="text-center">
-                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">Km Initial</p>
+                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">{t('vehicleDetails.initialKm')}</p>
                                     <p className="text-lg font-900 tracking-tight">{vehicle.mileage - 200}</p>
                                 </div>
                                 <div className="w-px h-8 bg-white/10" />
                                 <div className="text-center">
-                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">Dernier Client</p>
+                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">{t('vehicleDetails.lastClient')}</p>
                                     <p className="text-lg font-900 tracking-tight">Marché J.</p>
                                 </div>
                                 <div className="w-px h-8 bg-white/10" />
                                 <div className="text-center">
-                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">Réservations</p>
+                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">{t('vehicleDetails.reservations')}</p>
                                     <p className="text-lg font-900 tracking-tight">
                                         {reservationCount}
                                     </p>
@@ -179,14 +181,14 @@ const VehicleDetailPage = () => {
                     {/* Inclusion & Safety Card */}
                     <div className="glass-panel p-8 space-y-8">
                         <h3 className="text-sm font-900 uppercase tracking-[0.2em] text-muted border-b border-border pb-4 flex items-center gap-2">
-                            <Shield size={16} className="text-primary" /> Sécurité & Services
+                            <Shield size={16} className="text-primary" /> {t('vehicleDetails.safetyServices')}
                         </h3>
                         <div className="space-y-6">
                             {[
-                                { title: 'Assurance Tous Risques', desc: 'Franchise réduite incluse', icon: <CheckCircle2 className="text-success" /> },
-                                { title: 'Assistance 24/7', desc: 'Dépannage partout au Maroc', icon: <CheckCircle2 className="text-success" /> },
-                                { title: 'Nettoyage Premium', desc: 'Effectué après chaque location', icon: <CheckCircle2 className="text-success" /> },
-                                { title: 'Wifi Embarqué', desc: 'Connexion 4G illimitée', icon: <CheckCircle2 className="text-success" /> }
+                                { title: t('vehicleDetails.insurance'), desc: t('vehicleDetails.insuranceDesc'), icon: <CheckCircle2 className="text-success" /> },
+                                { title: t('vehicleDetails.assistance'), desc: t('vehicleDetails.assistanceDesc'), icon: <CheckCircle2 className="text-success" /> },
+                                { title: t('vehicleDetails.cleaning'), desc: t('vehicleDetails.cleaningDesc'), icon: <CheckCircle2 className="text-success" /> },
+                                { title: t('vehicleDetails.wifi'), desc: t('vehicleDetails.wifiDesc'), icon: <CheckCircle2 className="text-success" /> }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-start gap-4">
                                     <div className="mt-1">{item.icon}</div>
@@ -198,9 +200,9 @@ const VehicleDetailPage = () => {
                             ))}
                         </div>
                         <div className="p-5 bg-accent rounded-[20px] border border-border/50 text-center">
-                            <p className="text-[10px] font-800 text-muted uppercase tracking-widest mb-1">Localisation Actuelle</p>
+                            <p className="text-[10px] font-800 text-muted uppercase tracking-widest mb-1">{t('vehicleDetails.currentLocation')}</p>
                             <div className="flex items-center justify-center gap-2 text-main font-900">
-                                <MapPin size={14} className="text-primary" /> Agence Casablanca Anfa
+                                <MapPin size={14} className="text-primary" /> {t('vehicleDetails.agencyLocation')}
                             </div>
                         </div>
                     </div>

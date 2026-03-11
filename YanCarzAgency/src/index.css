@@ -261,13 +261,13 @@ a:hover {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: var(--sidebar-width);
-  transition: margin-left 0.3s ease;
+  margin-inline-start: var(--sidebar-width);
+  transition: margin-inline-start 0.3s ease;
   min-width: 0;
 }
 
 .dashboard-main.collapsed {
-  margin-left: var(--sidebar-collapsed-width);
+  margin-inline-start: var(--sidebar-collapsed-width);
 }
 
 .dashboard-content {
@@ -451,7 +451,7 @@ a:hover {
 
 @media (max-width: 768px) {
   .dashboard-main {
-    margin-left: var(--sidebar-collapsed-width);
+    margin-inline-start: var(--sidebar-collapsed-width);
   }
 
   .dashboard-content {
@@ -467,4 +467,89 @@ a:hover {
   .kpi-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================
+   LANGUAGE SWITCHER
+   ============================================ */
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--bg-color);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.2rem 0.3rem;
+}
+
+.lang-btn {
+  padding: 0.2rem 0.6rem;
+  border: none;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.lang-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary-hover);
+}
+
+.lang-btn--active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.lang-btn--active:hover {
+  background: var(--primary-hover);
+  color: #ffffff;
+}
+
+/* ============================================
+   AUTH PAGE — Language switcher (logical position)
+   ============================================ */
+.auth-lang-switcher {
+  position: absolute;
+  top: 1rem;
+  inset-inline-end: 1rem;
+  z-index: 10;
+}
+
+/* ============================================
+   RTL SUPPORT (Arabic)
+   ============================================ */
+
+/* Arabic font stack — prefer Noto Sans Arabic for best rendering */
+[dir="rtl"] body {
+  font-family: 'Noto Sans Arabic', 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Logo row — no need to reverse; logical gap handles it */
+[dir="rtl"] .logo-container {
+  flex-direction: row-reverse;
+}
+
+/* Page header flex row stays the same — space-between already works */
+
+/* Filter bar — keep wrap order natural in RTL */
+[dir="rtl"] .filter-bar {
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+}
+
+/* Badge positioning inside the notification bell */
+[dir="rtl"] .topbar__badge {
+  inset-inline-end: -4px;
+  left: auto;
+}
+
+/* Dropdown items text alignment */
+[dir="rtl"] .topbar__dropdown-item {
+  flex-direction: row-reverse;
 }

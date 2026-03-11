@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     LayoutDashboard, Car, CalendarCheck, Users, Receipt, CreditCard,
     Bell, BarChart3, UserCog, Settings, LogOut, ChevronLeft, ChevronRight
@@ -9,16 +10,16 @@ import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
 const NAV_ITEMS = [
-    { to: '/dashboard', label: 'Tableau de bord', Icon: LayoutDashboard },
-    { to: '/vehicles', label: 'Véhicules', Icon: Car },
-    { to: '/reservations', label: 'Réservations', Icon: CalendarCheck },
-    { to: '/clients', label: 'Clients', Icon: Users },
-    { to: '/billing', label: 'Facturation', Icon: Receipt },
-    { to: '/payments', label: 'Paiements', Icon: CreditCard },
-    { to: '/notifications', label: 'Notifications', Icon: Bell },
-    { to: '/reporting', label: 'Rapports', Icon: BarChart3 },
-    { to: '/team', label: 'Équipe', Icon: UserCog },
-    { to: '/settings', label: 'Paramètres', Icon: Settings },
+    { to: '/dashboard', key: 'nav.dashboard', Icon: LayoutDashboard },
+    { to: '/vehicles', key: 'nav.vehicles', Icon: Car },
+    { to: '/reservations', key: 'nav.reservations', Icon: CalendarCheck },
+    { to: '/clients', key: 'nav.clients', Icon: Users },
+    { to: '/billing', key: 'nav.billing', Icon: Receipt },
+    { to: '/payments', key: 'nav.payments', Icon: CreditCard },
+    { to: '/notifications', key: 'nav.notifications', Icon: Bell },
+    { to: '/reporting', key: 'nav.reporting', Icon: BarChart3 },
+    { to: '/team', key: 'nav.team', Icon: UserCog },
+    { to: '/settings', key: 'nav.settings', Icon: Settings },
 ];
 
 const YanCarzLogo = ({ collapsed }) => (
@@ -36,41 +37,51 @@ const YanCarzLogo = ({ collapsed }) => (
 const Sidebar = () => {
     const { collapsed, toggleSidebar } = useSidebar();
     const { logout } = useAuth();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
+    const isRtl = i18n.dir() === 'rtl';
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
+    // In RTL the sidebar is on the right, so collapse/expand arrow direction is flipped
+    const CollapseIcon = collapsed
+        ? (isRtl ? ChevronLeft : ChevronRight)
+        : (isRtl ? ChevronRight : ChevronLeft);
+
     return (
         <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
             <YanCarzLogo collapsed={collapsed} />
 
-            <button className="sidebar-toggle" onClick={toggleSidebar} title={collapsed ? 'Expand' : 'Collapse'}>
-                {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            <button className="sidebar-toggle" onClick={toggleSidebar} title={collapsed ? t('nav.dashboard') : undefined}>
+                <CollapseIcon size={16} />
             </button>
 
             <nav className="sidebar-nav">
-                {NAV_ITEMS.map(({ to, label, Icon: NavIcon }) => (
-                    // eslint-disable-next-line no-unused-vars
+                {NAV_ITEMS.map(({ to, key, Icon: NavIcon }) => (
                     <NavLink
                         key={to}
                         to={to}
-                        title={collapsed ? label : undefined}
+                        title={collapsed ? t(key) : undefined}
                         className={({ isActive }) =>
                             `sidebar-link ${isActive ? 'active' : ''}`
                         }
                     >
                         <NavIcon size={20} className="sidebar-link__icon" />
-                        {!collapsed && <span className="sidebar-link__label">{label}</span>}
+                        {!collapsed && <span className="sidebar-link__label">{t(key)}</span>}
                     </NavLink>
                 ))}
             </nav>
 
-            <button className="sidebar-link sidebar-logout" onClick={handleLogout} title={collapsed ? 'Déconnexion' : undefined}>
+            <button
+                className="sidebar-link sidebar-logout"
+                onClick={handleLogout}
+                title={collapsed ? t('nav.logout') : undefined}
+            >
                 <LogOut size={20} className="sidebar-link__icon" />
-                {!collapsed && <span className="sidebar-link__label">Déconnexion</span>}
+                {!collapsed && <span className="sidebar-link__label">{t('nav.logout')}</span>}
             </button>
         </aside>
     );
