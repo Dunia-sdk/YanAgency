@@ -26,7 +26,8 @@ export const AuthProvider = ({ children }) => {
                         agencyName: decoded.agencyName || localStorage.getItem('agencyName') || 'YanCarz Agency',
                         firstName: decoded.firstName || localStorage.getItem('firstName'),
                         lastName: decoded.lastName || localStorage.getItem('lastName'),
-                        role: decoded.role || 'Admin'
+                        role: decoded.role || 'Admin',
+                        isActive: decoded.isActive !== undefined ? decoded.isActive : localStorage.getItem('isActive') !== 'false'
                     });
                     setToken(storedToken);
                 } else {
@@ -53,7 +54,8 @@ export const AuthProvider = ({ children }) => {
                 agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
                 firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
                 lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
-                role: decoded.role || 'Admin'
+                role: decoded.role || 'Admin',
+                isActive: decoded.isActive !== undefined ? decoded.isActive : data.user?.isActive !== undefined ? data.user?.isActive : true
             };
             setUser(userData);
 
@@ -61,6 +63,7 @@ export const AuthProvider = ({ children }) => {
             if (userData.agencyName) localStorage.setItem('agencyName', userData.agencyName);
             if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
             if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
+            localStorage.setItem('isActive', userData.isActive);
 
             setToken(data.token);
             return data;
@@ -83,7 +86,8 @@ export const AuthProvider = ({ children }) => {
                 agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
                 firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
                 lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
-                role: decoded.role || 'Admin'
+                role: decoded.role || 'Admin',
+                isActive: decoded.isActive !== undefined ? decoded.isActive : data.user?.isActive !== undefined ? data.user?.isActive : false
             };
             setUser(userData);
 
@@ -91,6 +95,7 @@ export const AuthProvider = ({ children }) => {
             if (userData.agencyName) localStorage.setItem('agencyName', userData.agencyName);
             if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
             if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
+            localStorage.setItem('isActive', userData.isActive);
 
             setToken(data.token);
             return data;

@@ -58,7 +58,8 @@ const signup = async (formData) => {
             agencyName: formData.name,
             firstName: formData.firstName,
             lastName: formData.lastName,
-            role: 'Admin'
+            role: 'Admin',
+            isActive: false
         };
 
         // Create a minimal temporary token payload so jwtDecode doesn't crash
@@ -71,6 +72,7 @@ const signup = async (formData) => {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 role: 'Admin',
+                isActive: false,
                 exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // 24h
             })) + '.temp-signature';
 

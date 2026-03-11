@@ -23,24 +23,33 @@ const DashboardPage = () => {
     const location = useLocation();
     const { user } = useAuth();
     const isNewSignup = location.state?.newSignup;
+    const isNotActive = user?.isActive === false;
 
-    // Zero out stats for new signup, otherwise use mock data
-    const totalVehicles = isNewSignup ? 0 : vehicles.length;
-    const activeRes = isNewSignup ? 0 : reservations.filter(r => r.status === 'confirmed').length;
-    const monthlyRevenue = isNewSignup ? 0 : reservations.reduce((s, r) => s + r.total, 0);
-    const unreadMessages = isNewSignup ? 0 : 7;
-    const recentActivity = isNewSignup ? [] : reservations.slice(0, 5);
-    const currentRevenueData = isNewSignup ? [] : revenueData;
-    const currentVehicleStatusData = isNewSignup ? [] : vehicleStatusData;
+    // Zero out stats for inactive/new accounts, otherwise use mock data
+    const totalVehicles = isNotActive ? 0 : vehicles.length;
+    const activeRes = isNotActive ? 0 : reservations.filter(r => r.status === 'confirmed').length;
+    const monthlyRevenue = isNotActive ? 0 : reservations.reduce((s, r) => s + r.total, 0);
+    const unreadMessages = isNotActive ? 0 : 7;
+    const recentActivity = isNotActive ? [] : reservations.slice(0, 5);
+    const currentRevenueData = isNotActive ? [] : revenueData;
+    const currentVehicleStatusData = isNotActive ? [] : vehicleStatusData;
 
     return (
         <div style={{ animation: 'slideUpFade 0.4s ease' }}>
-            {isNewSignup && (
-                <div style={{ marginBottom: '1.5rem' }}>
-                    <Alert
-                        type="success"
-                        message={`Bienvenue ${user?.firstName || ''} ${user?.lastName || ''} ! Vous êtes connecté avec succès. Vous recevrez bientôt un message dans votre email.`}
-                    />
+            {(isNewSignup || isNotActive) && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                    {isNewSignup && (
+                        <Alert
+                            type="success"
+                            message={`Bienvenue ${user?.firstName || ''} ${user?.lastName || ''} ! Vous êtes connecté avec succès. Vous recevrez bientôt un message dans votre email.`}
+                        />
+                    )}
+                    {isNotActive && (
+                        <Alert
+                            type="error"
+                            message="Votre compte n'est pas encore activé."
+                        />
+                    )}
                 </div>
             )}
             <div className="page-header">
