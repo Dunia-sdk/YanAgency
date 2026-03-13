@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
-import { UserPlus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { UserPlus, AlertCircle, Loader, Edit, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Table from '../components/Table';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
-import { teamMembers as initialTeam } from '../services/mockData';
+import { getAgencyUsers, addAgencyUser, updateAgencyUser, deleteAgencyUser } from '../services/agencyUserService';
+import { useAuth } from '../context/AuthContext';
 
 const TeamPage = () => {
     const { t } = useTranslation();
-    const [team, setTeam] = useState(initialTeam);
+    const { user } = useAuth();
+    const [team, setTeam] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [pageError, setPageError] = useState(null);
     const [modal, setModal] = useState(false);
-    const [form, setForm] = useState({ name: '', email: '', role: 'Staff', department: '' });
+    const [editingId, setEditingId] = useState(null);
+    const [form, setForm] = useState({ firstName: '', lastName: '', email: '', telephone: '', role: 'Staff', department: '', agencyId: '' });
     const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const fetchTeam = React.useCallback(async () => {
+        try {
+            setLoading(true);
+            const data = await getAgencyUsers();
+            setTeam(data);
+            setPageError(null);
+        } catch (err) {
+            setPageError(t('team.loadError') || 'Failed to load team members.');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    }, [t]);
+
+    useEffect(() => {
+        fetchTeam();
+    }, [fetchTeam]);
 
     const ROLES = ['Staff', 'Manager', 'Owner'];
 
@@ -28,17 +52,70 @@ const TeamPage = () => {
                 }}>{row.avatar}</div>
             )
         },
-        { key: 'name', label: t('team.columns.name'), width: '22%' },
-        { key: 'email', label: t('team.columns.email'), width: '24%' },
-        { key: 'department', label: t('team.columns.department'), width: '16%' },
+        { key: 'firstName', label: t('firstName') || 'First Name', width: '15%' },
+        { key: 'lastName', label: t('lastName') || 'Last Name', width: '15%' },
+        { key: 'email', label: t('email'), width: '22%' },
+        { key: 'telephone', label: t('telephone') || 'Telephone', width: '14%' },
         {
             key: 'role',
-            label: t('team.columns.role'),
-            width: '14%',
-            render: v => <span className={`badge badge-${v.toLowerCase()}`}>{t(`team.roles.${v.toLowerCase()}`)}</span>
+            label: t('role'),
+            width: '12%',
+            render: v => <span className={`badge badge-${v?.toLowerCase() || 'staff'}`}>{t(`team.roles.${v?.toLowerCase() || 'staff'}`)}</span>
         },
-        { key: 'joined', label: t('team.columns.joined'), width: '14%' },
+        { key: 'joined', label: t('joined'), width: '12%' },
+        {
+            key: 'actions',
+            label: '',
+            width: '10%',
+            render: (v, row) => (
+                <div className="flex justify-end gap-2">
+                    <Button variant="ghost" size="sm" onClick={() => handleOpenEdit(row)}>
+                        <Edit size={16} />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(row.id, row.firstName, row.lastName)} style={{ color: 'var(--danger, #ef4444)' }}>
+                        <Trash2 size={16} />
+                    </Button>
+                </div>
+            )
+        }
     ];
+
+    const handleDelete = async (userId, firstName, lastName) => {
+        if (!window.confirm(t('team.confirmDelete') || `Are you sure you want to delete ${firstName} ${lastName}?`)) return;
+        
+        try {
+            setLoading(true); // Optional: global loading state while deleting
+            await deleteAgencyUser(userId);
+            await fetchTeam(); // Refresh the list
+        } catch (err) {
+            console.error('Failed to delete user:', err);
+            setPageError(t('team.deleteError') || 'Failed to delete team member.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleOpenEdit = (user) => {
+        setEditingId(user.id);
+        setForm({
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            telephone: user.telephone || '',
+            role: user.role || 'Staff',
+            department: user.department || '',
+            agencyId: user.agencyId || ''
+        });
+        setErrors({});
+        setModal(true);
+    };
+
+    const handleOpenInvite = () => {
+        setEditingId(null);
+        setForm({ firstName: '', lastName: '', email: '', telephone: '', role: 'Staff', department: '' });
+        setErrors({});
+        setModal(true);
+    };
 
     const handleChange = e => {
         setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -47,22 +124,33 @@ const TeamPage = () => {
 
     const validate = () => {
         const errs = {};
-        if (!form.name.trim()) errs.name = t('team.nameError');
+        if (!form.firstName.trim()) errs.firstName = t('team.firstNameError') || 'First name is required';
+        if (!form.lastName.trim()) errs.lastName = t('team.lastNameError') || 'Last name is required';
         if (!form.email.trim()) errs.email = t('team.emailError');
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = t('team.emailInvalid');
         setErrors(errs);
         return Object.keys(errs).length === 0;
     };
 
-    const handleInvite = () => {
+    const handleInvite = async () => {
         if (!validate()) return;
-        const initials = form.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        setTeam(prev => [
-            ...prev,
-            { id: Date.now(), ...form, avatar: initials, joined: new Date().toISOString().slice(0, 10) }
-        ]);
-        setForm({ name: '', email: '', role: 'Staff', department: '' });
-        setModal(false);
+        try {
+            setIsSubmitting(true);
+            const currentAgencyId = user?.agencyId || localStorage.getItem('agencyId') || "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+            
+            if (editingId) {
+                await updateAgencyUser(editingId, form);
+            } else {
+                await addAgencyUser(form, currentAgencyId);
+            }
+            await fetchTeam(); // Refresh the list
+            setModal(false);
+        } catch (err) {
+            console.error('Failed to save user:', err);
+            setErrors({ submit: (editingId ? t('team.updateError') : t('team.addError')) || 'Failed to save team member. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -74,7 +162,7 @@ const TeamPage = () => {
                         {t('team.subtitle', { count: team.length })}
                     </p>
                 </div>
-                <Button onClick={() => setModal(true)}>
+                <Button onClick={handleOpenInvite}>
                     <div className="flex items-center gap-2"><UserPlus size={16} /> {t('team.inviteMember')}</div>
                 </Button>
             </div>
@@ -93,19 +181,58 @@ const TeamPage = () => {
                 })}
             </div>
 
-            <Table columns={COLUMNS} data={team} emptyMessage={t('team.noMembers')} />
+            {loading ? (
+                <div className="flex justify-center items-center p-12 glass-panel" style={{ borderRadius: 12 }}>
+                    <div className="flex flex-col items-center gap-4 text-gray-400">
+                        <Loader className="animate-spin text-primary" size={32} />
+                        <p>{t('team.loading') || 'Loading team members...'}</p>
+                    </div>
+                </div>
+            ) : pageError ? (
+                <div className="flex justify-center items-center p-12 glass-panel border border-red-500/30" style={{ borderRadius: 12, background: 'rgba(239, 68, 68, 0.05)' }}>
+                    <div className="flex flex-col items-center gap-3 text-red-500">
+                        <AlertCircle size={32} />
+                        <p>{pageError}</p>
+                        <Button variant="outline" onClick={() => window.location.reload()} style={{ marginTop: '1rem' }}>
+                            Try Again
+                        </Button>
+                    </div>
+                </div>
+            ) : (
+                <Table columns={COLUMNS} data={team} emptyMessage={t('team.noMembers')} />
+            )}
 
-            {/* Invite Modal */}
-            <Modal isOpen={modal} onClose={() => setModal(false)} title={t('team.inviteModal')} size="sm">
-                <InputField
-                    label={t('team.fullName')}
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder={t('team.fullName')}
-                    error={errors.name}
-                    required
-                />
+            {/* Invite / Edit Modal */}
+            <Modal isOpen={modal} onClose={() => setModal(false)} title={editingId ? (t('team.editModal') || 'Edit Team Member') : t('team.inviteModal')} size="sm">
+                {errors.submit && (
+                    <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md text-sm border border-red-200" style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)' }}>
+                        {errors.submit}
+                    </div>
+                )}
+                <div className="flex gap-4">
+                    <div style={{ flex: 1 }}>
+                        <InputField
+                            label={t('firstName') || 'First Name'}
+                            name="firstName"
+                            value={form.firstName}
+                            onChange={handleChange}
+                            placeholder={t('firstName') || 'First Name'}
+                            error={errors.firstName}
+                            required
+                        />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <InputField
+                            label={t('lastName') || 'Last Name'}
+                            name="lastName"
+                            value={form.lastName}
+                            onChange={handleChange}
+                            placeholder={t('lastName') || 'Last Name'}
+                            error={errors.lastName}
+                            required
+                        />
+                    </div>
+                </div>
                 <InputField
                     label={t('email')}
                     name="email"
@@ -116,14 +243,21 @@ const TeamPage = () => {
                     required
                 />
                 <InputField
-                    label={t('team.labels.department')}
+                    label={t('telephone') || 'Telephone'}
+                    name="telephone"
+                    value={form.telephone}
+                    onChange={handleChange}
+                    placeholder={t('telephone') || 'Phone Number'}
+                />
+                <InputField
+                    label={t('department')}
                     name="department"
                     value={form.department}
                     onChange={handleChange}
-                    placeholder={t('team.departmentPlaceholder')}
+                    placeholder={t('department')}
                 />
                 <div className="input-group">
-                    <label className="input-label">{t('team.labels.role')}</label>
+                    <label className="input-label">{t('role')}</label>
                     <select className="input-field" name="role" value={form.role} onChange={handleChange} style={{ padding: '0.75rem 1rem' }}>
                         {ROLES.map(r => (
                             <option key={r} value={r}>
@@ -133,8 +267,12 @@ const TeamPage = () => {
                     </select>
                 </div>
                 <div className="flex gap-2 mt-4">
-                    <Button onClick={handleInvite} fullWidth>{t('team.buttons.sendInvitation')}</Button>
-                    <Button variant="outline" onClick={() => setModal(false)} fullWidth>{t('team.buttons.cancel')}</Button>
+                    <Button onClick={handleInvite} fullWidth disabled={isSubmitting}>
+                        {isSubmitting ? (t('saving') || 'Saving...') : (editingId ? (t('saveChanges') || 'Save Changes') : (t('sendInvitation') || 'Send Invitation'))}
+                    </Button>
+                    <Button variant="outline" onClick={() => setModal(false)} fullWidth disabled={isSubmitting}>
+                        {t('cancel')}
+                    </Button>
                 </div>
             </Modal>
         </div>

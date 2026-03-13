@@ -47,10 +47,12 @@
     "all": "Tous",
     "name": "Nom",
     "phone": "Téléphone",
+    "telephone": "Téléphone",
     "address": "Adresse",
     "role": "Rôle",
     "department": "Département",
     "joinedOn": "Rejoint le",
+    "joined": "Rejoint le",
     "errors": {
         "nameRequired": "Le nom de l'agence est requis",
         "emailRequired": "L'email est requis",

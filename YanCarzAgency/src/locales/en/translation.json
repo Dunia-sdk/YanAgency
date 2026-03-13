@@ -47,10 +47,12 @@
     "all": "All",
     "name": "Name",
     "phone": "Phone",
+    "telephone": "Telephone",
     "address": "Address",
     "role": "Role",
     "department": "Department",
     "joinedOn": "Joined on",
+    "joined": "Joined",
     "errors": {
         "nameRequired": "Agency name is required",
         "emailRequired": "Email is required",

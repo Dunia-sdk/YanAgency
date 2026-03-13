@@ -47,10 +47,12 @@
     "all": "الكل",
     "name": "الاسم",
     "phone": "الهاتف",
+    "telephone": "الهاتف",
     "address": "العنوان",
     "role": "الدور",
     "department": "القسم",
     "joinedOn": "انضم في",
+    "joined": "تاريخ الانضمام",
     "errors": {
         "nameRequired": "اسم الوكالة مطلوب",
         "emailRequired": "البريد الإلكتروني مطلوب",
