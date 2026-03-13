@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import authService from '../api/services/authService';
+import authService from '../services/authService';
 import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
                     setUser({
                         email: decoded.email,
                         name: decoded.name,
+                        agencyId: decoded.agencyId || decoded.agency_id || localStorage.getItem('agencyId'),
                         agencyName: decoded.agencyName || localStorage.getItem('agencyName') || 'YanCarz Agency',
                         firstName: decoded.firstName || localStorage.getItem('firstName'),
                         lastName: decoded.lastName || localStorage.getItem('lastName'),
@@ -51,6 +52,7 @@ export const AuthProvider = ({ children }) => {
             const userData = {
                 email: decoded.email,
                 name: decoded.name,
+                agencyId: decoded.agencyId || decoded.agency_id || data.user?.agencyId || localStorage.getItem('agencyId'),
                 agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
                 firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
                 lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
@@ -60,6 +62,7 @@ export const AuthProvider = ({ children }) => {
             setUser(userData);
 
             localStorage.setItem('token', data.token);
+            if (userData.agencyId) localStorage.setItem('agencyId', userData.agencyId);
             if (userData.agencyName) localStorage.setItem('agencyName', userData.agencyName);
             if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
             if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
@@ -96,6 +99,7 @@ export const AuthProvider = ({ children }) => {
             if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
             if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
             localStorage.setItem('isActive', userData.isActive);
+            if (userData.agencyId) localStorage.setItem('agencyId', userData.agencyId);
 
             setToken(data.token);
             return data;

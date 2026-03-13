@@ -7,8 +7,8 @@ import SelectField from '../components/SelectField';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 import LanguageSwitcher from '../components/LanguageSwitcher';
-import api from '../api/services/api';
-import authService from '../api/services/authService';
+import api from '../services/api';
+import authService from '../services/authService';
 import { cities as mockCities } from '../services/mockData';
 
 const SignupPage = () => {

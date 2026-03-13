@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
@@ -6,13 +6,16 @@ import Table from '../components/Table';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
-import { vehicles as initialVehicles } from '../services/mockData';
+import { getVehicles, createVehicle, updateVehicle, deleteVehicle, mapApiToUi, mapUiToApi } from '../services/vehicleService';
+import { useAuth } from '../context/AuthContext';
+import Alert from '../components/Alert';
 
 const STATUS_VALUES = ['available', 'rented', 'maintenance'];
 
 const VehiclesPage = () => {
     const { t } = useTranslation();
     const { searchQuery = '' } = useOutletContext() || {};
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const CATEGORIES = t('vehicles.categories', { returnObjects: true });
@@ -25,15 +28,36 @@ const VehiclesPage = () => {
         maintenance: t('vehicles.statusMaintenance'),
     };
 
-    const emptyForm = { brand: '', model: '', year: '', price: '', mileage: '', category: CATEGORIES[1] || 'Berline', fuel: FUELS[1] || 'Essence', transmission: TRANS[1] || 'Auto', status: 'available', image: '' };
+    const emptyForm = { brand: '', model: '', year: '', price: '', mileage: '', category: CATEGORIES[1] || 'Berline', fuel: FUELS[1] || 'Essence', transmission: TRANS[1] || 'Auto', status: 'available', image: '', plateNumber: '', color: '' };
 
-    const [vehicles, setVehicles] = useState(initialVehicles);
+    const [vehicles, setVehicles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [activeRow, setActiveRow] = useState(null);
     const [modal, setModal] = useState(false);
     const [editVehicle, setEditVehicle] = useState(null);
     const [form, setForm] = useState(emptyForm);
     const [localSearch, setLocalSearch] = useState('');
     const [filters, setFilters] = useState({ category: CATEGORIES[0], fuel: FUELS[0], transmission: TRANS[0], status: t('all') });
+
+    const fetchVehicles = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await getVehicles();
+            const mapped = data.map(mapApiToUi);
+            setVehicles(mapped);
+        } catch (err) {
+            console.error('Failed to fetch vehicles:', err);
+            setError(t('errors.fetchFailed') || 'Impossible de charger les véhicules');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchVehicles();
+    }, []);
 
     const query = localSearch || searchQuery;
 
@@ -82,7 +106,7 @@ const VehiclesPage = () => {
     const handleFormChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     const handleFilterChange = (key, val) => setFilters(prev => ({ ...prev, [key]: val }));
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!form.brand || !form.model) return;
         const year = Number(form.year);
         const currentYear = new Date().getFullYear();
@@ -91,17 +115,43 @@ const VehiclesPage = () => {
             return;
         }
         if (Number(form.price) < 0 || Number(form.mileage) < 0) return;
-        if (editVehicle) {
-            setVehicles(prev => prev.map(v => v.id === editVehicle.id ? { ...v, ...form, year } : v));
-        } else {
-            setVehicles(prev => [...prev, { ...form, id: Date.now(), price: Number(form.price), year }]);
+
+        setLoading(true);
+        try {
+            // agencyId now comes from user context (correctly populated after login/signup)
+            const agencyId = user?.agencyId || localStorage.getItem('agencyId') || "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+            const apiData = mapUiToApi(form, agencyId);
+
+            if (editVehicle) {
+                const updated = await updateVehicle(editVehicle.id, apiData);
+                setVehicles(prev => prev.map(v => v.id === editVehicle.id ? mapApiToUi(updated) : v));
+            } else {
+                const created = await createVehicle(apiData);
+                setVehicles(prev => [...prev, mapApiToUi(created)]);
+            }
+            closeModal();
+        } catch (err) {
+            console.error('Failed to save vehicle:', err);
+            const errorMsg = typeof err === 'string' ? err : (err.message || JSON.stringify(err));
+            alert(errorMsg);
+        } finally {
+            setLoading(false);
         }
-        closeModal();
     };
 
-    const handleDelete = (id) => {
-        setVehicles(prev => prev.filter(v => v.id !== id));
-        if (activeRow?.id === id) setActiveRow(null);
+    const handleDelete = async (id) => {
+        if (!window.confirm(t('confirmDelete') || 'Êtes-vous sûr de vouloir supprimer ce véhicule ?')) return;
+        setLoading(true);
+        try {
+            await deleteVehicle(id);
+            setVehicles(prev => prev.filter(v => v.id !== id));
+            if (activeRow?.id === id) setActiveRow(null);
+        } catch (err) {
+            console.error('Failed to delete vehicle:', err);
+            alert(err.message || 'Erreur lors de la suppression');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -111,10 +161,17 @@ const VehiclesPage = () => {
                     <h1 className="page-title">{t('vehicles.title')}</h1>
                     <p className="page-subtitle">{t('vehicles.subtitle', { count: filtered.length })}</p>
                 </div>
-                <Button onClick={openAdd}>
-                    <div className="flex items-center gap-2"><Plus size={16} /> {t('vehicles.addVehicle')}</div>
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={fetchVehicles} disabled={loading}>
+                        {loading ? '...' : t('refresh') || 'Rafraîchir'}
+                    </Button>
+                    <Button onClick={openAdd}>
+                        <div className="flex items-center gap-2"><Plus size={16} /> {t('vehicles.addVehicle')}</div>
+                    </Button>
+                </div>
             </div>
+
+            <Alert type="error" message={error} onClose={() => setError(null)} />
 
             <div className="filter-bar">
                 <div style={{ position: 'relative' }}>
@@ -142,13 +199,22 @@ const VehiclesPage = () => {
                 </select>
             </div>
 
-            <Table
-                columns={COLUMNS(openEdit, handleDelete, openView)}
-                data={filtered}
-                onRowClick={setActiveRow}
-                activeRowId={activeRow?.id}
-                emptyMessage={t('vehicles.noResults')}
-            />
+            {loading && vehicles.length === 0 ? (
+                <div className="flex items-center justify-center p-12 glass-panel mt-4">
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-muted">{t('loading') || 'Chargement...'}</p>
+                    </div>
+                </div>
+            ) : (
+                <Table
+                    columns={COLUMNS(openEdit, handleDelete, openView)}
+                    data={filtered}
+                    onRowClick={setActiveRow}
+                    activeRowId={activeRow?.id}
+                    emptyMessage={t('vehicles.noResults')}
+                />
+            )}
 
             <Modal isOpen={modal} onClose={closeModal} title={editVehicle ? t('vehicles.editModal') : t('vehicles.addModal')}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
@@ -157,6 +223,8 @@ const VehiclesPage = () => {
                     <InputField label={t('vehicles.year')} name="year" type="number" value={form.year} onChange={handleFormChange} placeholder="2023" min="1900" max={new Date().getFullYear() + 1} />
                     <InputField label={`${t('vehicles.pricePerDay')} (MAD)`} name="price" type="number" value={form.price} onChange={handleFormChange} placeholder="500" min="0" />
                     <InputField label={`${t('vehicles.mileage')} (km)`} name="mileage" type="number" value={form.mileage} onChange={handleFormChange} placeholder="15000" min="0" />
+                    <InputField label={t('vehicles.plateNumber') || 'Plaque'} name="plateNumber" value={form.plateNumber} onChange={handleFormChange} placeholder="1234-A-15" />
+                    <InputField label={t('vehicles.color') || 'Couleur'} name="color" value={form.color} onChange={handleFormChange} placeholder="Gris" />
                     <InputField label={t('vehicles.imageUrl')} name="image" value={form.image} onChange={handleFormChange} placeholder="https://..." />
                     {[
                         ['category', t('vehicles.category'), CATEGORIES.slice(1)],

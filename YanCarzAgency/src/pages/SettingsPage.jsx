@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import authService from '../api/services/authService';
+import authService from '../services/authService';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
 import Alert from '../components/Alert';
