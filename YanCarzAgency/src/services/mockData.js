@@ -49,11 +49,11 @@ export const reservations = [
 
 // ─── TEAM ────────────────────────────────────────────────────────────────────
 export const teamMembers = [
-    { id: 1, name: 'Jean-Paul Marché', email: 'jp@yancarz.com', role: 'Owner', department: 'Direction', joined: '2022-01-01', avatar: 'JP' },
-    { id: 2, name: 'Sophie Durant', email: 'sophie@yancarz.com', role: 'Manager', department: 'Opérations', joined: '2022-06-15', avatar: 'SD' },
-    { id: 3, name: 'Karim Benali', email: 'karim@yancarz.com', role: 'Staff', department: 'Commercial', joined: '2023-02-01', avatar: 'KB' },
-    { id: 4, name: 'Lucie Fontaine', email: 'lucie@yancarz.com', role: 'Staff', department: 'Comptabilité', joined: '2023-04-10', avatar: 'LF' },
-    { id: 5, name: 'Marc Tessier', email: 'marc@yancarz.com', role: 'Manager', department: 'Flotte', joined: '2022-11-20', avatar: 'MT' },
+    { id: 1, name: 'Jean-Paul Marché', email: 'jp@yancarz.com', role: 'Owner', department: 'Direction', joined: '2022-01-01', avatar: 'JP', agencyId: "3fa85f64-5717-4562-b3fc-2c963f66afa6" },
+    { id: 2, name: 'Sophie Durant', email: 'sophie@yancarz.com', role: 'Manager', department: 'Opérations', joined: '2022-06-15', avatar: 'SD', agencyId: "3fa85f64-5717-4562-b3fc-2c963f66afa6" },
+    { id: 3, name: 'Karim Benali', email: 'karim@yancarz.com', role: 'Staff', department: 'Commercial', joined: '2023-02-01', avatar: 'KB', agencyId: "3fa85f64-5717-4562-b3fc-2c963f66afa6" },
+    { id: 4, name: 'Lucie Fontaine', email: 'lucie@yancarz.com', role: 'Staff', department: 'Comptabilité', joined: '2023-04-10', avatar: 'LF', agencyId: "3fa85f64-5717-4562-b3fc-2c963f66afa6" },
+    { id: 5, name: 'Marc Tessier', email: 'marc@yancarz.com', role: 'Manager', department: 'Flotte', joined: '2022-11-20', avatar: 'MT', agencyId: "3fa85f64-5717-4562-b3fc-2c963f66afa6" },
 ];
 
 // ─── INVOICES ─────────────────────────────────────────────────────────────────

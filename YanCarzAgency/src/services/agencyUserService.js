@@ -6,9 +6,11 @@ import api from './api';
  * { id, firstName, lastName, eMail, telephone, status, agencyId }
  * Returns clean structured data for frontend display in TeamPage.jsx.
  */
-export const getAgencyUsers = async () => {
+export const getAgencyUsers = async (agencyId) => {
     try {
-        const response = await api.get('/AgencyUser');
+        const response = await api.get('/AgencyUser', {
+            params: { agencyId }
+        });
         
         // Map the API response schema to the frontend structure based on TeamPage.jsx requirements
         const formattedUsers = response.data.map(user => {
