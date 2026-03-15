@@ -23,7 +23,8 @@ const TeamPage = () => {
     const fetchTeam = React.useCallback(async () => {
         try {
             setLoading(true);
-            const data = await getAgencyUsers();
+            const currentAgencyId = user?.agencyId || localStorage.getItem('agencyId');
+            const data = await getAgencyUsers(currentAgencyId);
             setTeam(data);
             setPageError(null);
         } catch (err) {
@@ -32,7 +33,7 @@ const TeamPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [t]);
+    }, [t, user?.agencyId]);
 
     useEffect(() => {
         fetchTeam();
