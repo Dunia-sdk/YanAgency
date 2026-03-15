@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # --- CONFIGURATION ---
-BASE_URL = "http://localhost:5173" 
+BASE_URL = "http://localhost:5175" 
 ADMIN_EMAIL = "admin@yancarz.com"
 ADMIN_PASS = "password123"
 
