@@ -68,10 +68,7 @@ const VehiclesPage = () => {
     const query = localSearch || searchQuery;
 
     const COLUMNS = (onEdit, onDelete, onView) => [
-        {
-            key: 'image', label: t('vehicles.photo'), width: '60px',
-            render: (v) => <img src={v} alt="car" style={{ width: 40, height: 30, borderRadius: 4, objectFit: 'cover' }} />
-        },
+        
         { key: 'brand', label: t('vehicles.brand'), width: '12%' },
         { key: 'model', label: t('vehicles.model'), width: '14%' },
         { key: 'year', label: t('vehicles.year'), width: '8%' },
