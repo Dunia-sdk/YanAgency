@@ -28,7 +28,7 @@ const VehiclesPage = () => {
         maintenance: t('vehicles.statusMaintenance'),
     };
 
-    const emptyForm = { brand: '', markId: '', model: '', modelId: '', year: '', price: '', mileage: '', category: CATEGORIES[1] || 'Berline', fuel: FUELS[1] || 'Essence', transmission: TRANS[1] || 'Auto', status: 'available', image: '', plateNumber: '', color: '' };
+    const emptyForm = { brand: '', markId: '', model: '', modelId: '', year: '', price: '', mileage: '', category: CATEGORIES[1] || 'Berline', fuel: FUELS[1] || 'Essence', transmission: TRANS[1] || 'Auto', status: 'available', plateNumber: '', color: '', seats: 5 };
 
     const [vehicles, setVehicles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -195,15 +195,38 @@ const VehiclesPage = () => {
         setLoading(true);
         try {
             // agencyId now comes from user context (correctly populated after login/signup)
-            const agencyId = user?.agencyId || localStorage.getItem('agencyId') || "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+            const agencyId = user?.agencyId || localStorage.getItem('agencyId');
+            
+            // Validate agencyId before sending to API to prevent 400 Bad Request (Guid conversion error)
+            const isValidGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(agencyId);
+            
+            if (!agencyId || !isValidGuid) {
+                console.warn('Invalid or missing Agency ID:', agencyId);
+                alert(`${t('errors.invalidAgency') || "ID d'agence invalide."} \n\n${t('errors.reconnectSuggested') || "Veuillez vous déconnecter et vous reconnecter pour rafraîchir votre session."}`);
+                setLoading(false);
+                return;
+            }
+            
             const apiData = mapUiToApi(form, agencyId);
 
             if (editVehicle) {
-                const updated = await updateVehicle(editVehicle.id, apiData);
-                setVehicles(prev => prev.map(v => v.id === editVehicle.id ? mapApiToUi(updated) : v));
+                const response = await updateVehicle(editVehicle.id, apiData);
+                // Merge form and response for absolute data integrity in UI
+                const updated = mapApiToUi({ ...form, ...(typeof response === 'object' ? response : {}) });
+                setVehicles(prev => prev.map(v => v.id === editVehicle.id ? updated : v));
             } else {
-                const created = await createVehicle(apiData);
-                setVehicles(prev => [...prev, mapApiToUi(created)]);
+                const response = await createVehicle(apiData);
+                // If response is just a string (the ID), use it. If it's an object, merge it.
+                const newId = typeof response === 'string' ? response : (response.id || response.Id || response.uid);
+                const resultObj = typeof response === 'object' ? response : {};
+                
+                const created = mapApiToUi({
+                    ...form,
+                    ...resultObj,
+                    id: newId
+                });
+                
+                setVehicles(prev => [...prev, created]);
             }
             closeModal();
         } catch (err) {
@@ -331,7 +354,8 @@ const VehiclesPage = () => {
                     <InputField label={`${t('vehicles.mileage')} (km)`} name="mileage" type="number" value={form.mileage} onChange={handleFormChange} placeholder="15000" min="0" />
                     <InputField label={t('vehicles.plateNumber') || 'Plaque'} name="plateNumber" value={form.plateNumber} onChange={handleFormChange} placeholder="1234-A-15" />
                     <InputField label={t('vehicles.color') || 'Couleur'} name="color" value={form.color} onChange={handleFormChange} placeholder="Gris" />
-                    <InputField label={t('vehicles.imageUrl')} name="image" value={form.image} onChange={handleFormChange} placeholder="https://..." />
+
+                    <InputField label={t('vehicles.seats') || 'Places'} name="seats" type="number" value={form.seats} onChange={handleFormChange} placeholder="5" min="1" max="50" />
                     {[
                         ['category', t('vehicles.category'), CATEGORIES.slice(1)],
                         ['fuel', t('vehicles.fuel'), FUELS.slice(1)],

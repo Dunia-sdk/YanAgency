@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -10,17 +10,35 @@ import {
 import Card from '../components/Card';
 import Table from '../components/Table';
 import Alert from '../components/Alert';
-import { vehicles, reservations, revenueData, vehicleStatusData } from '../services/mockData';
+import { reservations, revenueData, vehicleStatusData, vehicles as mockVehicles } from '../services/mockData';
+import { getVehicles } from '../services/vehicleService';
 
 const DashboardPage = () => {
     const location = useLocation();
     const { user } = useAuth();
     const { t } = useTranslation();
+    const [realVehicles, setRealVehicles] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     const isNewSignup = location.state?.newSignup;
     const isNotActive = user?.isActive === false;
 
-    // Zero out stats for inactive/new accounts, otherwise use mock data
-    const totalVehicles = isNotActive ? 0 : vehicles.length;
+    useEffect(() => {
+        if (!isNotActive) {
+            const fetchStats = async () => {
+                try {
+                    const data = await getVehicles();
+                    setRealVehicles(data || []);
+                } catch (err) {
+                    console.error("Dashboard fetch failed", err);
+                }
+            };
+            fetchStats();
+        }
+    }, [isNotActive]);
+
+    // Zero out stats for inactive/new accounts
+    const totalVehicles = isNotActive ? 0 : (realVehicles.length > 0 ? realVehicles.length : mockVehicles.length);
     const activeRes = isNotActive ? 0 : reservations.filter(r => r.status === 'confirmed').length;
     const monthlyRevenue = isNotActive ? 0 : reservations.reduce((s, r) => s + r.total, 0);
     const unreadMessages = isNotActive ? 0 : 7;

@@ -20,10 +20,13 @@ export const AuthProvider = ({ children }) => {
                 const decoded = jwtDecode(storedToken);
                 // Check if token is expired
                 if (decoded.exp * 1000 > Date.now()) {
+                    const getValidId = (id) => (id && id !== 'null' && id !== 'undefined') ? id : null;
+                    const agencyId = getValidId(decoded.agencyId) || getValidId(decoded.agency_id) || getValidId(decoded.AgencyId) || getValidId(localStorage.getItem('agencyId'));
+
                     setUser({
                         email: decoded.email,
                         name: decoded.name,
-                        agencyId: decoded.agencyId || decoded.agency_id || localStorage.getItem('agencyId'),
+                        agencyId: agencyId,
                         agencyName: decoded.agencyName || localStorage.getItem('agencyName') || 'YanCarz Agency',
                         firstName: decoded.firstName || localStorage.getItem('firstName'),
                         lastName: decoded.lastName || localStorage.getItem('lastName'),
@@ -49,10 +52,13 @@ export const AuthProvider = ({ children }) => {
         try {
             const data = await authService.login(email, password);
             const decoded = jwtDecode(data.token);
+            const getValidId = (id) => (id && id !== 'null' && id !== 'undefined') ? id : null;
+            const agencyId = getValidId(decoded.agencyId) || getValidId(decoded.agency_id) || getValidId(decoded.AgencyId) || getValidId(data.user?.agencyId) || getValidId(localStorage.getItem('agencyId'));
+
             const userData = {
                 email: decoded.email,
                 name: decoded.name,
-                agencyId: decoded.agencyId || decoded.agency_id || data.user?.agencyId || localStorage.getItem('agencyId'),
+                agencyId: agencyId,
                 agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
                 firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
                 lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
@@ -83,9 +89,19 @@ export const AuthProvider = ({ children }) => {
         try {
             const data = await authService.signup(signupData);
             const decoded = jwtDecode(data.token);
+            const getValidId = (id) => (id && id !== 'null' && id !== 'undefined') ? id : null;
+            
+            // Priority: Service Response > Token Claims > LocalStorage
+            const agencyId = getValidId(data.user?.agencyId) || 
+                           getValidId(decoded.agencyId) || 
+                           getValidId(decoded.agency_id) || 
+                           getValidId(decoded.AgencyId) || 
+                           getValidId(localStorage.getItem('agencyId'));
+
             const userData = {
                 email: decoded.email,
                 name: decoded.name,
+                agencyId: agencyId,
                 agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
                 firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
                 lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
@@ -115,6 +131,7 @@ export const AuthProvider = ({ children }) => {
         authService.logout();
         setUser(null);
         setToken(null);
+        localStorage.removeItem('agencyId');
         localStorage.removeItem('agencyName');
         localStorage.removeItem('firstName');
         localStorage.removeItem('lastName');

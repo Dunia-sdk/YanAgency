@@ -49,13 +49,13 @@ export const VehicleStatus = Object.freeze({
  * @example
  * const newVehicle = await createVehicle({
  *   year:         2023,
- *   modelId:      "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+ *   modelId:      "<car-model-uuid>",
  *   plateNumber:  "100-ALG-16",
  *   color:        "Midnight Black",
  *   fuelType:     FuelType.Diesel,        // 2
  *   seats:        5,
  *   pricePerDay:  4500,
- *   agencyId:     "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+ *   agencyId:     "<agency-uuid>",
  *   status:       VehicleStatus.Available, // 0
  * });
  */
@@ -93,6 +93,23 @@ const handleAxiosError = (error) => {
     };
   }
   throw { message: error.message, status: null, data: null };
+};
+
+/**
+ * GET /api/agency/AgencyCar/{id}
+ *
+ * Fetches a single vehicle by its UUID.
+ *
+ * @param {string} id - UUID of the vehicle
+ * @returns {Promise<Object>} The vehicle details (AgencyCarDto)
+ */
+export const getVehicleById = async (id) => {
+  try {
+    const response = await api.get(`/agency/AgencyCar/${id}`);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
 };
 
 /**
@@ -175,11 +192,11 @@ export const createVehicle = async (vehicleData) => {
  * @throws  {Object}          Normalised error with `message`, `status`, and `data` fields
  *
  * @example
- * const updated = await updateVehicle("3fa85f64-5717-4562-b3fc-2c963f66afa6", {
- *   year: 2024, modelId: "<uuid>", plateNumber: "200-ALG-16",
+ * const updated = await updateVehicle("<vehicle-uuid>", {
+ *   year: 2024, modelId: "<model-uuid>", plateNumber: "200-ALG-16",
  *   color: "Pearl White", fuelType: FuelType.Electric,
  *   seats: 5, pricePerDay: 5500,
- *   agencyId: "<uuid>", status: VehicleStatus.Available,
+ *   agencyId: "<agency-uuid>", status: VehicleStatus.Available,
  * });
  */
 export const updateVehicle = async (vehicleId, vehicleData) => {
@@ -201,7 +218,7 @@ export const updateVehicle = async (vehicleId, vehicleData) => {
  * @throws  {Object}          Normalised error with `message`, `status`, and `data` fields
  *
  * @example
- * await deleteVehicle("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+ * await deleteVehicle("<vehicle-uuid>");
  */
 export const deleteVehicle = async (vehicleId) => {
   try {
@@ -214,31 +231,66 @@ export const deleteVehicle = async (vehicleId) => {
 
 // ─── Mapping Helpers ─────────────────────────────────────────────────────────
 
-export const mapApiToUi = (vehicle) => ({
-  ...vehicle,
-  id: vehicle.id,
-  brand: vehicle.model?.brand?.name || 'Unknown',
-  model: vehicle.model?.name || 'Unknown',
-  status: {
-    [VehicleStatus.Available]: 'available',
-    [VehicleStatus.Rented]: 'rented',
-    [VehicleStatus.Maintenance]: 'maintenance',
-    [VehicleStatus.Inactive]: 'maintenance'
-  }[vehicle.status] || 'available',
-  fuel: {
-    [FuelType.Petrol]: 'Essence',
-    [FuelType.Diesel]: 'Diesel',
-    [FuelType.Electric]: 'Électrique',
-    [FuelType.Hybrid]: 'Hybride'
-  }[vehicle.fuelType] || 'Essence',
-  price: vehicle.pricePerDay,
-  mileage: vehicle.mileage || 0,
-  category: vehicle.model?.category || 'Berline'
-});
+export const mapApiToUi = (vehicle) => {
+  // If vehicle is just a GUID string (returned by some POST APIs), 
+  // return a skeleton so the UI doesn't crash, though handleSave should handle this better.
+  if (typeof vehicle === 'string') return { id: vehicle, brand: '...', model: '...', status: 'available' };
+
+  const v = vehicle || {};
+  
+  // Handle nested or flat Brand
+  const brand = v.model?.brand?.name || v.brandName || v.BrandName || v.brand || v.Brand || 'Unknown';
+  
+  // Handle nested or flat Model
+  const modelName = v.model?.name || v.modelName || v.ModelName || v.model || v.Model || 'Unknown';
+  
+  // Handle Status (detect string or number)
+  const getStatus = (s) => {
+    const statusMap = {
+      [VehicleStatus.Available]: 'available',
+      [VehicleStatus.Rented]: 'rented',
+      [VehicleStatus.Maintenance]: 'maintenance',
+      [VehicleStatus.Inactive]: 'maintenance'
+    };
+    if (typeof s === 'number') return statusMap[s] || 'available';
+    if (typeof s === 'string') return s.toLowerCase();
+    return 'available';
+  };
+
+  // Handle FuelType
+  const getFuel = (f) => {
+    const fuelMap = {
+      [FuelType.Petrol]: 'Essence',
+      [FuelType.Diesel]: 'Diesel',
+      [FuelType.Electric]: 'Électrique',
+      [FuelType.Hybrid]: 'Hybride'
+    };
+    if (typeof f === 'number') return fuelMap[f] || 'Essence';
+    if (typeof f === 'string') return f;
+    return 'Essence';
+  };
+
+  return {
+    ...v,
+    id: v.id || v.Id || v.uid || v.UID,
+    brand: brand,
+    model: modelName,
+    year: v.year || v.Year || '',
+    price: v.pricePerDay || v.PricePerDay || v.price || v.Price || 0,
+    mileage: v.mileage || v.Mileage || 0,
+    category: v.model?.category || v.category || v.Category || 'Berline',
+    fuel: getFuel(v.fuelType || v.FuelType || v.fuel),
+    status: getStatus(v.status || v.Status),
+    plateNumber: v.plateNumber || v.PlateNumber || '',
+    color: v.color || v.Color || '',
+    seats: v.seats || v.Seats || 5,
+    image: v.image || v.Image || v.imageUrl || v.ImageUrl || ''
+  };
+};
 
 export const mapUiToApi = (form, agencyId) => ({
   year: Number(form.year),
-  modelId: form.modelId, // This should no longer have the default UUID unless intentionally selected from UI
+  modelId: form.modelId,
   plateNumber: form.plateNumber || "",
   color: form.color || "Unknown",
   fuelType: {
@@ -247,7 +299,7 @@ export const mapUiToApi = (form, agencyId) => ({
     'Électrique': FuelType.Electric,
     'Hybride': FuelType.Hybrid
   }[form.fuel] || FuelType.Petrol,
-  seats: Number(form.seats || 5),
+  seats: Number(form.seats),
   pricePerDay: Number(form.price),
   agencyId: agencyId,
   status: {

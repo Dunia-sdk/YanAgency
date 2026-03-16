@@ -70,7 +70,9 @@
         "emailRequired2": "Email is required",
         "emailInvalid2": "Invalid email",
         "passwordMismatch": "New passwords do not match.",
-        "yearInvalid": "Year must be between 1900 and {{max}}"
+        "yearInvalid": "Year must be between 1900 and {{max}}",
+        "invalidAgency": "Invalid or missing Agency ID. Please log in again.",
+        "reconnectSuggested": "Please log out and log back in to refresh your session."
     },
     "success": {
         "settingsSaved": "Settings saved successfully!",
@@ -161,6 +163,7 @@
         "categories": ["All", "Sedan", "Compact", "SUV", "Premium"],
         "fuels": ["All", "Petrol", "Diesel", "Hybrid", "Electric"],
         "transmissions": ["All", "Auto", "Manual"],
+        "seats": "Seats",
         "statuses": ["All", "available", "rented", "maintenance"]
     },
     "reservations": {

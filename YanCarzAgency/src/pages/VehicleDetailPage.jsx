@@ -1,24 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Car, Fuel, Settings, Calendar, Shield, MapPin, Tag, CheckCircle2, AlertCircle, Sparkles, ChevronRight, Info, Zap, Gauge, Star } from 'lucide-react';
 import Button from '../components/Button';
-import { vehicles } from '../services/mockData';
+import { getVehicleById, mapApiToUi } from '../services/vehicleService';
 
 const VehicleDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const vehicle = vehicles.find(v => v.id === parseInt(id));
-    const reservationCount = vehicle?.nbReservation ?? '—';
+    const [vehicle, setVehicle] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    if (!vehicle) {
+    useEffect(() => {
+        const fetchVehicle = async () => {
+            setLoading(true);
+            try {
+                const data = await getVehicleById(id);
+                setVehicle(mapApiToUi(data));
+            } catch (err) {
+                console.error('Failed to fetch vehicle:', err);
+                setError(t('errors.fetchFailed') || 'Impossible de charger les détails du véhicule');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchVehicle();
+    }, [id, t]);
+
+    const reservationCount = vehicle?.nbReservation ?? '0';
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-96">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <p className="mt-4 text-muted">{t('loading') || 'Chargement...'}</p>
+            </div>
+        );
+    }
+
+    if (error || !vehicle) {
         return (
             <div className="flex flex-col items-center justify-center h-96">
                 <div className="p-4 bg-error-bg text-error rounded-full mb-4">
                     <AlertCircle size={32} />
                 </div>
-                <p className="text-muted mb-4 font-700 uppercase tracking-widest text-xs">{t('vehicleDetails.notFound')}</p>
+                <p className="text-muted mb-4 font-700 uppercase tracking-widest text-xs">{error || t('vehicleDetails.notFound')}</p>
                 <Button onClick={() => navigate('/vehicles')}>{t('vehicleDetails.backToFleet')}</Button>
             </div>
         );
@@ -40,7 +68,7 @@ const VehicleDetailPage = () => {
                             <Sparkles size={10} fill="currentColor" />
                             <span>{t('vehicleDetails.fleet')}</span>
                             <ChevronRight size={10} className="text-muted" />
-                            <span>{t(`vehicles.categories.${vehicles.categories?.indexOf(vehicle.category) ?? -1}`, vehicle.category)}</span>
+                            <span>{vehicle.category}</span>
                         </div>
                         <h1 className="text-3xl md:text-4xl font-900 text-main tracking-tight uppercase">
                             {vehicle.brand} <span className="text-primary">{vehicle.model}</span>
@@ -65,9 +93,10 @@ const VehicleDetailPage = () => {
                     <div className="glass-panel overflow-hidden group shadow-xl">
                         <div className="relative h-[480px]">
                             <img
-                                src={vehicle.image}
+                                src={vehicle.image || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800'}
                                 alt={`${vehicle.brand} ${vehicle.model}`}
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800'; }}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
                             <div className="absolute bottom-8 left-8 text-white">
@@ -84,10 +113,10 @@ const VehicleDetailPage = () => {
                     {/* Features Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {[
-                            { icon: <Gauge size={24} />, label: t('vehicleDetails.mileage'), value: `${vehicle.mileage.toLocaleString()} KM`, color: 'text-blue-600', bg: 'bg-blue-50' },
-                            { icon: <Fuel size={24} />, label: t('vehicleDetails.fuel'), value: t(`vehicles.fuels.${['Petrol', 'Diesel', 'Hybrid', 'Electric'].indexOf(vehicle.fuel) + 1}`, vehicle.fuel), color: 'text-amber-600', bg: 'bg-amber-50' },
-                            { icon: <Settings size={24} />, label: t('vehicleDetails.transmission'), value: t(`vehicles.transmissions.${['Auto', 'Manual'].indexOf(vehicle.transmission) + 1}`, vehicle.transmission), color: 'text-purple-600', bg: 'bg-purple-50' },
-                            { icon: <Zap size={24} />, label: t('vehicleDetails.category'), value: t(`vehicles.categories.${['Sedan', 'Compact', 'SUV', 'Premium'].indexOf(vehicle.category) + 1}`, vehicle.category), color: 'text-primary', bg: 'bg-primary/5' }
+                            { icon: <Gauge size={24} />, label: t('vehicleDetails.mileage'), value: `${vehicle.mileage?.toLocaleString()} KM`, color: 'text-blue-600', bg: 'bg-blue-50' },
+                            { icon: <Fuel size={24} />, label: t('vehicleDetails.fuel'), value: vehicle.fuel, color: 'text-amber-600', bg: 'bg-amber-50' },
+                            { icon: <Settings size={24} />, label: t('vehicleDetails.transmission'), value: vehicle.transmission || 'Auto', color: 'text-purple-600', bg: 'bg-purple-50' },
+                            { icon: <Zap size={24} />, label: t('vehicleDetails.category'), value: vehicle.category, color: 'text-primary', bg: 'bg-primary/5' }
                         ].map((spec, i) => (
                             <div key={i} className={`glass-panel p-6 flex flex-col items-center text-center gap-3 hover:shadow-lg transition-all border-none ${spec.bg}`}>
                                 <div className={`${spec.color} p-3 rounded-2xl bg-white shadow-inner`}>

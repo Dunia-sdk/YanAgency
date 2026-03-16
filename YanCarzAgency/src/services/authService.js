@@ -5,7 +5,8 @@ import api, { isMockMode } from './api';
  */
 
 // Valid-formatted mock JWT (Header.Payload.Signature)
-const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHlhbmNhcnouY29tIiwibmFtZSI6IkFkbWluIEFkbWluIiwiZXhwIjoyNTI0NjA4MDAwfQ.mock-signature';
+// Valid-formatted mock JWT (Header.Payload.Signature) - Includes a dummy agencyId for testing
+const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHlhbmNhcnouY29tIiwibmFtZSI6IkFkbWluIEFkbWluIiwiYWdlbmN5SWQiOiI1NTA2MGViMi03MzExLTQzYzgtOTZkZi0zNmRhZDYyOGM0N2EiLCJuYW1lIjoiQWRtaW4gQWRtaW4iLCJleHAiOjI1MjQ2MDgwMDB9.mock-signature';
 
 const login = async (email, password) => {
     if (isMockMode) {
@@ -33,28 +34,68 @@ const signup = async (formData) => {
         console.log('Mock Mode: Registering', formData);
         const response = {
             token: MOCK_TOKEN,
-            user: { email: formData.email, name: formData.contact }
+            user: { email: formData.email, name: formData.name, agencyId: '55060eb2-7311-43c8-96df-36dad628c47a' }
         };
         localStorage.setItem('token', response.token);
         return response;
     }
     try {
         // 1. Agency and User creation via single API endpoint
+        // Payload compatibility: send both firstName and firstMame (backend might expect firstMame)
         const response = await api.post('/agency/Agency', {
             name: formData.name,
             eMail: formData.email,
             nbrPhone: formData.phone,
             lastName: formData.lastName,
-            firstMame: formData.firstName,
+            firstName: formData.firstName,
+            firstMame: formData.firstName, // Legacy/Typos compatibility
             address: "",
             idCity: formData.idCity
         });
         
         const agencyData = response.data;
-        const agencyId = agencyData?.id || agencyData?.agencyId;
+        const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        let agencyId = null;
+
+        // --- Extreme Robust Extraction ---
+        // A. Check Location header first (standard for 201 Created)
+        const locationHeader = response.headers?.location;
+        if (locationHeader) {
+            // Split and find the first part that looks like a GUID, starting from the end
+            const parts = locationHeader.split('/').filter(Boolean);
+            const guidPart = [...parts].reverse().find(p => guidRegex.test(p));
+            if (guidPart) {
+                agencyId = guidPart;
+            }
+        }
+
+        // B. Check common keys
+        if (!agencyId && agencyData) {
+            agencyId = agencyData.id || agencyData.agencyId || agencyData.AgencyId || agencyData.agencyID;
+        }
+
+        // C. Direct string check
+        if (!agencyId && typeof agencyData === 'string' && guidRegex.test(agencyData)) {
+            agencyId = agencyData;
+        }
+
+        // D. Recursive Search
+        if (!agencyId && agencyData && typeof agencyData === 'object') {
+            const searchGuid = (obj) => {
+                for (const key in obj) {
+                    const value = obj[key];
+                    if (typeof value === 'string' && guidRegex.test(value)) return value;
+                    if (value && typeof value === 'object') {
+                        const found = searchGuid(value);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+            agencyId = searchGuid(agencyData);
+        }
 
         // 2. Build a temporary session from signup data
-        // (Login API not yet available from backend - will be updated once /Auth/login is deployed)
         const tempUser = {
             email: formData.email,
             name: `${formData.firstName} ${formData.lastName}`,
@@ -65,19 +106,28 @@ const signup = async (formData) => {
             isActive: false
         };
 
-        // Create a minimal temporary token payload so jwtDecode doesn't crash
-        // This is a placeholder — will be replaced by real JWT from login API
-        const tempPayload = btoa(JSON.stringify({ alg: 'none' })) + '.' +
-            btoa(JSON.stringify({
-                email: formData.email,
-                name: `${formData.firstName} ${formData.lastName}`,
-                agencyName: formData.name,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                role: 'Admin',
-                isActive: false,
-                exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // 24h
-            })) + '.temp-signature';
+        // UTF-8 safe base64url encoding helper
+        const utf8ToB64Url = (str) => {
+            const b64 = btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+                return String.fromCharCode('0x' + p1);
+            }));
+            return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        };
+
+        const payload = {
+            email: formData.email,
+            name: `${formData.firstName} ${formData.lastName}`,
+            agencyName: formData.name,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            agencyId: agencyId,
+            role: 'Admin',
+            isActive: false,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // 24h
+        };
+
+        const tempPayload = utf8ToB64Url(JSON.stringify({ alg: 'none', typ: 'JWT' })) + '.' +
+                           utf8ToB64Url(JSON.stringify(payload)) + '.temp-signature';
 
         if (agencyId) localStorage.setItem('agencyId', agencyId);
         localStorage.setItem('token', tempPayload);
@@ -96,6 +146,7 @@ const signup = async (formData) => {
 
 const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('agencyId');
 };
 
 const handleApiError = (error, defaultMessage) => {

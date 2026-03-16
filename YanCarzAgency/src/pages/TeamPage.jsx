@@ -137,7 +137,7 @@ const TeamPage = () => {
         if (!validate()) return;
         try {
             setIsSubmitting(true);
-            const currentAgencyId = user?.agencyId || localStorage.getItem('agencyId') || "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+            const currentAgencyId = user?.agencyId || localStorage.getItem('agencyId');
             
             if (editingId) {
                 await updateAgencyUser(editingId, form);

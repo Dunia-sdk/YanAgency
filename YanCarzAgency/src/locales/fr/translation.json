@@ -70,7 +70,9 @@
         "emailRequired2": "L'email est requis",
         "emailInvalid2": "Email invalide",
         "passwordMismatch": "Les nouveaux mots de passe ne correspondent pas.",
-        "yearInvalid": "L'année doit être comprise entre 1900 et {{max}}"
+        "yearInvalid": "L'année doit être comprise entre 1900 et {{max}}",
+        "invalidAgency": "ID d'agence invalide ou manquant. Veuillez vous reconnecter.",
+        "reconnectSuggested": "Veuillez vous déconnecter et vous reconnecter pour rafraîchir votre session."
     },
     "success": {
         "settingsSaved": "Paramètres enregistrés avec succès !",
@@ -161,6 +163,7 @@
         "categories": ["Tous", "Berline", "Citadine", "SUV", "Premium"],
         "fuels": ["Tous", "Essence", "Diesel", "Hybride", "Électrique"],
         "transmissions": ["Tous", "Auto", "Manuel"],
+        "seats": "Places",
         "statuses": ["Tous", "available", "rented", "maintenance"]
     },
     "reservations": {
