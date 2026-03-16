@@ -238,8 +238,8 @@ export const mapApiToUi = (vehicle) => {
 
   const v = vehicle || {};
   
-  // Handle nested or flat Brand
-  const brand = v.model?.brand?.name || v.brandName || v.BrandName || v.brand || v.Brand || 'Unknown';
+  // Handle nested or flat Brand/Mark
+  const brand = v.model?.brand?.name || v.mark?.name || v.brandName || v.MarkName || v.markName || v.brand || v.Brand || v.mark || v.Mark || 'Unknown';
   
   // Handle nested or flat Model
   const modelName = v.model?.name || v.modelName || v.ModelName || v.model || v.Model || 'Unknown';
@@ -277,7 +277,7 @@ export const mapApiToUi = (vehicle) => {
     model: modelName,
     year: v.year || v.Year || '',
     price: v.pricePerDay || v.PricePerDay || v.price || v.Price || 0,
-    mileage: v.mileage || v.Mileage || 0,
+    mileage: v.mileage || v.Mileage || v.km || v.Km || v.kilometrage || v.Kilometrage || 0,
     category: v.model?.category || v.category || v.Category || 'Berline',
     fuel: getFuel(v.fuelType || v.FuelType || v.fuel),
     status: getStatus(v.status || v.Status),
@@ -301,6 +301,7 @@ export const mapUiToApi = (form, agencyId) => ({
   }[form.fuel] || FuelType.Petrol,
   seats: Number(form.seats),
   pricePerDay: Number(form.price),
+  mileage: Math.max(0, Number(form.mileage || 0)), // Ensure positive mileage
   agencyId: agencyId,
   status: {
     'available': VehicleStatus.Available,

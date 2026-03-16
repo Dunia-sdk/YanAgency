@@ -72,7 +72,9 @@
         "passwordMismatch": "Les nouveaux mots de passe ne correspondent pas.",
         "yearInvalid": "L'année doit être comprise entre 1900 et {{max}}",
         "invalidAgency": "ID d'agence invalide ou manquant. Veuillez vous reconnecter.",
-        "reconnectSuggested": "Veuillez vous déconnecter et vous reconnecter pour rafraîchir votre session."
+        "reconnectSuggested": "Veuillez vous déconnecter et vous reconnecter pour rafraîchir votre session.",
+        "priceNegative": "Le prix doit être un nombre positif",
+        "mileageNegative": "Le kilométrage doit être un nombre positif"
     },
     "success": {
         "settingsSaved": "Paramètres enregistrés avec succès !",

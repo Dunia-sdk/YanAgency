@@ -9,7 +9,7 @@ import Alert from '../components/Alert';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import api from '../services/api';
 import authService from '../services/authService';
-import { cities as mockCities } from '../services/mockData';
+// Removed static mockCities import
 
 const SignupPage = () => {
     const { t } = useTranslation();
@@ -38,15 +38,9 @@ const SignupPage = () => {
                     ...res.data.map(c => ({ value: c.id, label: c.name }))
                 ];
                 setCities(cityOptions);
-                setCitiesLoading(false);
-                return;
             } catch (err) {
-                console.error('API failed to load cities, falling back to mockData', err);
-                const cityOptions = [
-                    { value: '', label: t('selectCity'), disabled: true },
-                    ...mockCities.map(c => ({ value: c.id, label: c.name }))
-                ];
-                setCities(cityOptions);
+                console.error('API failed to load cities:', err);
+                setCities([{ value: '', label: t('errors.cityRequired'), disabled: true }]);
             } finally {
                 setCitiesLoading(false);
             }

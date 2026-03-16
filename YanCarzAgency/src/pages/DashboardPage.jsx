@@ -10,41 +10,58 @@ import {
 import Card from '../components/Card';
 import Table from '../components/Table';
 import Alert from '../components/Alert';
-import { reservations, revenueData, vehicleStatusData, vehicles as mockVehicles } from '../services/mockData';
-import { getVehicles } from '../services/vehicleService';
+import { reservations, revenueData, vehicles as mockVehicles } from '../services/mockData';
+import { getVehicles, mapApiToUi } from '../services/vehicleService';
 
 const DashboardPage = () => {
     const location = useLocation();
     const { user } = useAuth();
     const { t } = useTranslation();
     const [realVehicles, setRealVehicles] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const isNewSignup = location.state?.newSignup;
     const isNotActive = user?.isActive === false;
+    const isVisible = !isNotActive && !loading;
 
     useEffect(() => {
         if (!isNotActive) {
             const fetchStats = async () => {
+                setLoading(true);
                 try {
                     const data = await getVehicles();
                     setRealVehicles(data || []);
                 } catch (err) {
                     console.error("Dashboard fetch failed", err);
+                } finally {
+                    setLoading(false);
                 }
             };
             fetchStats();
         }
     }, [isNotActive]);
 
-    // Zero out stats for inactive/new accounts
-    const totalVehicles = isNotActive ? 0 : (realVehicles.length > 0 ? realVehicles.length : mockVehicles.length);
-    const activeRes = isNotActive ? 0 : reservations.filter(r => r.status === 'confirmed').length;
-    const monthlyRevenue = isNotActive ? 0 : reservations.reduce((s, r) => s + r.total, 0);
-    const unreadMessages = isNotActive ? 0 : 7;
-    const recentActivity = isNotActive ? [] : reservations.slice(0, 5);
-    const currentRevenueData = isNotActive ? [] : revenueData;
-    const currentVehicleStatusData = isNotActive ? [] : vehicleStatusData;
+    const mappedVehicles = realVehicles.map(mapApiToUi);
+
+    // Dynamic vehicle stats
+    const vehicleStatusData = [
+        { name: t('vehicles.statusAvailable'), value: mappedVehicles.filter(v => v.status === 'available').length, fill: '#10b981' },
+        { name: t('vehicles.statusRented'), value: mappedVehicles.filter(v => v.status === 'rented').length, fill: '#6366f1' },
+        { name: t('vehicles.statusMaintenance'), value: mappedVehicles.filter(v => v.status === 'maintenance').length, fill: '#f59e0b' },
+    ];
+
+    // KPI Calculations
+    const totalVehicles = isNotActive ? 0 : realVehicles.length;
+    const activeRes = isNotActive ? 0 : (isVisible ? reservations.filter(r => r.status === 'confirmed').length : 0);
+    const monthlyRevenue = isNotActive ? 0 : (isVisible ? reservations.reduce((s, r) => s + r.total, 0) : 0);
+    const unreadMessages = isNotActive ? 0 : (isVisible ? 7 : 0);
+    const recentActivity = isNotActive ? [] : (isVisible ? reservations.slice(0, 5) : []);
+    const currentRevenueData = isNotActive ? [] : (isVisible ? revenueData : []);
+    const currentVehicleStatusData = isNotActive ? [] : (realVehicles.length > 0 ? vehicleStatusData : [
+        { name: t('vehicles.statusAvailable'), value: 0, fill: '#10b981' },
+        { name: t('vehicles.statusRented'), value: 0, fill: '#6366f1' },
+        { name: t('vehicles.statusMaintenance'), value: 0, fill: '#f59e0b' },
+    ]);
 
     const RECENT_COLS = [
         { key: 'id', label: t('ref') },
@@ -81,7 +98,7 @@ const DashboardPage = () => {
 
             {/* KPI Cards */}
             <div className="kpi-grid">
-                <Card title={t('totalVehicles')} value={totalVehicles} icon={Car} trend={isNewSignup ? 0 : 5} trendLabel={t('vsLastMonth')} color="var(--primary)" />
+                <Card title={t('totalVehicles')} value={loading ? '...' : totalVehicles} icon={Car} trend={isNewSignup ? 0 : 5} trendLabel={t('vsLastMonth')} color="var(--primary)" />
                 <Card title={t('activeReservations')} value={activeRes} icon={CalendarCheck} trend={isNewSignup ? 0 : 12} trendLabel={t('vsLastMonth')} color="#6366f1" />
                 <Card title={t('monthlyRevenue')} value={`${monthlyRevenue} MAD`} icon={DollarSign} trend={isNewSignup ? 0 : 8} trendLabel={t('vsLastMonth')} color="#f59e0b" />
                 <Card title={t('unreadMessages')} value={unreadMessages} icon={MessageSquare} trend={isNewSignup ? 0 : -2} trendLabel={t('vsLastMonth')} color="#ec4899" />

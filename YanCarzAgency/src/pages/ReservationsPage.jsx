@@ -1,17 +1,38 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, RefreshCw } from 'lucide-react';
 import Table from '../components/Table';
-import { reservations as initialReservations } from '../services/mockData';
+import * as bookingService from '../services/bookingService';
 
 const ReservationsPage = () => {
     const { t } = useTranslation();
     const { searchQuery = '' } = useOutletContext() || {};
     const navigate = useNavigate();
-    const [reservations, setReservations] = useState(initialReservations);
+    const [reservations, setReservations] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState('all');
     const [openDropdown, setOpenDropdown] = useState(null);
+
+    const loadBookings = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await bookingService.getBookings();
+            const mappedData = (data || []).map(bookingService.mapApiToUi);
+            setReservations(mappedData);
+        } catch (err) {
+            console.error('Failed to fetch bookings:', err);
+            setError(t('errors.fetchFailed') || 'Impossible de récupérer les réservations');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadBookings();
+    }, []);
 
     const STATUS_OPTS = [
         { value: 'all', label: t('all') },
@@ -36,7 +57,7 @@ const ReservationsPage = () => {
     };
 
     const filtered = useMemo(() => {
-        return reservations.filter(r => {
+        return (reservations || []).filter(r => {
             const matchFilter = statusFilter === 'all' || r.status === statusFilter;
             const matchSearch = `${r.client} ${r.vehicle} ${r.id}`.toLowerCase().includes(searchQuery.toLowerCase());
             return matchFilter && matchSearch;
@@ -48,6 +69,7 @@ const ReservationsPage = () => {
             navigate(`/reservations/${id}`);
             return;
         }
+        // TODO: Implement status update API call if needed
         const map = {
             actionConfirm: 'confirmed',
             actionCancel: 'cancelled',
@@ -100,6 +122,14 @@ const ReservationsPage = () => {
                     <h1 className="page-title">{t('reservations.title')}</h1>
                     <p className="page-subtitle">{t('reservations.subtitle', { count: filtered.length })}</p>
                 </div>
+                <button 
+                  className="btn btn-secondary flex items-center gap-2" 
+                  onClick={loadBookings}
+                  disabled={loading}
+                >
+                  <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                  {t('refresh')}
+                </button>
             </div>
 
             <div className="filter-bar">
@@ -113,7 +143,17 @@ const ReservationsPage = () => {
                 ))}
             </div>
 
-            <Table columns={columns} data={filtered} emptyMessage={t('reservations.noResults')} />
+            {error && (
+                <div className="error-message" style={{ padding: '1rem', background: 'var(--error-light)', color: 'var(--error)', borderRadius: '8px', marginBottom: '1rem' }}>
+                    {error}
+                </div>
+            )}
+
+            <Table 
+                columns={columns} 
+                data={filtered} 
+                emptyMessage={loading ? t('loading') : t('reservations.noResults')} 
+            />
         </div>
     );
 };

@@ -187,7 +187,14 @@ const VehiclesPage = () => {
             alert(t('errors.yearInvalid', { max: currentYear + 1 }));
             return;
         }
-        if (Number(form.price) < 0 || Number(form.mileage) < 0) return;
+        if (Number(form.price) < 0) {
+            alert(t('errors.priceNegative') || 'Le prix doit être un nombre positif');
+            return;
+        }
+        if (Number(form.mileage) < 0) {
+            alert(t('errors.mileageNegative') || 'Le kilométrage doit être un nombre positif');
+            return;
+        }
 
         setLoading(true);
         try {
@@ -356,19 +363,39 @@ const VehiclesPage = () => {
                     {[
                         ['category', t('vehicles.category'), CATEGORIES.slice(1)],
                         ['fuel', t('vehicles.fuel'), FUELS.slice(1)],
-                        ['transmission', t('vehicles.transmission'), TRANS.slice(1)],
-                        ['status', t('status'), STATUS_VALUES.map(s => ({ value: s, label: STATUS_LABELS[s] }))]
                     ].map(([key, lbl, opts]) => (
                         <div className="input-group" key={key}>
                             <label className="input-label">{lbl}</label>
                             <select className="input-field select-input" name={key} value={form[key]} onChange={handleFormChange} style={{ padding: '0.75rem 1rem' }}>
-                                {opts.map(o => typeof o === 'string'
-                                    ? <option key={o} value={o}>{o}</option>
-                                    : <option key={o.value} value={o.value}>{o.label}</option>
-                                )}
+                                {opts.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                         </div>
                     ))}
+
+                    <div className="input-group">
+                        <label className="input-label">{t('vehicles.transmission')}</label>
+                        <div className="toggle-group">
+                            {TRANS.slice(1).map(o => (
+                                <button
+                                    key={o}
+                                    type="button"
+                                    className={`toggle-btn ${form.transmission === o ? 'active' : ''}`}
+                                    onClick={() => setForm(prev => ({ ...prev, transmission: o }))}
+                                >
+                                    {o}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label">{t('status')}</label>
+                        <select className="input-field select-input" name="status" value={form.status} onChange={handleFormChange} style={{ padding: '0.75rem 1rem' }}>
+                            {STATUS_VALUES.map(s => (
+                                <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
                 <div className="flex gap-2 mt-4">
                     <Button onClick={handleSave} fullWidth>{editVehicle ? t('save') : t('add')}</Button>
