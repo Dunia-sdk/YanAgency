@@ -112,6 +112,32 @@ export const getVehicles = async () => {
 };
 
 /**
+ * GET /api/shared/Mark
+ * Fetches all vehicle brands.
+ */
+export const getMarks = async () => {
+  try {
+    const response = await api.get('/shared/Mark');
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+};
+
+/**
+ * GET /api/shared/Model?markId={id}
+ * Fetches all models for a specific vehicle brand.
+ */
+export const getModelsByMark = async (markId) => {
+  try {
+    const response = await api.get(`/shared/Model?markId=${markId}`);
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+};
+
+/**
  * POST /api/agency/AgencyCar
  *
  * Creates a new AgencyCar and returns the created vehicle object.
@@ -212,7 +238,7 @@ export const mapApiToUi = (vehicle) => ({
 
 export const mapUiToApi = (form, agencyId) => ({
   year: Number(form.year),
-  modelId: form.modelId || "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  modelId: form.modelId, // This should no longer have the default UUID unless intentionally selected from UI
   plateNumber: form.plateNumber || "",
   color: form.color || "Unknown",
   fuelType: {

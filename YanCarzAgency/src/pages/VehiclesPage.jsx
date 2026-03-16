@@ -6,7 +6,7 @@ import Table from '../components/Table';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
-import { getVehicles, createVehicle, updateVehicle, deleteVehicle, mapApiToUi, mapUiToApi } from '../services/vehicleService';
+import { getVehicles, createVehicle, updateVehicle, deleteVehicle, mapApiToUi, mapUiToApi, getMarks, getModelsByMark } from '../services/vehicleService';
 import { useAuth } from '../context/AuthContext';
 import Alert from '../components/Alert';
 
@@ -28,7 +28,7 @@ const VehiclesPage = () => {
         maintenance: t('vehicles.statusMaintenance'),
     };
 
-    const emptyForm = { brand: '', model: '', year: '', price: '', mileage: '', category: CATEGORIES[1] || 'Berline', fuel: FUELS[1] || 'Essence', transmission: TRANS[1] || 'Auto', status: 'available', image: '', plateNumber: '', color: '' };
+    const emptyForm = { brand: '', markId: '', model: '', modelId: '', year: '', price: '', mileage: '', category: CATEGORIES[1] || 'Berline', fuel: FUELS[1] || 'Essence', transmission: TRANS[1] || 'Auto', status: 'available', image: '', plateNumber: '', color: '' };
 
     const [vehicles, setVehicles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -39,6 +39,12 @@ const VehiclesPage = () => {
     const [form, setForm] = useState(emptyForm);
     const [localSearch, setLocalSearch] = useState('');
     const [filters, setFilters] = useState({ category: CATEGORIES[0], fuel: FUELS[0], transmission: TRANS[0], status: t('all') });
+
+    // Dynamic Options State
+    const [marks, setMarks] = useState([]);
+    const [models, setModels] = useState([]);
+    const [loadingMarks, setLoadingMarks] = useState(false);
+    const [loadingModels, setLoadingModels] = useState(false);
 
     const fetchVehicles = async () => {
         setLoading(true);
@@ -98,12 +104,82 @@ const VehiclesPage = () => {
         });
     }, [vehicles, query, filters, t]);
 
-    const openAdd = () => { setForm(emptyForm); setEditVehicle(null); setModal(true); };
-    const openEdit = (v) => { setForm({ ...v }); setEditVehicle(v); setModal(true); };
+    const openAdd = () => { 
+        setForm(emptyForm); 
+        setEditVehicle(null); 
+        setModels([]); 
+        setModal(true); 
+        fetchMarks(); 
+    };
+    
+    const openEdit = async (v) => { 
+        // Need to find markId based on brand name for editing, since API doesn't return markId directly mapped on UI currently
+        setForm({ ...v }); 
+        setEditVehicle(v); 
+        setModal(true); 
+        
+        await fetchMarks();
+        // Since we don't have markId in mapped UI easily, we look it up from marks list
+        // Note: Ideally API returned modelId, markId consistently, handling as a best-effort here
+    };
+
+    const fetchMarks = async () => {
+        if (marks.length > 0) return;
+        setLoadingMarks(true);
+        try {
+            const data = await getMarks();
+            setMarks(data || []);
+        } catch (err) {
+            console.error('Failed to fetch marks:', err);
+        } finally {
+            setLoadingMarks(false);
+        }
+    };
+
+    const fetchModels = async (markId) => {
+        if (!markId) {
+            setModels([]);
+            return;
+        }
+        setLoadingModels(true);
+        try {
+            const data = await getModelsByMark(markId);
+            setModels(data || []);
+        } catch (err) {
+            console.error('Failed to fetch models:', err);
+        } finally {
+            setLoadingModels(false);
+        }
+    };
+
     const openView = (v) => { navigate(`/vehicles/${v.id}`); };
     const closeModal = () => { setModal(false); };
 
-    const handleFormChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const handleFormChange = e => {
+        const { name, value } = e.target;
+        
+        if (name === 'brand') {
+            const selectedMark = marks.find(m => m.id === value);
+            setForm(prev => ({ 
+                ...prev, 
+                brand: selectedMark ? selectedMark.name : '',
+                markId: value,
+                model: '', // Reset model
+                modelId: '' // Reset modelId
+            }));
+            fetchModels(value);
+        } else if (name === 'model') {
+            const selectedModel = models.find(m => m.id === value);
+            setForm(prev => ({
+                ...prev,
+                model: selectedModel ? selectedModel.name : '',
+                modelId: value
+            }));
+        } else {
+            setForm(prev => ({ ...prev, [name]: value }));
+        }
+    };
+    
     const handleFilterChange = (key, val) => setFilters(prev => ({ ...prev, [key]: val }));
 
     const handleSave = async () => {
@@ -218,8 +294,38 @@ const VehiclesPage = () => {
 
             <Modal isOpen={modal} onClose={closeModal} title={editVehicle ? t('vehicles.editModal') : t('vehicles.addModal')}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
-                    <InputField label={t('vehicles.brand')} name="brand" value={form.brand} onChange={handleFormChange} placeholder="Toyota" required />
-                    <InputField label={t('vehicles.model')} name="model" value={form.model} onChange={handleFormChange} placeholder="Corolla" required />
+                    <div className="input-group">
+                        <label className="input-label">{t('vehicles.brand')} *</label>
+                        <select 
+                            className="input-field select-input" 
+                            name="brand" 
+                            value={form.markId || ''} 
+                            onChange={handleFormChange} 
+                            style={{ padding: '0.75rem 1rem' }}
+                            disabled={loadingMarks}
+                            required
+                        >
+                            <option value="" disabled>{loadingMarks ? 'Chargement...' : 'Sélectionner une marque'}</option>
+                            {marks.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label">{t('vehicles.model')} *</label>
+                        <select 
+                            className="input-field select-input" 
+                            name="model" 
+                            value={form.modelId || ''} 
+                            onChange={handleFormChange} 
+                            style={{ padding: '0.75rem 1rem' }}
+                            disabled={!form.markId || loadingModels}
+                            required
+                        >
+                            <option value="" disabled>{!form.markId ? 'Sélectionnez d\'abord une marque' : (loadingModels ? 'Chargement...' : 'Sélectionner un modèle')}</option>
+                            {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        </select>
+                    </div>
+
                     <InputField label={t('vehicles.year')} name="year" type="number" value={form.year} onChange={handleFormChange} placeholder="2023" min="1900" max={new Date().getFullYear() + 1} />
                     <InputField label={`${t('vehicles.pricePerDay')} (MAD)`} name="price" type="number" value={form.price} onChange={handleFormChange} placeholder="500" min="0" />
                     <InputField label={`${t('vehicles.mileage')} (km)`} name="mileage" type="number" value={form.mileage} onChange={handleFormChange} placeholder="15000" min="0" />
