@@ -110,14 +110,14 @@ const VehiclesPage = () => {
     };
     
     const openEdit = async (v) => { 
-        // Need to find markId based on brand name for editing, since API doesn't return markId directly mapped on UI currently
         setForm({ ...v }); 
         setEditVehicle(v); 
         setModal(true); 
         
         await fetchMarks();
-        // Since we don't have markId in mapped UI easily, we look it up from marks list
-        // Note: Ideally API returned modelId, markId consistently, handling as a best-effort here
+        if (v.markId) {
+            fetchModels(v.markId);
+        }
     };
 
     const fetchMarks = async () => {

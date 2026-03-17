@@ -87,29 +87,8 @@ const VehicleDetailPage = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* 2. Left Column: Image & Feature Cards (7 Columns) */}
-                <div className="lg:col-span-7 space-y-8">
-                    {/* Hero Image Card */}
-                    <div className="glass-panel overflow-hidden group shadow-xl">
-                        <div className="relative h-[480px]">
-                            <img
-                                src={vehicle.image || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800'}
-                                alt={`${vehicle.brand} ${vehicle.model}`}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800'; }}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
-                            <div className="absolute bottom-8 left-8 text-white">
-                                <p className="text-[10px] font-900 uppercase tracking-[0.3em] mb-2 opacity-80">{t('vehicleDetails.designPerformance')}</p>
-                                <h2 className="text-4xl font-900 tracking-tighter uppercase">{vehicle.brand} {vehicle.model} <span className="text-primary-light">{t('vehicleDetails.edition')} {vehicle.year}</span></h2>
-                            </div>
-                            <div className="absolute top-8 right-8 bg-white/90 backdrop-blur-md px-6 py-4 rounded-[20px] shadow-2xl border border-white/50 text-center flex flex-col items-center">
-                                <span className="text-[10px] font-800 text-muted uppercase tracking-widest mb-1">{t('vehicleDetails.dailyPrice')}</span>
-                                <p className="text-3xl font-900 text-primary tracking-tighter">{vehicle.price} <span className="text-xs">{t('vehicleDetails.currency')}</span></p>
-                            </div>
-                        </div>
-                    </div>
-
+                {/* 2. Left Column: Feature Cards & Config Details (8 Columns) */}
+                <div className="lg:col-span-8 space-y-8">
                     {/* Features Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {[
@@ -120,7 +99,7 @@ const VehicleDetailPage = () => {
                         ].map((spec, i) => (
                             <div key={i} className={`glass-panel p-6 flex flex-col items-center text-center gap-3 hover:shadow-lg transition-all border-none ${spec.bg}`}>
                                 <div className={`${spec.color} p-3 rounded-2xl bg-white shadow-inner`}>
-                                    {spec.icon}
+                                     {spec.icon}
                                 </div>
                                 <div>
                                     <p className="text-[9px] uppercase font-800 text-muted tracking-widest mb-1">{spec.label}</p>
@@ -139,17 +118,16 @@ const VehicleDetailPage = () => {
                                 </div>
                                 <h3 className="text-xl font-900 uppercase tracking-tighter text-main">{t('vehicleDetails.configDetails')}</h3>
                             </div>
-                            <Button variant="outline" size="sm" className="font-800 text-[10px] tracking-widest">{t('vehicleDetails.techReport')}</Button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                             {[
-                                { label: t('vehicleDetails.doors'), value: t('vehicleDetails.doorsValue') },
-                                { label: t('vehicleDetails.seats'), value: t('vehicleDetails.seatsValue') },
-                                { label: t('vehicleDetails.trunkVol'), value: t('vehicleDetails.trunkVolValue') },
-                                { label: t('vehicleDetails.engine'), value: t('vehicleDetails.engineValue') },
+                                { label: t('vehicleDetails.plateNumber') || 'Plaque d\'immatriculation', value: vehicle.plateNumber || '---' },
+                                { label: t('vehicleDetails.color') || 'Couleur', value: vehicle.color || '---' },
+                                { label: t('vehicleDetails.seats'), value: vehicle.seats || 5 },
                                 { label: t('vehicleDetails.yearOfCirculation'), value: vehicle.year },
-                                { label: t('vehicleDetails.lastService'), value: t('vehicleDetails.lastServiceValue', 'Mars 2024') }
+                                { label: t('vehicleDetails.category'), value: vehicle.category },
+                                { label: t('vehicleDetails.price'), value: `${vehicle.price} ${t('vehicleDetails.currency')}` }
                             ].map((item, i) => (
                                 <div key={i} className="flex justify-between items-center py-3 border-b border-accent">
                                     <span className="text-[10px] font-800 text-muted uppercase tracking-widest">{item.label}</span>
@@ -160,8 +138,8 @@ const VehicleDetailPage = () => {
                     </div>
                 </div>
 
-                {/* 3. Right Column: Sidebars (5 Columns) */}
-                <div className="lg:col-span-5 space-y-8">
+                {/* 3. Right Column: Sidebars (4 Columns) */}
+                <div className="lg:col-span-4 space-y-8">
                     {/* Status & Quick Actions Card */}
                     <div className="glass-panel p-8 bg-main text-white relative overflow-hidden shadow-2xl">
                         <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 translate-x-10 -translate-y-10">
@@ -188,13 +166,13 @@ const VehicleDetailPage = () => {
 
                             <div className="pt-6 border-t border-white/10 flex items-center justify-between">
                                 <div className="text-center">
-                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">{t('vehicleDetails.initialKm')}</p>
-                                    <p className="text-lg font-900 tracking-tight">{vehicle.mileage - 200}</p>
+                                    <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">{t('vehicleDetails.mileage')}</p>
+                                    <p className="text-lg font-900 tracking-tight">{vehicle.mileage?.toLocaleString()} KM</p>
                                 </div>
                                 <div className="w-px h-8 bg-white/10" />
                                 <div className="text-center">
                                     <p className="text-[10px] font-800 uppercase tracking-widest text-black/40 mb-1">{t('vehicleDetails.lastClient')}</p>
-                                    <p className="text-lg font-900 tracking-tight">Marché J.</p>
+                                    <p className="text-lg font-900 tracking-tight">---</p>
                                 </div>
                                 <div className="w-px h-8 bg-white/10" />
                                 <div className="text-center">

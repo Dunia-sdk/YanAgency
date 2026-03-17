@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Calendar, User, Car, Tag, MapPin, Receipt, Clock, CheckCircle2, XCircle, AlertCircle, Sparkles, CreditCard, ShieldCheck, Download, History, Zap, ChevronRight, Star, ExternalLink, Printer } from 'lucide-react';
 import Button from '../components/Button';
-import { reservations } from '../services/mockData';
+import * as bookingService from '../services/bookingService';
 
 const ReservationDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const reservation = reservations.find(r => r.id === id);
+    const [reservation, setReservation] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchReservation = async () => {
+            setLoading(true);
+            try {
+                const data = await bookingService.getBookingById(id);
+                setReservation(bookingService.mapApiToUi(data));
+            } catch (err) {
+                console.error('Failed to fetch reservation:', err);
+                setError(t('errors.fetchFailed') || 'Impossible de récupérer les détails de la réservation');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchReservation();
+    }, [id, t]);
 
     const STATUS_LABELS = {
         pending: t('reservations.statusPending'),
@@ -25,20 +43,35 @@ const ReservationDetailPage = () => {
         cancelled: { color: 'text-error', bg: 'bg-error-bg', border: 'border-error/20', icon: <XCircle size={16} /> }
     };
 
-    if (!reservation) {
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-96">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <p className="mt-4 text-muted">{t('loading') || 'Chargement...'}</p>
+            </div>
+        );
+    }
+
+    if (error || !reservation) {
         return (
             <div className="flex flex-col items-center justify-center h-96">
                 <AlertCircle size={48} className="text-muted mb-4 opacity-20" />
-                <p className="text-muted mb-4 font-800 uppercase tracking-[0.2em] text-xs">{t('reservationDetails.notFound')}</p>
+                <p className="text-muted mb-4 font-800 uppercase tracking-[0.2em] text-xs">{error || t('reservationDetails.notFound')}</p>
                 <Button onClick={() => navigate('/reservations')}>{t('reservationDetails.backToFiles')}</Button>
             </div>
         );
     }
 
+
     const theme = STATUS_THEMES[reservation.status] || STATUS_THEMES.pending;
-    const tax = reservation.total * 0.2;
-    const basePrice = reservation.total - tax - 150;
-    const daysCount = 5; // Hardcoded in original, maintaining consistency
+    const total = reservation.total || 0;
+    const tax = total * 0.2;
+    const basePrice = total - tax - 150;
+    // Calculate days count
+    const start = new Date(reservation.rawStartDate);
+    const end = new Date(reservation.rawEndDate);
+    const diffTime = Math.abs(end - start);
+    const daysCount = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
 
     return (
         <div className="pb-12 space-y-8 animate-[slideUpFade_0.5s_ease-out]">
@@ -103,8 +136,8 @@ const ReservationDetailPage = () => {
                                 <div className="p-10 bg-accent/30 border border-border/60 rounded-[48px] min-w-[280px] shadow-sm group-hover:bg-white group-hover:shadow-2xl transition-all duration-500 border-dashed group-hover:border-solid group-hover:border-primary/20">
                                     <p className="text-4xl font-900 text-main tracking-tighter">{reservation.startDate}</p>
                                     <div className="mt-4 flex flex-col items-center gap-2">
-                                        <p className="text-[11px] text-primary font-900 uppercase tracking-widest bg-primary/5 py-1.5 px-4 rounded-full border border-primary/10">09:00 • {t('reservationDetails.terminalAgency')}</p>
-                                        <p className="text-[9px] text-muted font-600 uppercase">{t('reservationDetails.locationAnfa')}</p>
+                                        <p className="text-[11px] text-primary font-900 uppercase tracking-widest bg-primary/5 py-1.5 px-4 rounded-full border border-primary/10">{reservation.startTime} • {t('reservationDetails.terminalAgency')}</p>
+                                        <p className="text-[9px] text-muted font-600 uppercase">{reservation.pickupPlace}</p>
                                     </div>
                                 </div>
                             </div>
@@ -128,8 +161,8 @@ const ReservationDetailPage = () => {
                                 <div className="p-10 bg-accent/30 border border-border/60 rounded-[48px] min-w-[280px] shadow-sm group-hover:bg-white group-hover:shadow-2xl transition-all duration-500 border-dashed group-hover:border-solid group-hover:border-primary/20">
                                     <p className="text-4xl font-900 text-main tracking-tighter">{reservation.endDate}</p>
                                     <div className="mt-4 flex flex-col items-center gap-2">
-                                        <p className="text-[11px] text-primary font-900 uppercase tracking-widest bg-primary/5 py-1.5 px-4 rounded-full border border-primary/10">18:00 • {t('reservationDetails.terminalAgency')}</p>
-                                        <p className="text-[9px] text-muted font-600 uppercase">{t('reservationDetails.locationAnfa')}</p>
+                                        <p className="text-[11px] text-primary font-900 uppercase tracking-widest bg-primary/5 py-1.5 px-4 rounded-full border border-primary/10">{reservation.endTime} • {t('reservationDetails.terminalAgency')}</p>
+                                        <p className="text-[9px] text-muted font-600 uppercase">{reservation.returnPlace}</p>
                                     </div>
                                 </div>
                             </div>
@@ -157,11 +190,11 @@ const ReservationDetailPage = () => {
                                     <p className="text-3xl font-900 text-main tracking-tight leading-none mb-3">{reservation.client}</p>
                                     <div className="flex items-center gap-3 text-sm font-700 text-muted">
                                         <MapPin size={16} className="text-primary" />
-                                        <span>{t('reservationDetails.locationAnfa')}</span>
+                                        <span>{reservation.pickupPlace}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 px-5 py-2 bg-white rounded-2xl text-[10px] font-900 text-primary uppercase border border-primary/10 shadow-sm">
-                                    <Star size={12} fill="currentColor" /> {t('reservationDetails.executiveMember')}
+                                    <Star size={12} fill="currentColor" /> {t('reservationDetails.activeClient')}
                                 </div>
                             </div>
                             <Button variant="outline" fullWidth className="h-14 font-900 tracking-[0.2em] uppercase text-[10px] border-2 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all" onClick={() => navigate('/clients')}>{t('reservationDetails.viewArchive')}</Button>
@@ -186,11 +219,11 @@ const ReservationDetailPage = () => {
                                     <p className="text-3xl font-900 text-main tracking-tight leading-none mb-3">{reservation.vehicle}</p>
                                     <div className="flex items-center gap-3 text-sm font-700 text-muted">
                                         <Tag size={16} className="text-primary" />
-                                        <span>{t('reservationDetails.premiumAuto')}</span>
+                                        <span>{reservation.vehicleCategory}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3 px-5 py-2 bg-white rounded-2xl text-[10px] font-900 text-primary uppercase border border-primary/10 shadow-sm">
-                                    <Zap size={12} fill="currentColor" /> {t('reservationDetails.fullOptionsDiesel')}
+                                    <Zap size={12} fill="currentColor" /> {reservation.vehicleBrand || t('reservationDetails.standardOption')}
                                 </div>
                             </div>
                             <Button variant="outline" fullWidth className="h-14 font-900 tracking-[0.2em] uppercase text-[10px] border-2 group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all" onClick={() => navigate('/vehicles')}>{t('reservationDetails.technicalData')}</Button>
@@ -212,16 +245,16 @@ const ReservationDetailPage = () => {
                         <div className="flex flex-col gap-8 relative z-10 mb-12">
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center group/item">
-                                    <span className="text-[10px] font-800 text-black/40 uppercase tracking-[0.15em]">{t('reservationDetails.netRent', { count: daysCount })}</span>
-                                    <span className="text-base font-900 text-black group-hover/item:text-primary transition-colors tracking-tight">{basePrice.toLocaleString()} MAD</span>
+                                    <span className="text-[10px] font-800 text-white/40 uppercase tracking-[0.15em]">{t('reservationDetails.netRent', { count: daysCount })}</span>
+                                    <span className="text-base font-900 text-white group-hover/item:text-primary transition-colors tracking-tight">{basePrice.toLocaleString()} MAD</span>
                                 </div>
                                 <div className="flex justify-between items-center group/item">
-                                    <span className="text-[10px] font-800 text-black/40 uppercase tracking-[0.15em]">{t('reservationDetails.premiumInsurance')}</span>
-                                    <span className="text-base font-900 text-black group-hover/item:text-primary transition-colors tracking-tight">150.00 MAD</span>
+                                    <span className="text-[10px] font-800 text-white/40 uppercase tracking-[0.15em]">{t('reservationDetails.premiumInsurance')}</span>
+                                    <span className="text-base font-900 text-white group-hover/item:text-primary transition-colors tracking-tight">150.00 MAD</span>
                                 </div>
                                 <div className="flex justify-between items-center group/item">
-                                    <span className="text-[10px] font-800 text-black/40 uppercase tracking-[0.15em]">{t('reservationDetails.indirectTax')}</span>
-                                    <span className="text-base font-900 text-black group-hover/item:text-primary transition-colors tracking-tight">{tax.toLocaleString()} MAD</span>
+                                    <span className="text-[10px] font-800 text-white/40 uppercase tracking-[0.15em]">{t('reservationDetails.indirectTax')}</span>
+                                    <span className="text-base font-900 text-white group-hover/item:text-primary transition-colors tracking-tight">{tax.toLocaleString()} MAD</span>
                                 </div>
                             </div>
 

@@ -239,7 +239,7 @@ export const mapApiToUi = (vehicle) => {
   const v = vehicle || {};
   
   // Handle nested or flat Brand/Mark
-  const brand = v.model?.brand?.name || v.mark?.name || v.brandName || v.MarkName || v.markName || v.brand || v.Brand || v.mark || v.Mark || 'Unknown';
+  const brand = v.model?.mark?.name || v.model?.brand?.name || v.markName || v.mark?.name || v.brandName || v.MarkName || v.brand || v.Brand || v.mark || v.Mark || 'Unknown';
   
   // Handle nested or flat Model
   const modelName = v.model?.name || v.modelName || v.ModelName || v.model || v.Model || 'Unknown';
@@ -275,9 +275,11 @@ export const mapApiToUi = (vehicle) => {
     id: v.id || v.Id || v.uid || v.UID,
     brand: brand,
     model: modelName,
+    markId: v.model?.mark?.id || v.model?.brand?.id || v.markId || v.MarkId || '',
+    modelId: v.modelId || v.ModelId || v.model?.id || '',
     year: v.year || v.Year || '',
     price: v.pricePerDay || v.PricePerDay || v.price || v.Price || 0,
-    mileage: v.mileage || v.Mileage || v.km || v.Km || v.kilometrage || v.Kilometrage || 0,
+    mileage: v.kilometrage || v.Kilometrage || v.mileage || v.Mileage || v.km || v.Km || 0,
     category: v.model?.category || v.category || v.Category || 'Berline',
     fuel: getFuel(v.fuelType || v.FuelType || v.fuel),
     status: getStatus(v.status || v.Status),
@@ -288,24 +290,28 @@ export const mapApiToUi = (vehicle) => {
   };
 };
 
-export const mapUiToApi = (form, agencyId) => ({
-  year: Number(form.year),
-  modelId: form.modelId,
-  plateNumber: form.plateNumber || "",
-  color: form.color || "Unknown",
-  fuelType: {
-    'Essence': FuelType.Petrol,
-    'Diesel': FuelType.Diesel,
-    'Électrique': FuelType.Electric,
-    'Hybride': FuelType.Hybrid
-  }[form.fuel] || FuelType.Petrol,
-  seats: Number(form.seats),
-  pricePerDay: Number(form.price),
-  mileage: Math.max(0, Number(form.mileage || 0)), // Ensure positive mileage
-  agencyId: agencyId,
-  status: {
-    'available': VehicleStatus.Available,
-    'rented': VehicleStatus.Rented,
-    'maintenance': VehicleStatus.Maintenance
-  }[form.status] || VehicleStatus.Available
-});
+export const mapUiToApi = (form, agencyId) => {
+  const mileageValue = Math.max(0, Number(form.mileage || 0));
+  return {
+    year: Number(form.year),
+    modelId: form.modelId,
+    plateNumber: form.plateNumber || "",
+    color: form.color || "Unknown",
+    fuelType: {
+      'Essence': FuelType.Petrol,
+      'Diesel': FuelType.Diesel,
+      'Électrique': FuelType.Electric,
+      'Hybride': FuelType.Hybrid
+    }[form.fuel] || FuelType.Petrol,
+    seats: Number(form.seats),
+    pricePerDay: Number(form.price),
+    mileage: mileageValue,
+    kilometrage: mileageValue, // Send both for compatibility
+    agencyId: agencyId,
+    status: {
+      'available': VehicleStatus.Available,
+      'rented': VehicleStatus.Rented,
+      'maintenance': VehicleStatus.Maintenance
+    }[form.status] || VehicleStatus.Available
+  };
+};
