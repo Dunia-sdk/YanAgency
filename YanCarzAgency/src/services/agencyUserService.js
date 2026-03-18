@@ -39,7 +39,6 @@ export const getAgencyUsers = async (agencyId) => {
                 
                 // Keep original data just in case
                 originalStatus: user.status,
-                telephone: user.telephone,
                 agencyId: user.agencyId
             };
         });

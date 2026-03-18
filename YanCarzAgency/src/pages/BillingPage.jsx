@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Receipt, FileText, AlertCircle, Clock } from 'lucide-react';
+import { Receipt, FileText, AlertCircle, Clock, Search } from 'lucide-react';
 import Table from '../components/Table';
 import Card from '../components/Card';
 import { invoices as initialInvoices } from '../services/mockData';
@@ -10,6 +10,8 @@ const BillingPage = () => {
     const { t } = useTranslation();
     const { searchQuery = '' } = useOutletContext() || {};
     const [invoices] = useState(initialInvoices);
+    const [localSearch, setLocalSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
 
     const STATUS_LABELS = {
         paid: t('billing.statusPaid'),
@@ -35,13 +37,16 @@ const BillingPage = () => {
         },
     ];
 
+    const query = localSearch || searchQuery;
+
     const filtered = useMemo(() => {
         return invoices.filter(inv => {
-            const matchSearch = inv.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                inv.ref.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchSearch;
+            const matchSearch = inv.client.toLowerCase().includes(query.toLowerCase()) ||
+                inv.ref.toLowerCase().includes(query.toLowerCase());
+            const matchStatus = statusFilter === 'all' || inv.status === statusFilter;
+            return matchSearch && matchStatus;
         });
-    }, [invoices, searchQuery]);
+    }, [invoices, query, statusFilter]);
 
     const stats = useMemo(() => {
         const total = filtered.reduce((acc, inv) => acc + inv.amount, 0);
@@ -57,6 +62,30 @@ const BillingPage = () => {
                     <h1 className="page-title">{t('billing.title')}</h1>
                     <p className="page-subtitle">{t('billing.subtitle', { count: filtered.length })}</p>
                 </div>
+            </div>
+
+            {/* Search + Status filter bar */}
+            <div className="filter-bar">
+                <div style={{ position: 'relative' }}>
+                    <Search size={15} style={{ position: 'absolute', insetInlineStart: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input
+                        type="text"
+                        placeholder={t('billing.searchPlaceholder') || 'Rechercher client, référence...'}
+                        value={localSearch}
+                        onChange={e => setLocalSearch(e.target.value)}
+                        style={{ padding: '0.55rem 1rem 0.55rem 2.2rem', border: '1px solid var(--border)', borderRadius: 8, fontFamily: 'inherit', fontSize: '0.875rem', outline: 'none', width: 260 }}
+                    />
+                </div>
+                {['all', 'paid', 'pending', 'overdue'].map(s => (
+                    <button
+                        key={s}
+                        className="action-btn"
+                        onClick={() => setStatusFilter(s)}
+                        style={{ background: statusFilter === s ? 'var(--primary)' : undefined, color: statusFilter === s ? '#fff' : undefined }}
+                    >
+                        {s === 'all' ? t('all') : STATUS_LABELS[s]}
+                    </button>
+                ))}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>

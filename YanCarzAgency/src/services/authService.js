@@ -26,6 +26,7 @@ const login = async (email, password) => {
         return response.data;
     } catch (error) {
         handleApiError(error, 'Login failed');
+        throw error; // Ensure caller always receives the rejection
     }
 };
 
@@ -175,12 +176,12 @@ const changePassword = async (oldPassword, newPassword) => {
         return response.data;
     } catch (error) {
         handleApiError(error, 'Password change failed');
+        throw error; // Ensure caller always receives the rejection
     }
 };
 
-const sendWelcomeEmail = async (email, firstName) => {
-    // Mocking email sending as backend doesn't have an endpoint yet
-    console.log(`[Mock Email] Sending welcome email to ${email} (Hi ${firstName}!)`);
+const sendWelcomeEmail = async (_email, _firstName) => {
+    // TODO: implement real email endpoint. Currently a silent no-op mock.
     return new Promise(resolve => setTimeout(resolve, 1000));
 };
 

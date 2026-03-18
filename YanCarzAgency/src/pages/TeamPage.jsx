@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { UserPlus, AlertCircle, Loader, Edit, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { UserPlus, AlertCircle, Loader, Edit, Trash2, Search } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Table from '../components/Table';
 import Modal from '../components/Modal';
@@ -11,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 const TeamPage = () => {
     const { t } = useTranslation();
     const { user } = useAuth();
+    const { searchQuery = '' } = useOutletContext() || {};
     const [team, setTeam] = useState([]);
     const [loading, setLoading] = useState(true);
     const [pageError, setPageError] = useState(null);
@@ -19,6 +21,8 @@ const TeamPage = () => {
     const [form, setForm] = useState({ firstName: '', lastName: '', email: '', telephone: '', role: 'Staff', department: '', agencyId: '' });
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [localSearch, setLocalSearch] = useState('');
+    const [roleFilter, setRoleFilter] = useState('all');
 
     const fetchTeam = React.useCallback(async () => {
         try {
@@ -40,6 +44,16 @@ const TeamPage = () => {
     }, [fetchTeam]);
 
     const ROLES = ['Staff', 'Manager', 'Owner'];
+
+    const query = localSearch || searchQuery;
+
+    const filteredTeam = useMemo(() => {
+        return team.filter(m => {
+            const matchSearch = `${m.firstName} ${m.lastName} ${m.email}`.toLowerCase().includes(query.toLowerCase());
+            const matchRole = roleFilter === 'all' || m.role === roleFilter;
+            return matchSearch && matchRole;
+        });
+    }, [team, query, roleFilter]);
 
     const COLUMNS = [
         {
@@ -168,18 +182,35 @@ const TeamPage = () => {
                 </Button>
             </div>
 
-            {/* Role summary pills */}
-            <div className="flex gap-2 mb-6" style={{ marginBottom: '1.5rem' }}>
-                {ROLES.map(role => {
-                    const count = team.filter(m => m.role === role).length;
-                    return (
-                        <div key={role} className="glass-panel flex items-center gap-2"
-                            style={{ padding: '0.6rem 1.1rem', borderRadius: 10, fontSize: '0.875rem' }}>
-                            <span className={`badge badge-${role.toLowerCase()}`}>{t(`team.roles.${role.toLowerCase()}`)}</span>
-                            <span style={{ fontWeight: 700 }}>{count}</span>
-                        </div>
-                    );
-                })}
+            {/* Search + Role filter bar */}
+            <div className="filter-bar">
+                <div style={{ position: 'relative' }}>
+                    <Search size={15} style={{ position: 'absolute', insetInlineStart: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input
+                        type="text"
+                        placeholder={t('team.searchPlaceholder') || 'Rechercher un membre...'}
+                        value={localSearch}
+                        onChange={e => setLocalSearch(e.target.value)}
+                        style={{ padding: '0.55rem 1rem 0.55rem 2.2rem', border: '1px solid var(--border)', borderRadius: 8, fontFamily: 'inherit', fontSize: '0.875rem', outline: 'none', width: 260 }}
+                    />
+                </div>
+                <button
+                    className="action-btn"
+                    onClick={() => setRoleFilter('all')}
+                    style={{ background: roleFilter === 'all' ? 'var(--primary)' : undefined, color: roleFilter === 'all' ? '#fff' : undefined }}
+                >
+                    {t('all')}
+                </button>
+                {ROLES.map(role => (
+                    <button
+                        key={role}
+                        className="action-btn"
+                        onClick={() => setRoleFilter(role)}
+                        style={{ background: roleFilter === role ? 'var(--primary)' : undefined, color: roleFilter === role ? '#fff' : undefined }}
+                    >
+                        {t(`team.roles.${role.toLowerCase()}`)} <span style={{ fontWeight: 700, marginLeft: 4 }}>({team.filter(m => m.role === role).length})</span>
+                    </button>
+                ))}
             </div>
 
             {loading ? (
@@ -200,7 +231,7 @@ const TeamPage = () => {
                     </div>
                 </div>
             ) : (
-                <Table columns={COLUMNS} data={team} emptyMessage={t('team.noMembers')} />
+                <Table columns={COLUMNS} data={filteredTeam} emptyMessage={t('team.noMembers')} />
             )}
 
             {/* Invite / Edit Modal */}

@@ -68,12 +68,13 @@ const VehiclesPage = () => {
     const query = localSearch || searchQuery;
 
     const COLUMNS = (onEdit, onDelete, onView) => [
-        
-        { key: 'brand', label: t('vehicles.brand'), width: '12%' },
+        // brand, mileage, category: real API value per row, with a static fallback if missing
+        { key: 'brand', label: t('vehicles.brand'), width: '12%', render: v => v || 'Renault' },
         { key: 'model', label: t('vehicles.model'), width: '14%' },
         { key: 'year', label: t('vehicles.year'), width: '8%' },
-        { key: 'mileage', label: t('vehicles.mileage'), width: '8%', render: v => `${v?.toLocaleString()} km` },
-        { key: 'category', label: t('vehicles.category'), width: '10%' },
+        { key: 'mileage', label: t('vehicles.mileage'), width: '8%', render: v => v ? `${Number(v).toLocaleString()} km` : '—' },
+        { key: 'category', label: t('vehicles.category'), width: '10%', render: v => v || 'Berline' },
+        // Dynamic columns (fully from API)
         { key: 'fuel', label: t('vehicles.fuel'), width: '10%' },
         { key: 'price', label: t('vehicles.pricePerDay'), width: '10%', render: v => `${v} MAD` },
         { key: 'status', label: t('status'), width: '12%', render: v => <span className={`badge badge-${v}`}>{STATUS_LABELS[v] || v}</span> },
@@ -101,19 +102,19 @@ const VehiclesPage = () => {
         });
     }, [vehicles, query, filters, t]);
 
-    const openAdd = () => { 
-        setForm(emptyForm); 
-        setEditVehicle(null); 
-        setModels([]); 
-        setModal(true); 
-        fetchMarks(); 
+    const openAdd = () => {
+        setForm(emptyForm);
+        setEditVehicle(null);
+        setModels([]);
+        setModal(true);
+        fetchMarks();
     };
-    
-    const openEdit = async (v) => { 
-        setForm({ ...v }); 
-        setEditVehicle(v); 
-        setModal(true); 
-        
+
+    const openEdit = async (v) => {
+        setForm({ ...v });
+        setEditVehicle(v);
+        setModal(true);
+
         await fetchMarks();
         if (v.markId) {
             fetchModels(v.markId);
@@ -154,11 +155,11 @@ const VehiclesPage = () => {
 
     const handleFormChange = e => {
         const { name, value } = e.target;
-        
+
         if (name === 'brand') {
             const selectedMark = marks.find(m => m.id === value);
-            setForm(prev => ({ 
-                ...prev, 
+            setForm(prev => ({
+                ...prev,
                 brand: selectedMark ? selectedMark.name : '',
                 markId: value,
                 model: '', // Reset model
@@ -176,7 +177,7 @@ const VehiclesPage = () => {
             setForm(prev => ({ ...prev, [name]: value }));
         }
     };
-    
+
     const handleFilterChange = (key, val) => setFilters(prev => ({ ...prev, [key]: val }));
 
     const handleSave = async () => {
@@ -198,19 +199,19 @@ const VehiclesPage = () => {
 
         setLoading(true);
         try {
-            // agencyId now comes from user context (correctly populated after login/signup)
-            const agencyId = user?.agencyId || localStorage.getItem('agencyId');
-            
+            // agencyId comes exclusively from the AuthContext (single source of truth)
+            const agencyId = user?.agencyId;
+
             // Validate agencyId before sending to API to prevent 400 Bad Request (Guid conversion error)
             const isValidGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(agencyId);
-            
+
             if (!agencyId || !isValidGuid) {
                 console.warn('Invalid or missing Agency ID:', agencyId);
                 alert(`${t('errors.invalidAgency') || "ID d'agence invalide."} \n\n${t('errors.reconnectSuggested') || "Veuillez vous déconnecter et vous reconnecter pour rafraîchir votre session."}`);
                 setLoading(false);
                 return;
             }
-            
+
             const apiData = mapUiToApi(form, agencyId);
 
             if (editVehicle) {
@@ -223,13 +224,13 @@ const VehiclesPage = () => {
                 // If response is just a string (the ID), use it. If it's an object, merge it.
                 const newId = typeof response === 'string' ? response : (response.id || response.Id || response.uid);
                 const resultObj = typeof response === 'object' ? response : {};
-                
+
                 const created = mapApiToUi({
                     ...form,
                     ...resultObj,
                     id: newId
                 });
-                
+
                 setVehicles(prev => [...prev, created]);
             }
             closeModal();
@@ -323,11 +324,11 @@ const VehiclesPage = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
                     <div className="input-group">
                         <label className="input-label">{t('vehicles.brand')} *</label>
-                        <select 
-                            className="input-field select-input" 
-                            name="brand" 
-                            value={form.markId || ''} 
-                            onChange={handleFormChange} 
+                        <select
+                            className="input-field select-input"
+                            name="brand"
+                            value={form.markId || ''}
+                            onChange={handleFormChange}
                             style={{ padding: '0.75rem 1rem' }}
                             disabled={loadingMarks}
                             required
@@ -339,11 +340,11 @@ const VehiclesPage = () => {
 
                     <div className="input-group">
                         <label className="input-label">{t('vehicles.model')} *</label>
-                        <select 
-                            className="input-field select-input" 
-                            name="model" 
-                            value={form.modelId || ''} 
-                            onChange={handleFormChange} 
+                        <select
+                            className="input-field select-input"
+                            name="model"
+                            value={form.modelId || ''}
+                            onChange={handleFormChange}
                             style={{ padding: '0.75rem 1rem' }}
                             disabled={!form.markId || loadingModels}
                             required

@@ -24,15 +24,47 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Handle 401 Unauthorized globally
+        // Handle 401 Unauthorized globally — wipe all session data to avoid stale state
         if (error.response && error.response.status === 401) {
-            // - [x] Research current signup implementation <!-- id: 0 -->
-            // - [x] Research new API endpoints in Swagger <!-- id: 1 -->
-            localStorage.removeItem('token');
+            ['token', 'agencyId', 'agencyName', 'firstName', 'lastName', 'isActive'].forEach(
+                key => localStorage.removeItem(key)
+            );
             window.location.href = '/login';
         }
         return Promise.reject(error);
     }
 );
+
+/**
+ * Shared Axios error normaliser — converts an AxiosError into a plain,
+ * predictable object and re-throws it.
+ * Used by vehicleService, bookingService, etc.
+ * @param {import('axios').AxiosError} error
+ */
+export const handleAxiosError = (error) => {
+    if (error.response) {
+        const { status, data } = error.response;
+        let message = `Request failed with status ${status}`;
+        if (data) {
+            if (typeof data === 'string') message = data;
+            else if (data.message) message = data.message;
+            else if (data.title) message = data.title;
+            else if (data.errors) {
+                message = Object.entries(data.errors)
+                    .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+                    .join('\n');
+            }
+        }
+        throw { message, status, data };
+    }
+    if (error.request) {
+        throw {
+            message: 'No response received from the server. Please check your connection.',
+            status: null,
+            data: null,
+        };
+    }
+    throw { message: error.message, status: null, data: null };
+};
 
 export default api;

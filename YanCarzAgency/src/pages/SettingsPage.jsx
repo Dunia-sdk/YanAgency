@@ -137,7 +137,7 @@ const SettingsPage = () => {
                     />
                     <InputField
                         label={t('settings.confirmNewPassword')}
-                        name="confirmNewPassword"
+                        name="confirmPassword"
                         type="password"
                         value={securityForm.confirmPassword}
                         onChange={handleSecurityChange}

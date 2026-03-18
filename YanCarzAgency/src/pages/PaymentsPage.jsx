@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CreditCard, Calendar, Download } from 'lucide-react';
+import { CreditCard, Calendar, Download, Search } from 'lucide-react';
 import Table from '../components/Table';
 import { payments as initialPayments } from '../services/mockData';
 
@@ -10,6 +10,7 @@ const PaymentsPage = () => {
     const { searchQuery = '' } = useOutletContext() || {};
     const [payments] = useState(initialPayments);
     const [filters, setFilters] = useState({ method: 'all' });
+    const [localSearch, setLocalSearch] = useState('');
 
     const METHODS = [
         { value: 'all', label: t('all') },
@@ -42,12 +43,13 @@ const PaymentsPage = () => {
     ];
 
     const filtered = useMemo(() => {
+        const query = localSearch || searchQuery;
         return payments.filter(p => {
-            const matchSearch = p.client.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchSearch = p.client.toLowerCase().includes(query.toLowerCase());
             const matchMethod = filters.method === 'all' || p.method === filters.method;
             return matchSearch && matchMethod;
         });
-    }, [payments, searchQuery, filters]);
+    }, [payments, searchQuery, localSearch, filters]);
 
     const handleFilterChange = (val) => setFilters({ method: val });
 
@@ -61,12 +63,20 @@ const PaymentsPage = () => {
             </div>
 
             <div className="filter-bar">
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div className="input-group" style={{ marginBottom: 0 }}>
-                        <select className="select-input" value={filters.method} onChange={e => handleFilterChange(e.target.value)}>
-                            {METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-                        </select>
-                    </div>
+                <div style={{ position: 'relative' }}>
+                    <Search size={15} style={{ position: 'absolute', insetInlineStart: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input
+                        type="text"
+                        placeholder={t('payments.searchPlaceholder') || 'Rechercher un client...'}
+                        value={localSearch}
+                        onChange={e => setLocalSearch(e.target.value)}
+                        style={{ padding: '0.55rem 1rem 0.55rem 2.2rem', border: '1px solid var(--border)', borderRadius: 8, fontFamily: 'inherit', fontSize: '0.875rem', outline: 'none', width: 230 }}
+                    />
+                </div>
+                <div className="input-group" style={{ marginBottom: 0 }}>
+                    <select className="select-input" value={filters.method} onChange={e => handleFilterChange(e.target.value)}>
+                        {METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                    </select>
                 </div>
                 <div className="flex gap-2">
                     <div className="glass-panel items-center flex gap-2" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>

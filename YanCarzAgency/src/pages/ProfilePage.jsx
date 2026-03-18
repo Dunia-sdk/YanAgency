@@ -9,15 +9,21 @@ const ProfilePage = () => {
     const { user, logout } = useAuth();
     const { t } = useTranslation();
 
-    // Mock user details since auth context might just have { username, role }
-    const profileUser = {
-        name: user?.username || 'Jean-Paul Marché',
-        email: user?.email || 'jp@yancarz.com',
-        role: user?.role || 'Directeur Général',
-        phone: '+212 6 11 22 33 44',
-        location: 'Casablanca, Maroc',
-        joined: 'Janvier 2022'
-    };
+    // Build display name from signup data stored in AuthContext
+    const firstName  = user?.firstName || '';
+    const lastName   = user?.lastName  || '';
+    const fullName   = [firstName, lastName].filter(Boolean).join(' ') || user?.name || '—';
+    const email      = user?.email      || '—';
+    const role       = user?.role       || 'Admin';
+    const agencyName = user?.agencyName || 'YanCarz Agency';
+
+    // Avatar initials: up to 2 letters from the full name
+    const initials = fullName
+        .split(' ')
+        .map(n => n?.[0] || '')
+        .join('')
+        .toUpperCase()
+        .slice(0, 2) || '?';
 
     return (
         <div className="pb-12 space-y-8 animate-[slideUpFade_0.5s_ease-out]">
@@ -45,7 +51,7 @@ const ProfilePage = () => {
                             <div className="relative group mb-6 -mt-16 group transition-transform duration-500 hover:rotate-3">
                                 <div className="w-32 h-32 bg-white border-[8px] border-white shadow-2xl flex items-center justify-center overflow-hidden rounded-[48px]">
                                     <span className="text-5xl font-900 text-primary uppercase">
-                                        {profileUser.name.split(' ').map(n => n[0]).join('')}
+                                        {initials}
                                     </span>
                                 </div>
                                 <button 
@@ -56,16 +62,16 @@ const ProfilePage = () => {
                                 </button>
                             </div>
 
-                            <h2 className="font-900 text-3xl text-main tracking-tight mb-2 uppercase">{profileUser.name}</h2>
+                            <h2 className="font-900 text-3xl text-main tracking-tight mb-2 uppercase">{fullName}</h2>
                             <p className="text-[10px] font-800 text-muted uppercase tracking-[0.2em] mb-8 inline-block px-4 py-1.5 bg-accent/60 rounded-full">
-                                {profileUser.role}
+                                {role}
                             </p>
 
                             <div className="flex flex-col gap-6 w-full text-left pt-6 border-t border-border/80">
                                 {[
-                                    { icon: <Mail size={18} />, label: t('profile.professionalEmail'), value: profileUser.email },
-                                    { icon: <Phone size={18} />, label: t('profile.phone'), value: profileUser.phone },
-                                    { icon: <MapPin size={18} />, label: t('profile.office'), value: profileUser.location }
+                                    { icon: <Mail size={18} />,   label: t('profile.professionalEmail'), value: email },
+                                    { icon: <Shield size={18} />, label: t('profile.systemRole'),        value: role },
+                                    { icon: <MapPin size={18} />, label: t('profile.office'),             value: agencyName }
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-5 group transition-all">
                                         <div className="p-3.5 bg-accent text-primary rounded-2xl group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
@@ -93,23 +99,30 @@ const ProfilePage = () => {
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('profile.fullName')}</label>
-                                    <input type="text" defaultValue={profileUser.name} className="select-input w-full font-800 text-main" />
+                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('profile.firstName') || 'Prénom'}</label>
+                                    <input type="text" defaultValue={firstName} className="select-input w-full font-800 text-main" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('email')}</label>
-                                    <input type="email" defaultValue={profileUser.email} className="select-input w-full font-800 text-main" />
+                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('profile.lastName') || 'Nom'}</label>
+                                    <input type="text" defaultValue={lastName} className="select-input w-full font-800 text-main" />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('phoneNumber')}</label>
-                                    <input type="text" defaultValue={profileUser.phone} className="select-input w-full font-800 text-main" />
+                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('email')}</label>
+                                    <input type="email" defaultValue={email} className="select-input w-full font-800 text-main" />
                                 </div>
                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('profile.agencyName') || 'Agence'}</label>
+                                    <input type="text" defaultValue={agencyName} disabled className="select-input w-full font-800 text-main opacity-50 cursor-not-allowed bg-accent/30" />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
                                     <label className="text-[10px] font-900 text-muted uppercase tracking-[0.2em]">{t('profile.systemRole')}</label>
-                                    <input type="text" defaultValue={profileUser.role} disabled className="select-input w-full font-800 text-main opacity-50 cursor-not-allowed bg-accent/30" />
+                                    <input type="text" defaultValue={role} disabled className="select-input w-full font-800 text-main opacity-50 cursor-not-allowed bg-accent/30" />
                                 </div>
                             </div>
 

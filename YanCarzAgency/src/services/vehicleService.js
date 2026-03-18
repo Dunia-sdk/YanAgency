@@ -1,4 +1,4 @@
-import api from './api';
+import api, { handleAxiosError } from './api';
 
 // ─── Enum reference ───────────────────────────────────────────────────────────
 
@@ -59,41 +59,6 @@ export const VehicleStatus = Object.freeze({
  *   status:       VehicleStatus.Available, // 0
  * });
  */
-// ─── Shared error normaliser ─────────────────────────────────────────────────
-
-/**
- * Converts an Axios error into a plain, predictable object and re-throws it.
- * @param {import('axios').AxiosError} error
- */
-const handleAxiosError = (error) => {
-  if (error.response) {
-    const { status, data } = error.response;
-    let message = `Request failed with status ${status}`;
-    
-    // Extract message from common API error formats
-    if (data) {
-      if (typeof data === 'string') message = data;
-      else if (data.message) message = data.message;
-      else if (data.title) message = data.title;
-      else if (data.errors) {
-        // Handle ASP.NET Core Validation Errors
-        message = Object.entries(data.errors)
-          .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
-          .join('\n');
-      }
-    }
-    
-    throw { message, status, data };
-  }
-  if (error.request) {
-    throw {
-      message: 'No response received from the server. Please check your connection.',
-      status: null,
-      data: null,
-    };
-  }
-  throw { message: error.message, status: null, data: null };
-};
 
 /**
  * GET /api/agency/AgencyCar/{id}

@@ -7,6 +7,9 @@ const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
+/** Returns id only if it is a real, non-null string value */
+const getValidId = (id) => (id && id !== 'null' && id !== 'undefined') ? id : null;
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token'));
@@ -20,7 +23,6 @@ export const AuthProvider = ({ children }) => {
                 const decoded = jwtDecode(storedToken);
                 // Check if token is expired
                 if (decoded.exp * 1000 > Date.now()) {
-                    const getValidId = (id) => (id && id !== 'null' && id !== 'undefined') ? id : null;
                     const agencyId = getValidId(decoded.agencyId) || getValidId(decoded.agency_id) || getValidId(decoded.AgencyId) || getValidId(localStorage.getItem('agencyId'));
 
                     setUser({
@@ -52,7 +54,6 @@ export const AuthProvider = ({ children }) => {
         try {
             const data = await authService.login(email, password);
             const decoded = jwtDecode(data.token);
-            const getValidId = (id) => (id && id !== 'null' && id !== 'undefined') ? id : null;
             const agencyId = getValidId(decoded.agencyId) || getValidId(decoded.agency_id) || getValidId(decoded.AgencyId) || getValidId(data.user?.agencyId) || getValidId(localStorage.getItem('agencyId'));
 
             const userData = {
@@ -89,8 +90,6 @@ export const AuthProvider = ({ children }) => {
         try {
             const data = await authService.signup(signupData);
             const decoded = jwtDecode(data.token);
-            const getValidId = (id) => (id && id !== 'null' && id !== 'undefined') ? id : null;
-            
             // Priority: Service Response > Token Claims > LocalStorage
             const agencyId = getValidId(data.user?.agencyId) || 
                            getValidId(decoded.agencyId) || 

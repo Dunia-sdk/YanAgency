@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, RefreshCw } from 'lucide-react';
+import { ChevronDown, RefreshCw, Search } from 'lucide-react';
 import Table from '../components/Table';
 import * as bookingService from '../services/bookingService';
 
@@ -14,6 +14,7 @@ const ReservationsPage = () => {
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState('all');
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [localSearch, setLocalSearch] = useState('');
 
     const loadBookings = async () => {
         setLoading(true);
@@ -57,12 +58,13 @@ const ReservationsPage = () => {
     };
 
     const filtered = useMemo(() => {
+        const query = localSearch || searchQuery;
         return (reservations || []).filter(r => {
             const matchFilter = statusFilter === 'all' || r.status === statusFilter;
-            const matchSearch = `${r.client} ${r.vehicle} ${r.id}`.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchSearch = `${r.client} ${r.vehicle} ${r.id}`.toLowerCase().includes(query.toLowerCase());
             return matchFilter && matchSearch;
         });
-    }, [reservations, statusFilter, searchQuery]);
+    }, [reservations, statusFilter, searchQuery, localSearch]);
 
     const applyAction = (id, actionKey) => {
         if (actionKey === 'actionDetails') {
@@ -133,6 +135,16 @@ const ReservationsPage = () => {
             </div>
 
             <div className="filter-bar">
+                <div style={{ position: 'relative' }}>
+                    <Search size={15} style={{ position: 'absolute', insetInlineStart: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input
+                        type="text"
+                        placeholder={t('reservations.searchPlaceholder') || 'Rechercher client, véhicule, ref...'}
+                        value={localSearch}
+                        onChange={e => setLocalSearch(e.target.value)}
+                        style={{ padding: '0.55rem 1rem 0.55rem 2.2rem', border: '1px solid var(--border)', borderRadius: 8, fontFamily: 'inherit', fontSize: '0.875rem', outline: 'none', width: 260 }}
+                    />
+                </div>
                 <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>{t('reservations.filterByStatus')}</span>
                 {STATUS_OPTS.map(s => (
                     <button key={s.value} onClick={() => setStatusFilter(s.value)}
