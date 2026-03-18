@@ -32,7 +32,7 @@ const SignupPage = () => {
     useEffect(() => {
         const fetchCities = async () => {
             try {
-                const res = await api.get('/shared/City');
+                const res = await api.get('shared/City');
                 const cityOptions = [
                     { value: '', label: t('selectCity'), disabled: true },
                     ...res.data.map(c => ({ value: c.id, label: c.name }))

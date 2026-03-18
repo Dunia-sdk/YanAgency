@@ -115,7 +115,10 @@ export const AuthProvider = ({ children }) => {
             if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
             if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
             localStorage.setItem('isActive', userData.isActive);
-            if (userData.agencyId) localStorage.setItem('agencyId', userData.agencyId);
+            if (userData.agencyId) {
+                console.log('Saving Agency ID to localStorage:', userData.agencyId);
+                localStorage.setItem('agencyId', userData.agencyId);
+            }
 
             setToken(data.token);
             return data;

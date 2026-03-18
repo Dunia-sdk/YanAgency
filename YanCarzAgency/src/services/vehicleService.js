@@ -105,7 +105,7 @@ const handleAxiosError = (error) => {
  */
 export const getVehicleById = async (id) => {
   try {
-    const response = await api.get(`/agency/AgencyCar/${id}`);
+    const response = await api.get(`agency/AgencyCar/${id}`);
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -121,7 +121,7 @@ export const getVehicleById = async (id) => {
  */
 export const getVehicles = async () => {
   try {
-    const response = await api.get('/agency/AgencyCar');
+    const response = await api.get('agency/AgencyCar');
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -134,7 +134,7 @@ export const getVehicles = async () => {
  */
 export const getMarks = async () => {
   try {
-    const response = await api.get('/shared/Mark');
+    const response = await api.get('shared/Mark');
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -147,7 +147,7 @@ export const getMarks = async () => {
  */
 export const getModelsByMark = async (markId) => {
   try {
-    const response = await api.get(`/shared/Model?markId=${markId}`);
+    const response = await api.get(`shared/Model?markId=${markId}`);
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -164,7 +164,7 @@ export const getModelsByMark = async (markId) => {
  */
 export const createVehicle = async (vehicleData) => {
   try {
-    const response = await api.post('/agency/AgencyCar', vehicleData);
+    const response = await api.post('agency/AgencyCar', vehicleData);
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -201,7 +201,7 @@ export const createVehicle = async (vehicleData) => {
  */
 export const updateVehicle = async (vehicleId, vehicleData) => {
   try {
-    const response = await api.put(`/agency/AgencyCar/${vehicleId}`, vehicleData);
+    const response = await api.put(`agency/AgencyCar/${vehicleId}`, vehicleData);
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -222,7 +222,7 @@ export const updateVehicle = async (vehicleId, vehicleData) => {
  */
 export const deleteVehicle = async (vehicleId) => {
   try {
-    await api.delete(`/agency/AgencyCar/${vehicleId}`);
+    await api.delete(`agency/AgencyCar/${vehicleId}`);
     return true;
   } catch (error) {
     handleAxiosError(error);

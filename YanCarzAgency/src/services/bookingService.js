@@ -35,7 +35,7 @@ const handleAxiosError = (error) => {
  */
 export const getBookingById = async (id) => {
     try {
-        const response = await api.get(`/agency/Bookings/${id}`);
+        const response = await api.get(`agency/Bookings/${id}`);
         return response.data;
     } catch (error) {
         handleAxiosError(error);
@@ -48,7 +48,7 @@ export const getBookingById = async (id) => {
  */
 export const getBookings = async () => {
     try {
-        const response = await api.get('/agency/Bookings');
+        const response = await api.get('agency/Bookings');
         return response.data;
     } catch (error) {
         handleAxiosError(error);
@@ -72,7 +72,7 @@ export const getBookings = async () => {
  */
 export const createBooking = async (bookingData) => {
     try {
-        const response = await api.post('/agency/Bookings', bookingData);
+        const response = await api.post('agency/Bookings', bookingData);
         return response.data;
     } catch (error) {
         handleAxiosError(error);

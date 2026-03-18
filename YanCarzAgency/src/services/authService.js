@@ -19,7 +19,7 @@ const login = async (email, password) => {
         return response;
     }
     try {
-        const response = await api.post('/Auth/login', { email, password });
+        const response = await api.post('Auth/login', { email, password });
         if (response.data.token) {
             localStorage.setItem('token', response.data.token);
         }
@@ -42,7 +42,7 @@ const signup = async (formData) => {
     try {
         // 1. Agency and User creation via single API endpoint
         // Payload compatibility: send both firstName and firstMame (backend might expect firstMame)
-        const response = await api.post('/agency/Agency', {
+        const response = await api.post('agency/Agency', {
             name: formData.name,
             eMail: formData.email,
             nbrPhone: formData.phone,
@@ -171,7 +171,7 @@ const changePassword = async (oldPassword, newPassword) => {
         return { message: 'Password changed successfully' };
     }
     try {
-        const response = await api.post('/Auth/change-password', { oldPassword, newPassword });
+        const response = await api.post('Auth/change-password', { oldPassword, newPassword });
         return response.data;
     } catch (error) {
         handleApiError(error, 'Password change failed');

@@ -3,7 +3,10 @@ import axios from 'axios';
 export const isMockMode = import.meta.env.VITE_USE_MOCK === 'true';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api',
+    baseURL: import.meta.env.VITE_API_URL || 
+             (import.meta.env.DEV 
+                ? '/api/' 
+                : 'https://yancarz-be.azurewebsites.net/api/'),
     headers: {
         'Content-Type': 'application/json'
     }
