@@ -1,14 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCheck } from 'lucide-react';
-
-const NOTIFS = [
-    { id: 1, type: 'reservation', msgKey: 'n1', time: '5min', read: false },
-    { id: 2, type: 'vehicle', msgKey: 'n2', time: '1h', read: false },
-    { id: 3, type: 'payment', msgKey: 'n3', time: '2h', read: false },
-    { id: 4, type: 'team', msgKey: 'n4', time: 'yesterday', read: true },
-    { id: 5, type: 'reservation', msgKey: 'n5', time: 'yesterday', read: true },
-];
+import { useNotifications } from '../context/NotificationContext';
 
 const TYPE_ICON = {
     reservation: '📅', vehicle: '🚗', payment: '💳', team: '👥'
@@ -16,11 +9,8 @@ const TYPE_ICON = {
 
 const NotificationsPage = () => {
     const { t } = useTranslation();
-    const [notifs, setNotifs] = useState(NOTIFS);
-    const unread = notifs.filter(n => !n.read).length;
-
-    const markAllRead = () => setNotifs(prev => prev.map(n => ({ ...n, read: true })));
-    const markRead = (id) => setNotifs(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    const { notifications, markRead, markAllRead } = useNotifications();
+    const unread = notifications.filter(n => !n.read).length;
 
     return (
         <div style={{ animation: 'slideUpFade 0.4s ease' }}>
@@ -37,23 +27,34 @@ const NotificationsPage = () => {
             </div>
 
             <div className="glass-panel" style={{ overflow: 'hidden' }}>
-                {notifs.map((n, i) => (
-                    <div key={n.id} onClick={() => markRead(n.id)} style={{
-                        display: 'flex', alignItems: 'flex-start', gap: '1rem',
-                        padding: '1.1rem 1.5rem',
-                        background: n.read ? 'transparent' : 'var(--primary-light)',
-                        borderBottom: i < notifs.length - 1 ? '1px solid var(--border)' : 'none',
-                        cursor: n.read ? 'default' : 'pointer',
-                        transition: 'background 0.2s',
-                    }}>
-                        <div style={{ fontSize: '1.5rem', lineHeight: 1 }}>{TYPE_ICON[n.type]}</div>
-                        <div style={{ flex: 1 }}>
-                            <p style={{ margin: 0, color: 'var(--text-main)', fontWeight: n.read ? 400 : 600, fontSize: '0.9rem' }}>{t(`notifications.messages.${n.msgKey}`)}</p>
-                            <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t(`notifications.times.${n.time}`)}</p>
-                        </div>
-                        {!n.read && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--primary)', marginTop: 4, flexShrink: 0 }} />}
+                {notifications.length === 0 ? (
+                    <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                        <p>{t('notifications.empty') || 'Aucune notification pour le moment.'}</p>
                     </div>
-                ))}
+                ) : (
+                    notifications.map((n, i) => (
+                        <div key={n.id || i} onClick={() => markRead(n.id)} style={{
+                            display: 'flex', alignItems: 'flex-start', gap: '1rem',
+                            padding: '1.1rem 1.5rem',
+                            background: n.read ? 'transparent' : 'var(--primary-light)',
+                            borderBottom: i < notifications.length - 1 ? '1px solid var(--border)' : 'none',
+                            cursor: n.read ? 'default' : 'pointer',
+                            transition: 'background 0.2s',
+                        }}>
+                            <div style={{ fontSize: '1.5rem', lineHeight: 1 }}>{TYPE_ICON[n.type] || '🔔'}</div>
+                            <div style={{ flex: 1 }}>
+                                <p style={{ margin: 0, color: 'var(--text-main)', fontWeight: n.read ? 400 : 600, fontSize: '0.9rem' }}>
+                                    {/* Handle hardcoded translation keys or dynamic messages */}
+                                    {n.msgKey ? t(`notifications.messages.${n.msgKey}`) : n.msg}
+                                </p>
+                                <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                                    {n.time instanceof Date ? n.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (n.timeKey ? t(`notifications.times.${n.timeKey}`) : n.time)}
+                                </p>
+                            </div>
+                            {!n.read && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--primary)', marginTop: 4, flexShrink: 0 }} />}
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );

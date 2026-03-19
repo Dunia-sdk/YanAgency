@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Car, Fuel, Settings, Calendar, Shield, MapPin, Tag, CheckCircle2, AlertCircle, Sparkles, ChevronRight, Info, Zap, Gauge, Star } from 'lucide-react';
 import Button from '../components/Button';
+import CreateReservationModal from '../components/CreateReservationModal';
 import { getVehicleById, mapApiToUi } from '../services/vehicleService';
 
 const VehicleDetailPage = () => {
@@ -12,6 +13,7 @@ const VehicleDetailPage = () => {
     const [vehicle, setVehicle] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isResModalOpen, setIsResModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchVehicle = async () => {
@@ -54,6 +56,14 @@ const VehicleDetailPage = () => {
 
     return (
         <div className="pb-12 space-y-8 animate-[slideUpFade_0.5s_ease-out]">
+            {isResModalOpen && (
+                <CreateReservationModal 
+                    isOpen={isResModalOpen} 
+                    onClose={() => setIsResModalOpen(false)} 
+                    vehicleId={vehicle?.id || id} 
+                    vehiclePrice={vehicle?.price} 
+                />
+            )}
             {/* 1. Enhanced Header with Breadcrumbs */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-white p-8 rounded-[24px] shadow-sm border border-border/">
                 <div className="flex items-center gap-6">
@@ -156,7 +166,7 @@ const VehicleDetailPage = () => {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                <Button className="w-full h-14 bg-primary text-white font-900 uppercase tracking-[0.2em] shadow-lg border-none hover:bg-primary-hover">
+                                <Button onClick={() => setIsResModalOpen(true)} className="w-full h-14 bg-primary text-white font-900 uppercase tracking-[0.2em] shadow-lg border-none hover:bg-primary-hover">
                                     {t('vehicleDetails.createReservation')}
                                 </Button>
                                 <Button variant="outline" className="w-full h-14 border-white/20 text-white font-800 uppercase tracking-[0.2em] hover:bg-white/10">

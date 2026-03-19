@@ -1,8 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, ChevronDown } from 'lucide-react';
 import * as bookingService from '../services/bookingService';
+import { useNotifications } from '../context/NotificationContext';
 import './ReservationsPage.css';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -39,6 +40,11 @@ const ReservationsPage = () => {
     const { t } = useTranslation();
     const { searchQuery = '' } = useOutletContext() || {};
     const navigate = useNavigate();
+    const { addNotification } = useNotifications();
+
+    // Track seen booking IDs to detect newly added ones
+    const seenBookingIds = useRef(new Set());
+    const isFirstLoad = useRef(true);
 
     // ── Core state ─────────────────────────────────────────────────────────────
     const [reservations, setReservations] = useState([]);
@@ -91,6 +97,26 @@ const ReservationsPage = () => {
         try {
             const data       = await bookingService.getBookings();
             const mappedData = (data || []).map(bookingService.mapApiToUi);
+            
+            // Check for new bookings to notify
+            if (!isFirstLoad.current) {
+                mappedData.forEach(booking => {
+                    if (!seenBookingIds.current.has(booking.id)) {
+                        addNotification({
+                            id: `res-${booking.id}`,
+                            type: 'reservation',
+                            msg: `Nouvelle réservation : ${booking.client} - ${booking.vehicle}`,
+                            time: new Date()
+                        });
+                    }
+                });
+            } else {
+                isFirstLoad.current = false;
+            }
+
+            // Update seen IDs
+            mappedData.forEach(booking => seenBookingIds.current.add(booking.id));
+
             setReservations(mappedData);
         } catch (err) {
             console.error('Failed to fetch bookings:', err);

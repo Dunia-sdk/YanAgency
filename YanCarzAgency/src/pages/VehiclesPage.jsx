@@ -128,13 +128,15 @@ const VehiclesPage = () => {
     useEffect(() => { fetchVehicles(); }, []);
 
     const fetchMarks = async () => {
-        if (marks.length > 0) return;
+        if (marks.length > 0) return marks; // already cached
         setLoadingMarks(true);
         try {
             const data = await getMarks();
             setMarks(data || []);
+            return data || [];
         } catch (err) {
             console.error('Failed to fetch marks:', err);
+            return [];
         } finally {
             setLoadingMarks(false);
         }
@@ -196,7 +198,7 @@ const VehiclesPage = () => {
         setEditVehicle(v);
         setModal(true);
         await fetchMarks();
-        if (v.markId) fetchModels(v.markId);
+        if (v.markId) await fetchModels(v.markId);
     };
 
     const openView = (v) => navigate(`/vehicles/${v.id}`);
@@ -244,7 +246,11 @@ const VehiclesPage = () => {
 
             if (editVehicle) {
                 const response = await updateVehicle(editVehicle.id, apiData);
-                const updated  = mapApiToUi({ ...form, ...(typeof response === 'object' ? response : {}) });
+                // Some APIs return 204/empty body on PUT — fall back to form data
+                const merged = typeof response === 'object' && response !== null
+                    ? { ...editVehicle, ...form, ...response }
+                    : { ...editVehicle, ...form };
+                const updated = mapApiToUi(merged);
                 setVehicles(prev => prev.map(v => v.id === editVehicle.id ? updated : v));
             } else {
                 const response = await createVehicle(apiData);
