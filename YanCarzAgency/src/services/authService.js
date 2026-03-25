@@ -41,8 +41,10 @@ const signup = async (formData) => {
         return response;
     }
     try {
-        // 1. Agency and User creation via single API endpoint
-        // Payload compatibility: send both firstName and firstMame (backend might expect firstMame)
+        // Clear any old agency ID
+        localStorage.removeItem('agencyId');
+
+        // Agency and User creation via single API endpoint
         const response = await api.post('agency/Agency', {
             name: formData.name,
             eMail: formData.email,
@@ -53,50 +55,16 @@ const signup = async (formData) => {
             address: "",
             idCity: formData.idCity
         });
-        
-        const agencyData = response.data;
-        const guidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        let agencyId = null;
 
-        // --- Extreme Robust Extraction ---
-        // A. Check Location header first (standard for 201 Created)
-        const locationHeader = response.headers?.location;
-        if (locationHeader) {
-            // Split and find the first part that looks like a GUID, starting from the end
-            const parts = locationHeader.split('/').filter(Boolean);
-            const guidPart = [...parts].reverse().find(p => guidRegex.test(p));
-            if (guidPart) {
-                agencyId = guidPart;
-            }
+        // Capture the real agency ID if provided by the backend
+        const capturedAgencyId = response.data?.id || response.data?.agencyId || null;
+        if (capturedAgencyId) {
+            localStorage.setItem('agencyId', capturedAgencyId);
+            console.log('Real Agency ID captured during signup:', capturedAgencyId);
         }
 
-        // B. Check common keys
-        if (!agencyId && agencyData) {
-            agencyId = agencyData.id || agencyData.agencyId || agencyData.AgencyId || agencyData.agencyID;
-        }
-
-        // C. Direct string check
-        if (!agencyId && typeof agencyData === 'string' && guidRegex.test(agencyData)) {
-            agencyId = agencyData;
-        }
-
-        // D. Recursive Search
-        if (!agencyId && agencyData && typeof agencyData === 'object') {
-            const searchGuid = (obj) => {
-                for (const key in obj) {
-                    const value = obj[key];
-                    if (typeof value === 'string' && guidRegex.test(value)) return value;
-                    if (value && typeof value === 'object') {
-                        const found = searchGuid(value);
-                        if (found) return found;
-                    }
-                }
-                return null;
-            };
-            agencyId = searchGuid(agencyData);
-        }
-
-        // 2. Build a temporary session from signup data
+        // By user request: immediately enter the dashboard without a real token.
+        // We generate a temp fake token with the captured agencyId (or null if missing).
         const tempUser = {
             email: formData.email,
             name: `${formData.firstName} ${formData.lastName}`,
@@ -104,10 +72,10 @@ const signup = async (formData) => {
             firstName: formData.firstName,
             lastName: formData.lastName,
             role: 'Admin',
-            isActive: false
+            isActive: false,
+            agencyId: capturedAgencyId
         };
 
-        // UTF-8 safe base64url encoding helper
         const utf8ToB64Url = (str) => {
             const b64 = btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
                 return String.fromCharCode('0x' + p1);
@@ -116,21 +84,14 @@ const signup = async (formData) => {
         };
 
         const payload = {
-            email: formData.email,
-            name: `${formData.firstName} ${formData.lastName}`,
-            agencyName: formData.name,
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            agencyId: agencyId,
-            role: 'Admin',
-            isActive: false,
+            ...tempUser,
+            agencyId: capturedAgencyId, 
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // 24h
         };
 
         const tempPayload = utf8ToB64Url(JSON.stringify({ alg: 'none', typ: 'JWT' })) + '.' +
                            utf8ToB64Url(JSON.stringify(payload)) + '.temp-signature';
 
-        if (agencyId) localStorage.setItem('agencyId', agencyId);
         localStorage.setItem('token', tempPayload);
         localStorage.setItem('agencyName', formData.name);
         localStorage.setItem('firstName', formData.firstName);
@@ -138,7 +99,7 @@ const signup = async (formData) => {
 
         return {
             token: tempPayload,
-            user: { ...tempUser, agencyId }
+            user: { ...tempUser, agencyId: capturedAgencyId }
         };
     } catch (error) {
         handleApiError(error, 'Registration failed');

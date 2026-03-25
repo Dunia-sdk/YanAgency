@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, ChevronDown } from 'lucide-react';
+import { RefreshCw, ChevronDown, Eye } from 'lucide-react';
 import * as bookingService from '../services/bookingService';
 import { useNotifications } from '../context/NotificationContext';
 import './ReservationsPage.css';
@@ -145,11 +145,10 @@ const ReservationsPage = () => {
             }
 
             // Per-column filters (case-insensitive substring for text, exact for select)
-            if (columnFilters.id        && !String(r.id).toLowerCase().includes(columnFilters.id.toLowerCase()))             return false;
-            if (columnFilters.client    && !r.client.toLowerCase().includes(columnFilters.client.toLowerCase()))              return false;
-            if (columnFilters.vehicle   && !r.vehicle.toLowerCase().includes(columnFilters.vehicle.toLowerCase()))            return false;
-            if (columnFilters.startDate && !r.startDate.toLowerCase().includes(columnFilters.startDate.toLowerCase()))       return false;
-            if (columnFilters.endDate   && !r.endDate.toLowerCase().includes(columnFilters.endDate.toLowerCase()))           return false;
+            if (columnFilters.client    && !(r.client || '').toLowerCase().includes(columnFilters.client.toLowerCase()))              return false;
+            if (columnFilters.vehicle   && !(r.vehicle || '').toLowerCase().includes(columnFilters.vehicle.toLowerCase()))            return false;
+            if (columnFilters.startDate && !(r.startDate || '').toLowerCase().includes(columnFilters.startDate.toLowerCase()))       return false;
+            if (columnFilters.endDate   && !(r.endDate || '').toLowerCase().includes(columnFilters.endDate.toLowerCase()))           return false;
             if (columnFilters.status    && r.status !== columnFilters.status)                                                 return false;
 
             return true;
@@ -212,25 +211,17 @@ const ReservationsPage = () => {
                     <thead>
                         {/* Row 1 – column labels */}
                         <tr>
-                            <th style={{ width: '13%' }}>{t('reservations.reference')}</th>
-                            <th style={{ width: '18%' }}>{t('client')}</th>
-                            <th style={{ width: '18%' }}>{t('vehicle')}</th>
-                            <th style={{ width: '12%' }}>{t('reservations.startDate')}</th>
-                            <th style={{ width: '12%' }}>{t('reservations.endDate')}</th>
-                            <th style={{ width: '10%' }}>{t('total')}</th>
+                            <th style={{ width: '22%' }}>{t('client')}</th>
+                            <th style={{ width: '22%' }}>{t('vehicle')}</th>
+                            <th style={{ width: '13%' }}>{t('reservations.startDate')}</th>
+                            <th style={{ width: '13%' }}>{t('reservations.endDate')}</th>
+                            <th style={{ width: '11%' }}>{t('total')}</th>
                             <th style={{ width: '11%' }}>{t('status')}</th>
-                            <th style={{ width: '6%'  }}>{t('actions')}</th>
+                            <th style={{ width: '8%'  }}>{t('actions')}</th>
                         </tr>
 
                         {/* Row 2 – column filter inputs */}
                         <tr className="th-filter-row">
-                            <th>
-                                <ThTextFilter
-                                    value={columnFilters.id}
-                                    onChange={v => setColFilter('id', v)}
-                                    placeholder="Réf..."
-                                />
-                            </th>
                             <th>
                                 <ThTextFilter
                                     value={columnFilters.client}
@@ -290,9 +281,6 @@ const ReservationsPage = () => {
                             </tr>
                         ) : filtered.map((row, idx) => (
                             <tr key={row.id ?? idx}>
-                                <td style={{ fontFamily: 'monospace', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                                    {String(row.id).substring(0, 8)}…
-                                </td>
                                 <td>{row.client}</td>
                                 <td>{row.vehicle}</td>
                                 <td>{row.startDate}</td>
@@ -306,38 +294,47 @@ const ReservationsPage = () => {
 
                                 {/* Action dropdown */}
                                 <td>
-                                    <div style={{ position: 'relative' }}>
+                                    <div className="flex items-center gap-2">
                                         <button
-                                            className="action-btn flex items-center gap-1"
-                                            onClick={e => {
-                                                e.stopPropagation();
-                                                setOpenDropdown(prev => prev === row.id ? null : row.id);
-                                            }}
+                                            className="action-btn-primary"
+                                            title={t('viewDetails')}
+                                            onClick={() => applyAction(row.id, 'actionDetails')}
                                         >
-                                            {t('actions')} <ChevronDown size={12} />
+                                            <Eye size={16} />
                                         </button>
-                                        {openDropdown === row.id && (
-                                            <div style={{
-                                                position: 'absolute', insetInlineEnd: 0, top: '110%',
-                                                background: 'var(--surface)', border: '1px solid var(--border)',
-                                                borderRadius: 10, boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
-                                                zIndex: 99, minWidth: 140, overflow: 'hidden'
-                                            }}>
-                                                {(ACTION_KEYS[row.status] || []).map(key => (
-                                                    <button
-                                                        key={key}
-                                                        className="topbar__dropdown-item"
-                                                        onClick={e => { e.stopPropagation(); applyAction(row.id, key); }}
-                                                        style={{
-                                                            padding: '0.65rem 1rem',
-                                                            color: key === 'actionCancel' ? 'var(--error)' : 'inherit'
-                                                        }}
-                                                    >
-                                                        {t(`reservations.${key}`)}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
+                                        <div style={{ position: 'relative' }}>
+                                            <button
+                                                className="action-btn flex items-center gap-1"
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    setOpenDropdown(prev => prev === row.id ? null : row.id);
+                                                }}
+                                            >
+                                                {t('actions')} <ChevronDown size={12} />
+                                            </button>
+                                            {openDropdown === row.id && (
+                                                <div style={{
+                                                    position: 'absolute', insetInlineEnd: 0, top: '110%',
+                                                    background: 'var(--surface)', border: '1px solid var(--border)',
+                                                    borderRadius: 10, boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+                                                    zIndex: 99, minWidth: 140, overflow: 'hidden'
+                                                }}>
+                                                    {(ACTION_KEYS[row.status] || []).map(key => (
+                                                        <button
+                                                            key={key}
+                                                            className="topbar__dropdown-item"
+                                                            onClick={e => { e.stopPropagation(); applyAction(row.id, key); }}
+                                                            style={{
+                                                                padding: '0.65rem 1rem',
+                                                                color: key === 'actionCancel' ? 'var(--error)' : 'inherit'
+                                                            }}
+                                                        >
+                                                            {t(`reservations.${key}`)}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </td>
                             </tr>

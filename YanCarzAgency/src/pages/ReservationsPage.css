@@ -56,3 +56,56 @@
     border-color: var(--primary, #6366f1);
     box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
 }
+
+/* ─── Action Buttons ─── */
+.action-btn {
+    padding: 0.4rem 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: var(--bg-accent);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.action-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--primary-light, #eef2ff);
+    color: var(--primary, #6366f1);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn-primary:hover {
+    background: var(--primary, #6366f1);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.badge-pending { background: #fffbeb; color: #b45309; }
+.badge-confirmed { background: #ecfdf5; color: #047857; }
+.badge-completed { background: #eff6ff; color: #1d4ed8; }
+.badge-cancelled { background: #fef2f2; color: #b91c1c; }

@@ -45,7 +45,7 @@ const PaymentsPage = () => {
     const filtered = useMemo(() => {
         const query = localSearch || searchQuery;
         return payments.filter(p => {
-            const matchSearch = p.client.toLowerCase().includes(query.toLowerCase());
+            const matchSearch = (p.client || '').toLowerCase().includes((query || '').toLowerCase());
             const matchMethod = filters.method === 'all' || p.method === filters.method;
             return matchSearch && matchMethod;
         });

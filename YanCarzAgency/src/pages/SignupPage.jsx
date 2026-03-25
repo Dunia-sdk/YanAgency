@@ -111,7 +111,7 @@ const SignupPage = () => {
         setGlobalError('');
 
         try {
-            await register(formData);
+            const res = await register(formData);
 
             try {
                 await authService.sendWelcomeEmail(formData.email, formData.firstName);
@@ -119,7 +119,12 @@ const SignupPage = () => {
                 console.error("Failed to send welcome email", emailErr);
             }
 
-            navigate('/dashboard', { state: { newSignup: true } });
+            if (res && res.token) {
+                navigate('/dashboard', { state: { newSignup: true } });
+            } else {
+                alert(t('signupSuccessLogin') || 'Compte créé avec succès. Veuillez vous connecter.');
+                navigate('/login');
+            }
         } catch (err) {
             setGlobalError(err.message || t('errors.signupFailed'));
         } finally {

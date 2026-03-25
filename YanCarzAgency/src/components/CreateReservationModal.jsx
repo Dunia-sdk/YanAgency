@@ -7,10 +7,12 @@ import Button from './Button';
 import { createBooking } from '../services/bookingService';
 import { getDevises, getPlaces } from '../services/sharedService';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const CreateReservationModal = ({ isOpen, onClose, vehicleId, vehiclePrice }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 

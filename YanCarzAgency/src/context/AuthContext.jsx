@@ -23,7 +23,11 @@ export const AuthProvider = ({ children }) => {
                 const decoded = jwtDecode(storedToken);
                 // Check if token is expired
                 if (decoded.exp * 1000 > Date.now()) {
-                    const agencyId = getValidId(decoded.agencyId) || getValidId(decoded.agency_id) || getValidId(decoded.AgencyId) || getValidId(localStorage.getItem('agencyId'));
+                    const storedAgencyId = localStorage.getItem('agencyId');
+                    const agencyId = getValidId(decoded.agencyId) || 
+                                   getValidId(decoded.agency_id) || 
+                                   getValidId(decoded.AgencyId) || 
+                                   getValidId(storedAgencyId);
 
                     setUser({
                         email: decoded.email,
@@ -35,6 +39,11 @@ export const AuthProvider = ({ children }) => {
                         role: decoded.role || 'Admin',
                         isActive: decoded.isActive !== undefined ? decoded.isActive : localStorage.getItem('isActive') !== 'false'
                     });
+
+                    // Sync back to localStorage if found in token but missing in storage
+                    if (agencyId && !storedAgencyId) {
+                        localStorage.setItem('agencyId', agencyId);
+                    }
                     setToken(storedToken);
                 } else {
                     // Token is expired
@@ -54,7 +63,11 @@ export const AuthProvider = ({ children }) => {
         try {
             const data = await authService.login(email, password);
             const decoded = jwtDecode(data.token);
-            const agencyId = getValidId(decoded.agencyId) || getValidId(decoded.agency_id) || getValidId(decoded.AgencyId) || getValidId(data.user?.agencyId) || getValidId(localStorage.getItem('agencyId'));
+            const agencyId = getValidId(data.user?.agencyId) || 
+                             getValidId(decoded.agencyId) || 
+                             getValidId(decoded.agency_id) || 
+                             getValidId(decoded.AgencyId) || 
+                             getValidId(localStorage.getItem('agencyId'));
 
             const userData = {
                 email: decoded.email,
@@ -89,37 +102,40 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
         try {
             const data = await authService.signup(signupData);
-            const decoded = jwtDecode(data.token);
-            // Priority: Service Response > Token Claims > LocalStorage
-            const agencyId = getValidId(data.user?.agencyId) || 
-                           getValidId(decoded.agencyId) || 
-                           getValidId(decoded.agency_id) || 
-                           getValidId(decoded.AgencyId) || 
-                           getValidId(localStorage.getItem('agencyId'));
+            
+            // Only set session if a token was provided (e.g. from Mock Mode)
+            if (data && data.token) {
+                const decoded = jwtDecode(data.token);
+                // Priority: Service Response > Token Claims
+                const agencyId = getValidId(data.user?.agencyId) || 
+                               getValidId(decoded.agencyId) || 
+                               getValidId(decoded.agency_id) || 
+                               getValidId(decoded.AgencyId);
 
-            const userData = {
-                email: decoded.email,
-                name: decoded.name,
-                agencyId: agencyId,
-                agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
-                firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
-                lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
-                role: decoded.role || 'Admin',
-                isActive: decoded.isActive !== undefined ? decoded.isActive : data.user?.isActive !== undefined ? data.user?.isActive : false
-            };
-            setUser(userData);
+                const userData = {
+                    email: decoded.email,
+                    name: decoded.name,
+                    agencyId: agencyId,
+                    agencyName: decoded.agencyName || data.user?.agencyName || 'YanCarz Agency',
+                    firstName: decoded.firstName || data.user?.firstName || decoded.name?.split(' ')[0],
+                    lastName: decoded.lastName || data.user?.lastName || decoded.name?.split(' ')[1],
+                    role: decoded.role || 'Admin',
+                    isActive: decoded.isActive !== undefined ? decoded.isActive : data.user?.isActive !== undefined ? data.user?.isActive : false
+                };
+                setUser(userData);
 
-            localStorage.setItem('token', data.token);
-            if (userData.agencyName) localStorage.setItem('agencyName', userData.agencyName);
-            if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
-            if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
-            localStorage.setItem('isActive', userData.isActive);
-            if (userData.agencyId) {
-                console.log('Saving Agency ID to localStorage:', userData.agencyId);
-                localStorage.setItem('agencyId', userData.agencyId);
+                localStorage.setItem('token', data.token);
+                if (userData.agencyName) localStorage.setItem('agencyName', userData.agencyName);
+                if (userData.firstName) localStorage.setItem('firstName', userData.firstName);
+                if (userData.lastName) localStorage.setItem('lastName', userData.lastName);
+                localStorage.setItem('isActive', userData.isActive);
+                if (userData.agencyId) {
+                    console.log('Saving Agency ID to localStorage:', userData.agencyId);
+                    localStorage.setItem('agencyId', userData.agencyId);
+                }
+
+                setToken(data.token);
             }
-
-            setToken(data.token);
             return data;
         } catch (error) {
             console.error(error);

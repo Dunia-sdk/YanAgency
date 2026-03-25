@@ -31,10 +31,12 @@ export const getBookings = async () => {
  * POST /api/agency/Bookings
  * Creates a new booking.
  * 
- * @param {Object} bookingData - BookingCreateDto
- * @param {string} bookingData.customerId
+ * @param {Object} bookingData - CreateBookingPortalDto
+ * @param {string} bookingData.firstName
+ * @param {string} bookingData.lastName
+ * @param {string} bookingData.eMail
+ * @param {string} bookingData.nbrPhone
  * @param {string} bookingData.agencyCarId
- * @param {string} bookingData.agencyId
  * @param {string} bookingData.startDate
  * @param {string} bookingData.endDate
  * @param {string} bookingData.pickupPlaceId
@@ -55,13 +57,37 @@ export const createBooking = async (bookingData) => {
  * Mapping helper for UI representation
  */
 export const mapApiToUi = (booking) => {
+    // Map status from integer to string if necessary
+    // 0: pending, 1: confirmed, 2: completed, 3: cancelled
+    const statusMap = {
+        '0': 'pending',
+        '1': 'confirmed',
+        '2': 'completed',
+        '3': 'cancelled'
+    };
+    
+    let mappedStatus = booking.status?.toString().toLowerCase() || 'pending';
+    if (statusMap[mappedStatus]) {
+        mappedStatus = statusMap[mappedStatus];
+    }
+
+    // Client name fallbacks
+    const clientName = booking.customer?.firstName 
+        ? `${booking.customer.firstName} ${booking.customer.lastName || ''}` 
+        : (booking.customerFirstName ? `${booking.customerFirstName} ${booking.customerLastName || ''}` : null);
+
+    // Vehicle name fallbacks
+    const vehicleName = booking.agencyCar?.model?.name 
+        ? booking.agencyCar.model.name 
+        : (booking.carModelName || booking.vehicleName || null);
+
     return {
         id: booking.id || booking.Id || 'N/A',
-        client: booking.customer?.firstName ? `${booking.customer.firstName} ${booking.customer.lastName || ''}` : booking.customerId,
-        clientFirstName: booking.customer?.firstName || '',
-        clientLastName: booking.customer?.lastName || '',
-        vehicle: booking.agencyCar?.model?.name || booking.agencyCarId,
-        vehicleBrand: booking.agencyCar?.model?.mark?.name || '',
+        client: clientName || booking.customerId || 'N/A',
+        clientFirstName: booking.customer?.firstName || booking.customerFirstName || '',
+        clientLastName: booking.customer?.lastName || booking.customerLastName || '',
+        vehicle: vehicleName || booking.agencyCarId || 'N/A',
+        vehicleBrand: booking.agencyCar?.model?.mark?.name || booking.carMarkName || '',
         vehicleCategory: booking.agencyCar?.model?.category || 'Berline',
         vehiclePrice: booking.agencyCar?.pricePerDay || booking.pricePerDay || 0,
         startDate: booking.startDate ? new Date(booking.startDate).toLocaleDateString() : 'N/A',
@@ -71,7 +97,7 @@ export const mapApiToUi = (booking) => {
         pickupPlace: booking.pickupPlace?.name || 'Agence Centrale',
         returnPlace: booking.returnPlace?.name || 'Agence Centrale',
         total: booking.totalAmount || (booking.pricePerDay * ((new Date(booking.endDate) - new Date(booking.startDate)) / (1000 * 60 * 60 * 24))) || 0,
-        status: (booking.status?.toString().toLowerCase()) || 'pending',
+        status: mappedStatus,
         rawStartDate: booking.startDate,
         rawEndDate: booking.endDate
     };

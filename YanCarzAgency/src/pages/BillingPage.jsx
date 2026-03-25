@@ -41,8 +41,8 @@ const BillingPage = () => {
 
     const filtered = useMemo(() => {
         return invoices.filter(inv => {
-            const matchSearch = inv.client.toLowerCase().includes(query.toLowerCase()) ||
-                inv.ref.toLowerCase().includes(query.toLowerCase());
+            const matchSearch = (inv.client || '').toLowerCase().includes((query || '').toLowerCase()) ||
+                (inv.ref || '').toLowerCase().includes((query || '').toLowerCase());
             const matchStatus = statusFilter === 'all' || inv.status === statusFilter;
             return matchSearch && matchStatus;
         });
