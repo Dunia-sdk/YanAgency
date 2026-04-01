@@ -144,10 +144,13 @@ const VehiclesPage = () => {
 
     const fetchModels = async (markId) => {
         if (!markId) { setModels([]); return; }
+        setModels([]);   // Clear stale models immediately while loading
         setLoadingModels(true);
         try {
             const data = await getModelsByMark(markId);
-            setModels(data || []);
+            // Ensure client-side filtering as fallback if API returns all models
+            const filteredModels = (data || []).filter(m => m.markId === markId);
+            setModels(filteredModels);
         } catch (err) {
             console.error('Failed to fetch models:', err);
         } finally {
@@ -245,23 +248,16 @@ const VehiclesPage = () => {
             const apiData = mapUiToApi(form, agencyId);
 
             if (editVehicle) {
-                const response = await updateVehicle(editVehicle.id, apiData);
-                // Some APIs return 204/empty body on PUT — fall back to form data
-                const merged = typeof response === 'object' && response !== null
-                    ? { ...editVehicle, ...form, ...response }
-                    : { ...editVehicle, ...form };
-                const updated = mapApiToUi(merged);
-                setVehicles(prev => prev.map(v => v.id === editVehicle.id ? updated : v));
+                await updateVehicle(editVehicle.id, apiData);
             } else {
-                const response = await createVehicle(apiData);
-                const newId    = typeof response === 'string' ? response : (response?.id || response?.Id || response?.uid);
-                const created  = mapApiToUi({ ...form, ...(typeof response === 'object' ? response : {}), id: newId });
-                setVehicles(prev => [...prev, created]);
+                await createVehicle(apiData);
             }
+            await fetchVehicles(); // Dynamic refresh from server
             closeModal();
         } catch (err) {
             console.error('Failed to save vehicle:', err);
-            alert(typeof err === 'string' ? err : (err.message || JSON.stringify(err)));
+            const msg = typeof err === 'string' ? err : (err.message || JSON.stringify(err));
+            alert(msg);
         } finally {
             setLoading(false);
         }

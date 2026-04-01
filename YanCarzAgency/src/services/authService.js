@@ -56,11 +56,15 @@ const signup = async (formData) => {
             idCity: formData.idCity
         });
 
-        // Capture the real agency ID if provided by the backend
-        const capturedAgencyId = response.data?.id || response.data?.agencyId || null;
+        // Capture the real agency ID if provided by the backend (check common nested fields)
+        const d = response.data;
+        const capturedAgencyId = d?.id || d?.agencyId || d?.agency?.id || d?.data?.id || d?.result?.id || null;
+        
         if (capturedAgencyId) {
             localStorage.setItem('agencyId', capturedAgencyId);
             console.log('Real Agency ID captured during signup:', capturedAgencyId);
+        } else {
+            console.warn('Backend did not return an agency ID. Waiting for API fix as requested.');
         }
 
         // By user request: immediately enter the dashboard without a real token.

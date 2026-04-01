@@ -151,6 +151,8 @@
         "fuel": "الوقود",
         "pricePerDay": "السعر/يوم",
         "transmission": "ناقل الحركة",
+        "plateNumber": "رقم اللوحة",
+        "color": "اللون",
         "imageUrl": "رابط الصورة",
         "addModal": "إضافة مركبة",
         "editModal": "تعديل المركبة",

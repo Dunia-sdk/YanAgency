@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../context/NotificationContext';
 
 const TYPE_ICON = {
@@ -9,8 +10,14 @@ const TYPE_ICON = {
 
 const NotificationsPage = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const { notifications, markRead, markAllRead } = useNotifications();
     const unread = notifications.filter(n => !n.read).length;
+
+    const handleClick = (n) => {
+        markRead(n.id);
+        if (n.linkTo) navigate(n.linkTo);
+    };
 
     return (
         <div style={{ animation: 'slideUpFade 0.4s ease' }}>
@@ -33,12 +40,12 @@ const NotificationsPage = () => {
                     </div>
                 ) : (
                     notifications.map((n, i) => (
-                        <div key={n.id || i} onClick={() => markRead(n.id)} style={{
+                        <div key={n.id || i} onClick={() => handleClick(n)} style={{
                             display: 'flex', alignItems: 'flex-start', gap: '1rem',
                             padding: '1.1rem 1.5rem',
                             background: n.read ? 'transparent' : 'var(--primary-light)',
                             borderBottom: i < notifications.length - 1 ? '1px solid var(--border)' : 'none',
-                            cursor: n.read ? 'default' : 'pointer',
+                            cursor: 'pointer',
                             transition: 'background 0.2s',
                         }}>
                             <div style={{ fontSize: '1.5rem', lineHeight: 1 }}>{TYPE_ICON[n.type] || '🔔'}</div>

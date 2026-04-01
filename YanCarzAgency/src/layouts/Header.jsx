@@ -4,12 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSidebar } from '../context/SidebarContext';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import './Header.css';
 
 const Header = ({ onSearch, searchValue }) => {
     const { collapsed } = useSidebar();
     const { user, logout } = useAuth();
+    const { notifications } = useNotifications();
+    const unreadCount = notifications.filter(n => !n.read).length;
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -62,7 +65,9 @@ const Header = ({ onSearch, searchValue }) => {
                     onClick={() => navigate('/notifications')}
                 >
                     <Bell size={20} />
-                    <span className="topbar__badge">3</span>
+                    {unreadCount > 0 && (
+                        <span className="topbar__badge">{unreadCount}</span>
+                    )}
                 </button>
 
                 {/* User Dropdown */}

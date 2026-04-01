@@ -8,11 +8,13 @@ import { createBooking } from '../services/bookingService';
 import { getDevises, getPlaces } from '../services/sharedService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 
 const CreateReservationModal = ({ isOpen, onClose, vehicleId, vehiclePrice }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { addNotification } = useNotifications();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -97,12 +99,19 @@ const CreateReservationModal = ({ isOpen, onClose, vehicleId, vehiclePrice }) =>
                 deviseId: formData.deviseId
             };
 
-            await createBooking(payload);
+            const result = await createBooking(payload);
+            // Fire a dynamic notification so the bell badge updates immediately
+            const reservationId = result?.id || result?.data?.id;
+            addNotification({
+                id: `res-${reservationId || Date.now()}`,
+                type: 'reservation',
+                msg: `Nouvelle réservation : ${payload.firstName} ${payload.lastName}`,
+                linkTo: reservationId ? `/reservations/${reservationId}` : '/reservations',
+                time: new Date(),
+            });
             setLoading(false);
             onClose();
             navigate('/reservations');
-            // Assuming the app uses a global notification system or standard alerts
-            // alert('Réservation créée avec succès!');
         } catch (err) {
             console.error('Failed to create reservation:', err);
             setError(err.message || 'Erreur lors de la création de la réservation');

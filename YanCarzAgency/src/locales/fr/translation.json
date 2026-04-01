@@ -155,6 +155,8 @@
         "fuel": "Carburant",
         "pricePerDay": "Prix/jour",
         "transmission": "Boite",
+        "plateNumber": "Plaque",
+        "color": "Couleur",
         "imageUrl": "URL Image",
         "addModal": "Ajouter un véhicule",
         "editModal": "Modifier le véhicule",

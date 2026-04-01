@@ -28,8 +28,18 @@ const TeamPage = () => {
         try {
             setLoading(true);
             const currentAgencyId = user?.agencyId || localStorage.getItem('agencyId');
+            
+            if (!currentAgencyId) {
+                console.warn('No agencyId found, security skip of team fetch.');
+                setTeam([]);
+                setLoading(false);
+                return;
+            }
+
             const data = await getAgencyUsers(currentAgencyId);
-            setTeam(data);
+            // Strict client-side filter by agencyId to prevent data leaks
+            const filteredData = (data || []).filter(m => m.agencyId === currentAgencyId);
+            setTeam(filteredData);
             setPageError(null);
         } catch (err) {
             setPageError(t('team.loadError') || 'Failed to load team members.');

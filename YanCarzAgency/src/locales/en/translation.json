@@ -153,6 +153,8 @@
         "fuel": "Fuel",
         "pricePerDay": "Price/day",
         "transmission": "Gearbox",
+        "plateNumber": "Plate Number",
+        "color": "Color",
         "imageUrl": "Image URL",
         "addModal": "Add a vehicle",
         "editModal": "Edit vehicle",
