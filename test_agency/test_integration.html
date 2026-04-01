@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>YanCarz - Rapport d'Anomalies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <nav class="bg-white shadow-sm p-4 flex justify-between items-center border-b">
+        <div class="flex items-center gap-3 font-bold text-xl text-slate-800"><i class="fas fa-puzzle-piece text-rose-600"></i> YanCarz <span class="text-rose-600">Bugs Report</span></div>
+        <div class="flex gap-4 text-sm font-bold uppercase">
+            <a href="test_unitaire.html" class="text-slate-400">Unitaire</a>
+            <a href="test_integration.html" class="text-rose-600 border-b-2 border-rose-600">Intégration</a>
+            <a href="test_e2e.html" class="text-slate-400">End-to-End</a>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto py-12 px-6">
+        <h1 class="text-4xl font-black mb-10 text-rose-900 uppercase">Audit de Logique Métier</h1>
+
+        <div class="bg-rose-50 border-2 border-rose-600 p-8 rounded-3xl shadow-xl">
+    <div class="flex justify-between items-start">
+        <div>
+            <span class="bg-rose-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Critique</span>
+            <h3 class="text-2xl font-black text-rose-900 mt-3 italic underline">Alerte : Blocage Total du Système</h3>
+            <p class="text-rose-700 mt-4 leading-relaxed font-bold">
+                L'intégration des nouvelles APIs a provoqué une rupture du service d'authentification. 
+                <br>Impact : 100% des tests automatisés sont bloqués. Aucune gestion de flotte n'est possible.
+            </p>
+        </div>
+        <i class="fas fa-door-closed text-rose-600 text-6xl opacity-30"></i>
+    </div>
+</div>
+    </main>
+</body>
+</html>

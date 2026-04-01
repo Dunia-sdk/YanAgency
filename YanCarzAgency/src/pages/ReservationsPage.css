@@ -1,0 +1,111 @@
+/* ─── Shared column-filter styles (used by VehiclesPage & ReservationsPage) ─── */
+
+/**
+ * The filter row sits directly below the column-label row in <thead>.
+ * A subtle background distinguishes it from the main header.
+ */
+.th-filter-row th {
+    padding: 0.4rem 0.6rem;
+    background: var(--bg-accent, #f4f6fb);
+    border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+/* Text input inside a column header */
+.th-filter-input {
+    width: 100%;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-family: inherit;
+    color: var(--text-main, #1e293b);
+    background: var(--surface, #fff);
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.th-filter-input:focus {
+    border-color: var(--primary, #6366f1);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.th-filter-input::placeholder {
+    color: var(--text-muted, #94a3b8);
+    font-size: 0.75rem;
+}
+
+/* Select inside a column header */
+.th-filter-select {
+    width: 100%;
+    padding: 0.3rem 0.45rem;
+    border: 1px solid var(--border, #d1d5db);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-family: inherit;
+    color: var(--text-main, #1e293b);
+    background: var(--surface, #fff);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    appearance: auto;       /* keep native arrow for usability */
+}
+
+.th-filter-select:focus {
+    border-color: var(--primary, #6366f1);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+/* ─── Action Buttons ─── */
+.action-btn {
+    padding: 0.4rem 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: var(--bg-accent);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.action-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--primary-light, #eef2ff);
+    color: var(--primary, #6366f1);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn-primary:hover {
+    background: var(--primary, #6366f1);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.badge-pending { background: #fffbeb; color: #b45309; }
+.badge-confirmed { background: #ecfdf5; color: #047857; }
+.badge-completed { background: #eff6ff; color: #1d4ed8; }
+.badge-cancelled { background: #fef2f2; color: #b91c1c; }

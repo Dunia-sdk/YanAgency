@@ -10,7 +10,8 @@ const InputField = ({
     onChange,
     placeholder,
     error,
-    required = false
+    required = false,
+    ...props
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
@@ -31,8 +32,9 @@ const InputField = ({
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className={`input-field ${error ? 'input-error animate-shake' : ''}`}
+                    className={`input-field ${isPassword ? 'has-toggle' : ''} ${error ? 'input-error animate-shake' : ''}`}
                     required={required}
+                    {...props}
                 />
                 {isPassword && (
                     <button

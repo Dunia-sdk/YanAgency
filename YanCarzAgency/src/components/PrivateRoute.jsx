@@ -4,9 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import Loader from './Loader';
 
 const PrivateRoute = () => {
-    const { user, loading } = useAuth();
+    const { user, loading, initializing } = useAuth();
 
-    if (loading) {
+    if (loading || initializing) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <Loader size={40} color="var(--primary)" />

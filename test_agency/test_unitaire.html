@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>YanCarz - Tests Unitaires V3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <nav class="bg-white shadow-sm p-4 flex justify-between items-center border-b sticky top-0 z-50">
+        <div class="flex items-center gap-3 font-bold text-xl text-slate-800">
+            <i class="fas fa-microchip text-indigo-600"></i> YanCarz <span class="text-indigo-600 font-light italic">Audit Unitaire</span>
+        </div>
+        <div class="flex gap-4 text-sm font-bold uppercase tracking-wider">
+            <a href="test_unitaire.html" class="text-indigo-600 border-b-2 border-indigo-600">Unitaire</a>
+            <a href="test_integration.html" class="text-slate-400 hover:text-indigo-600 transition">Intégration</a>
+            <a href="test_e2e.html" class="text-slate-400 hover:text-indigo-600 transition">End-to-End</a>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto py-12 px-6">
+        <h1 class="text-4xl font-black mb-8">Validation des Composants (UI/UX)</h1>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-rose-500 flex justify-between items-center mb-6">
+    <div>
+        <h3 class="font-bold text-lg text-slate-800">Flux d'Authentification API</h3>
+        <p class="text-rose-600 text-sm font-bold italic">RÉSULTAT : ÉCHOUÉ (Message: Login failed)</p>
+        <p class="text-slate-500 text-xs mt-1">Le backend rejette les identifiants de test suite à la migration API.</p>
+    </div>
+    <i class="fas fa-times-circle text-rose-500 text-3xl"></i>
+</div>
+
+<div class="bg-gray-100 p-6 rounded-2xl flex justify-between items-center opacity-50">
+    <div>
+        <h3 class="font-bold text-lg text-slate-400">Composants Internes (Véhicules/Team)</h3>
+        <p class="text-slate-400 text-sm">NON EXÉCUTÉS : Bloqués par l'échec du login.</p>
+    </div>
+    <i class="fas fa-lock text-slate-400 text-2xl"></i>
+</div>
+    </main>
+</body>
+</html>

@@ -1,27 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import InputField from '../components/InputField';
+import SelectField from '../components/SelectField';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import api from '../services/api';
+import authService from '../services/authService';
+// Removed static mockCities import
 
 const SignupPage = () => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        password: '',
-        confirmPassword: ''
+        idCity: '',
+        phone: '',
+        firstName: '',
+        lastName: ''
     });
     const [formErrors, setFormErrors] = useState({});
     const [globalError, setGlobalError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [cities, setCities] = useState([]);
+    const [citiesLoading, setCitiesLoading] = useState(true);
     const { register } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCities = async () => {
+            try {
+                const res = await api.get('shared/City');
+                const cityOptions = [
+                    { value: '', label: t('selectCity'), disabled: true },
+                    ...res.data.map(c => ({ value: c.id, label: c.name }))
+                ];
+                setCities(cityOptions);
+            } catch (err) {
+                console.error('API failed to load cities:', err);
+                setCities([{ value: '', label: t('errors.cityRequired'), disabled: true }]);
+            } finally {
+                setCitiesLoading(false);
+            }
+        };
+        fetchCities();
+    }, [t]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        // Clear specific field error when user types
         if (formErrors[name]) {
             setFormErrors(prev => ({ ...prev, [name]: '' }));
         }
@@ -33,29 +62,40 @@ const SignupPage = () => {
         let isValid = true;
 
         if (!formData.name.trim()) {
-            errors.name = 'Le nom est requis';
+            errors.name = t('errors.nameRequired');
             isValid = false;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email) {
-            errors.email = 'L\'email est requis';
+            errors.email = t('errors.emailRequired');
             isValid = false;
         } else if (!emailRegex.test(formData.email)) {
-            errors.email = 'Format d\'email invalide';
+            errors.email = t('errors.emailInvalid');
             isValid = false;
         }
 
-        if (!formData.password) {
-            errors.password = 'Le mot de passe est requis';
-            isValid = false;
-        } else if (formData.password.length < 8) {
-            errors.password = 'Le mot de passe doit contenir au moins 8 caractères';
+        if (!formData.idCity) {
+            errors.idCity = t('errors.cityRequired');
             isValid = false;
         }
 
-        if (formData.password !== formData.confirmPassword) {
-            errors.confirmPassword = 'Les mots de passe ne correspondent pas';
+        const phoneRegex = /^(06|07|05)\d{8}$/;
+        if (!formData.phone) {
+            errors.phone = t('errors.phoneRequired');
+            isValid = false;
+        } else if (!phoneRegex.test(formData.phone)) {
+            errors.phone = t('errors.phoneInvalid');
+            isValid = false;
+        }
+
+        if (!formData.firstName.trim()) {
+            errors.firstName = t('errors.firstNameRequired');
+            isValid = false;
+        }
+
+        if (!formData.lastName.trim()) {
+            errors.lastName = t('errors.lastNameRequired');
             isValid = false;
         }
 
@@ -71,10 +111,22 @@ const SignupPage = () => {
         setGlobalError('');
 
         try {
-            await register(formData.name, formData.email, formData.password);
-            navigate('/dashboard');
+            const res = await register(formData);
+
+            try {
+                await authService.sendWelcomeEmail(formData.email, formData.firstName);
+            } catch (emailErr) {
+                console.error("Failed to send welcome email", emailErr);
+            }
+
+            if (res && res.token) {
+                navigate('/dashboard', { state: { newSignup: true } });
+            } else {
+                alert(t('signupSuccessLogin') || 'Compte créé avec succès. Veuillez vous connecter.');
+                navigate('/login');
+            }
         } catch (err) {
-            setGlobalError(err.message || 'Échec de l\'inscription');
+            setGlobalError(err.message || t('errors.signupFailed'));
         } finally {
             setLoading(false);
         }
@@ -82,7 +134,12 @@ const SignupPage = () => {
 
     return (
         <div className="auth-wrapper">
-            <div className="glass-panel auth-container">
+            <div className="glass-panel auth-container" style={{ position: 'relative' }}>
+                {/* Language Switcher — top end corner (flips in RTL) */}
+                <div className="auth-lang-switcher">
+                    <LanguageSwitcher />
+                </div>
+
                 <div className="logo-container" style={{ marginBottom: '1.5rem' }}>
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.5-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
@@ -94,15 +151,15 @@ const SignupPage = () => {
                 </div>
 
                 <div className="text-center mb-6">
-                    <h2 className="mb-2">Créer un compte</h2>
-                    <p>Rejoignez YanCarz pour gérer votre agence</p>
+                    <h2 className="mb-2">{t('createAccount')}</h2>
+                    <p>{t('joinYanCarz')}</p>
                 </div>
 
                 <Alert type="error" message={globalError} />
 
                 <form onSubmit={handleSubmit}>
                     <InputField
-                        label="Nom complet d'agence"
+                        label={t('agencyName')}
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
@@ -111,47 +168,66 @@ const SignupPage = () => {
                         required
                     />
                     <InputField
-                        label="Adresse Email"
+                        label={t('email')}
                         name="email"
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="nom@yancarz.com"
+                        placeholder="name@yancarz.com"
                         error={formErrors.email}
                         required
                     />
-                    <InputField
-                        label="Mot de passe"
-                        name="password"
-                        type="password"
-                        value={formData.password}
+                    <SelectField
+                        label={t('city')}
+                        name="idCity"
+                        value={formData.idCity}
                         onChange={handleChange}
-                        placeholder="Mini. 8 caractères"
-                        error={formErrors.password}
+                        options={citiesLoading ? [{ value: '', label: t('loadingCities'), disabled: true }] : cities}
+                        error={formErrors.idCity}
                         required
                     />
                     <InputField
-                        label="Confirmer le mot de passe"
-                        name="confirmPassword"
-                        type="password"
-                        value={formData.confirmPassword}
+                        label={t('phoneNumber')}
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
                         onChange={handleChange}
-                        placeholder="Répétez le mot de passe"
-                        error={formErrors.confirmPassword}
+                        placeholder="06XXXXXXXX"
+                        error={formErrors.phone}
                         required
                     />
+                    <div className="flex gap-4">
+                        <InputField
+                            label={t('firstName')}
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            placeholder={t('firstName')}
+                            error={formErrors.firstName}
+                            required
+                        />
+                        <InputField
+                            label={t('lastName')}
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            placeholder={t('lastName')}
+                            error={formErrors.lastName}
+                            required
+                        />
+                    </div>
 
                     <div className="mt-6 mb-4">
                         <Button type="submit" fullWidth isLoading={loading}>
-                            S'inscrire
+                            {t('signUp')}
                         </Button>
                     </div>
                 </form>
 
                 <div className="text-center mt-4">
                     <p style={{ fontSize: '0.875rem' }}>
-                        Vous avez déjà un compte ?{' '}
-                        <Link to="/login">Se connecter</Link>
+                        {t('alreadyAccount')}{' '}
+                        <Link to="/login">{t('login')}</Link>
                     </p>
                 </div>
             </div>

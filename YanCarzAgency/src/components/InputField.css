@@ -28,6 +28,7 @@
     color: var(--text-main);
     transition: all 0.2s ease;
     font-family: inherit;
+    text-align: start;
 }
 
 .input-field::placeholder {
@@ -38,6 +39,11 @@
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+/* Password field: reserve space for the toggle button on the end side */
+.input-field.has-toggle {
+    padding-inline-end: 3rem;
 }
 
 .input-error {
@@ -51,7 +57,7 @@
 
 .password-toggle {
     position: absolute;
-    right: 1rem;
+    inset-inline-end: 1rem;
     background: none;
     border: none;
     color: var(--text-muted);

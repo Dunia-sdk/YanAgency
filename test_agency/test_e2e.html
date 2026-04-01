@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>YanCarz - Rapport E2E (Alerte Régression)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <nav class="bg-white shadow-sm p-4 flex justify-between items-center border-b">
+        <div class="flex items-center gap-2 font-bold text-xl text-slate-800">
+            <i class="fas fa-exclamation-triangle text-rose-600"></i> YanCarz <span class="text-rose-600 italic">E2E Blocked</span>
+        </div>
+        <div class="flex gap-4 text-sm font-bold uppercase">
+            <a href="test_unitaire.html" class="text-slate-400">Unitaire</a>
+            <a href="test_integration.html" class="text-slate-400">Intégration</a>
+            <a href="test_e2e.html" class="text-rose-600 border-b-2 border-rose-600">End-to-End</a>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto py-12 px-6">
+        <h1 class="text-4xl font-black mb-12 text-slate-800">Scénario de Réservation (Audit API)</h1>
+        
+        <!-- ZONE D'ALERTE ROUGE -->
+        <div class="bg-rose-600 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden text-center mb-12">
+            <div class="absolute top-0 right-0 p-8 opacity-10 text-9xl">
+                <i class="fas fa-ban"></i>
+            </div>
+            <h2 class="text-3xl font-black mb-4 italic uppercase">Parcours Bloqué</h2>
+            <p class="text-rose-100 leading-relaxed font-medium text-lg">
+                "ALERTE : Le scénario End-to-End a échoué à l'étape 1. Suite à la mise à jour des APIs, les identifiants administrateurs ne sont plus reconnus par le serveur."
+            </p>
+            <div class="mt-8 p-4 bg-rose-900/30 rounded-xl font-mono text-sm border border-rose-400/30">
+                Error Code: AUTH_FAILED_401 | Message: "Login failed"
+            </div>
+        </div>
+
+        <div class="space-y-6 opacity-60">
+            <div class="p-6 bg-white rounded-2xl shadow-sm border border-rose-200 flex items-center gap-4">
+                <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center font-bold">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div>
+                    <p class="font-bold">Étape 1 : Authentification</p>
+                    <p class="text-xs text-rose-500 font-bold uppercase">Échec critique - Arrêt du test</p>
+                </div>
+            </div>
+            
+            <div class="p-6 bg-slate-100 rounded-2xl border border-slate-200 flex items-center gap-4 grayscale">
+                <div class="w-10 h-10 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center font-bold">2</div>
+                <p class="font-bold text-slate-400">Étape 2 : Tunnel d'achat & Réservation (Non exécuté)</p>
+            </div>
+        </div>
+
+        <div class="mt-12 p-6 bg-amber-50 border border-amber-200 rounded-2xl">
+            <h4 class="text-amber-800 font-bold flex items-center gap-2">
+                <i class="fas fa-lightbulb"></i> Recommandation QA
+            </h4>
+            <p class="text-amber-700 text-sm mt-2 leading-relaxed font-medium">
+                Le passage aux APIs réelles nécessite une synchronisation des comptes de test. Le développeur backend doit valider l'existence du compte admin dans la base de données Azure pour débloquer le cycle de vente.
+            </p>
+        </div>
+    </main>
+</body>
+</html>
